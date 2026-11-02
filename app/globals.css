@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-surface-subtle text-ink antialiased;
+  }
+
+  ::selection {
+    @apply bg-brand/20;
+  }
+
+  /* Sichtbarer Fokus-Ring für Tastaturnutzung */
+  :focus-visible {
+    outline: 2px solid #ff5500;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Dünne, ruhige Scrollbar für Datengrids und die Sidebar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #d6dae1 transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #d6dae1;
+    border-radius: 999px;
+  }
+}
