@@ -1,4 +1,9 @@
+import { eq, inArray } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
+import { companies, offersCalculations, vacancies } from "@/lib/db/schema";
+import { num, toIsoRequired } from "@/lib/db/crm";
+import { isDemoMode } from "@/lib/demo/mode";
 import { getVacancyTabCounts } from "@/lib/queries/vacancies";
 import { PipelineFunnelChart } from "@/components/reporting/pipeline-funnel-chart";
 import { RevenueTrendChart } from "@/components/reporting/revenue-trend-chart";
@@ -13,17 +18,58 @@ const stageLabels: Record<string, string> = {
   geschlossen: "Geschlossen",
 };
 
-export default async function ReportingPage() {
-  const supabase = createClient();
+async function getReportingData() {
+  if (isDemoMode()) {
+    const supabase = createClient();
+    const [tabCounts, { data: offers }, { data: openVacancies }] = await Promise.all([
+      getVacancyTabCounts(),
+      supabase.from("offers_calculations").select("created_at, monthly_revenue, margin_per_month"),
+      supabase
+        .from("vacancies")
+        .select("company_id, status, company:companies(name)")
+        .in("status", ["neue_anfrage", "offen", "in_bearbeitung"]),
+    ]);
+    return { tabCounts, offers: offers ?? [], vacancies: openVacancies ?? [] };
+  }
 
-  const [tabCounts, { data: offers }, { data: vacancies }] = await Promise.all([
+  const db = getDb();
+  const [tabCounts, offerRows, vacancyRows] = await Promise.all([
     getVacancyTabCounts(),
-    supabase.from("offers_calculations").select("created_at, monthly_revenue, margin_per_month"),
-    supabase
-      .from("vacancies")
-      .select("company_id, status, company:companies(name)")
-      .in("status", ["neue_anfrage", "offen", "in_bearbeitung"]),
+    db
+      .select({
+        createdAt: offersCalculations.createdAt,
+        monthlyRevenue: offersCalculations.monthlyRevenue,
+        marginPerMonth: offersCalculations.marginPerMonth,
+      })
+      .from(offersCalculations),
+    db
+      .select({
+        companyId: vacancies.companyId,
+        status: vacancies.status,
+        companyName: companies.name,
+      })
+      .from(vacancies)
+      .leftJoin(companies, eq(companies.id, vacancies.companyId))
+      .where(inArray(vacancies.status, ["neue_anfrage", "offen", "in_bearbeitung"])),
   ]);
+
+  return {
+    tabCounts,
+    offers: offerRows.map((o) => ({
+      created_at: toIsoRequired(o.createdAt),
+      monthly_revenue: num(o.monthlyRevenue),
+      margin_per_month: num(o.marginPerMonth),
+    })),
+    vacancies: vacancyRows.map((v) => ({
+      company_id: v.companyId,
+      status: v.status,
+      company: { name: v.companyName },
+    })),
+  };
+}
+
+export default async function ReportingPage() {
+  const { tabCounts, offers, vacancies: openVacancies } = await getReportingData();
 
   const funnelData = Object.entries(tabCounts).map(([stage, count]) => ({
     stage: stageLabels[stage] ?? stage,
@@ -31,7 +77,12 @@ export default async function ReportingPage() {
   }));
 
   const revenueByMonth = new Map<string, { revenue: number; margin: number }>();
-  (offers ?? []).forEach((o) => {
+  type OfferRow = {
+    created_at: string;
+    monthly_revenue: number | null;
+    margin_per_month: number | null;
+  };
+  (offers as OfferRow[]).forEach((o) => {
     const month = new Intl.DateTimeFormat("de-DE", { month: "short", year: "2-digit" }).format(
       new Date(o.created_at)
     );
@@ -43,7 +94,7 @@ export default async function ReportingPage() {
   const revenueTrend = Array.from(revenueByMonth.entries()).map(([month, v]) => ({ month, ...v }));
 
   const customerCounts = new Map<string, number>();
-  (vacancies ?? []).forEach((v: any) => {
+  openVacancies.forEach((v: { company?: { name?: string | null } | null }) => {
     const name = v.company?.name ?? "Unbekannt";
     customerCounts.set(name, (customerCounts.get(name) ?? 0) + 1);
   });
@@ -52,8 +103,8 @@ export default async function ReportingPage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 6);
 
-  const totalRevenue = (offers ?? []).reduce((sum, o) => sum + (o.monthly_revenue ?? 0), 0);
-  const totalMargin = (offers ?? []).reduce((sum, o) => sum + (o.margin_per_month ?? 0), 0);
+  const totalRevenue = (offers as OfferRow[]).reduce((sum, o) => sum + (o.monthly_revenue ?? 0), 0);
+  const totalMargin = (offers as OfferRow[]).reduce((sum, o) => sum + (o.margin_per_month ?? 0), 0);
 
   return (
     <div className="flex flex-col gap-4">

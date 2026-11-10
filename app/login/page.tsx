@@ -1,26 +1,10 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-
-async function login(formData: FormData) {
-  "use server";
-
-  const email = String(formData.get("email"));
-  const password = String(formData.get("password"));
-  const supabase = createClient();
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
-  }
-
-  redirect("/");
-}
+import Link from "next/link";
+import { loginAction } from "./actions";
 
 export default function LoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string };
+  searchParams: { error?: string; message?: string };
 }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface-subtle px-4">
@@ -37,13 +21,19 @@ export default function LoginPage({
           Melde dich mit deinem internen Konto an.
         </p>
 
+        {searchParams.message && (
+          <p className="mb-4 rounded-md bg-emerald-50 px-3 py-2 text-sm text-status-done">
+            {searchParams.message}
+          </p>
+        )}
+
         {searchParams.error && (
           <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-status-danger">
             {searchParams.error}
           </p>
         )}
 
-        <form action={login} className="flex flex-col gap-4">
+        <form action={loginAction} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="email" className="text-sm font-medium text-ink">
               E-Mail
@@ -76,6 +66,12 @@ export default function LoginPage({
             Anmelden
           </button>
         </form>
+
+        <p className="mt-4 text-sm">
+          <Link href="/login/forgot-password" className="font-medium text-brand hover:underline">
+            Passwort vergessen?
+          </Link>
+        </p>
 
         <p className="mt-5 text-xs leading-relaxed text-ink-muted">
           Demo: <span className="font-medium text-ink">anna.recruiter@cms-platform.de</span> /

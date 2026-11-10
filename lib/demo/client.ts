@@ -1,6 +1,11 @@
 import { cookies } from "next/headers";
 import { DEMO_COOKIE } from "./mode";
 import {
+  createDemoStaffSessionToken,
+  demoStaffCookieOptions,
+  verifyDemoStaffSessionToken,
+} from "./staff-session";
+import {
   DEMO_USERS,
   findDemoUser,
   findDemoUserById,
@@ -293,10 +298,14 @@ class QueryBuilder {
   }
 
   then<TResult1 = unknown, TResult2 = never>(
-    onfulfilled?: ((value: { data: unknown; error: null; count: number | null }) => TResult1 | PromiseLike<TResult1>) | null,
+    onfulfilled?: ((value: unknown) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
-  ) {
-    return this.execute().then(onfulfilled, onrejected);
+  ): Promise<TResult1 | TResult2> {
+    // Demo QueryBuilder intentionally returns a loose thenable; keep Promise typing simple.
+    return Promise.resolve(this.execute()).then(
+      onfulfilled as (value: unknown) => TResult1 | PromiseLike<TResult1>,
+      onrejected
+    );
   }
 
   private execute() {
@@ -355,31 +364,37 @@ class QueryBuilder {
   }
 }
 
-function setDemoCookie(userId: string) {
+async function setDemoCookie(userId: string) {
+  const token = await createDemoStaffSessionToken(userId);
   try {
     cookies().set({
       name: DEMO_COOKIE,
-      value: userId,
-      httpOnly: true,
-      path: "/",
-      sameSite: "lax",
+      value: token,
+      ...demoStaffCookieOptions(),
     });
   } catch {
-    // Middleware oder Read-only-Kontext
+    // Middleware or read-only cookie context
   }
 }
 
 function clearDemoCookie() {
   try {
-    cookies().set({ name: DEMO_COOKIE, value: "", httpOnly: true, path: "/", maxAge: 0 });
+    cookies().set({
+      name: DEMO_COOKIE,
+      value: "",
+      ...demoStaffCookieOptions(0),
+      maxAge: 0,
+    });
   } catch {
     // ignore
   }
 }
 
-function currentUserId() {
+async function currentUserId() {
   try {
-    return cookies().get(DEMO_COOKIE)?.value ?? null;
+    const token = cookies().get(DEMO_COOKIE)?.value;
+    const payload = await verifyDemoStaffSessionToken(token);
+    return payload?.userId ?? null;
   } catch {
     return null;
   }
@@ -394,7 +409,7 @@ export function createDemoClient() {
     },
     auth: {
       async getUser() {
-        const id = currentUserId();
+        const id = await currentUserId();
         const user = id ? toUser(id) : null;
         return { data: { user }, error: null };
       },
@@ -403,7 +418,17 @@ export function createDemoClient() {
         if (!user) {
           return { data: { user: null }, error: { message: "Ungültige Anmeldedaten" } };
         }
-        setDemoCookie(user.id);
+        try {
+          await setDemoCookie(user.id);
+        } catch (error) {
+          return {
+            data: { user: null },
+            error: {
+              message:
+                error instanceof Error ? error.message : "Demo-Session konnte nicht erzeugt werden.",
+            },
+          };
+        }
         return { data: { user: toUser(user.id) }, error: null };
       },
       async signOut() {

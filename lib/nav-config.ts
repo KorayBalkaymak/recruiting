@@ -10,6 +10,7 @@ import {
   Calculator,
   BarChart3,
   UserCog,
+  ClipboardCheck,
 } from "lucide-react";
 
 export type NavItem = {
@@ -17,11 +18,14 @@ export type NavItem = {
   href: string;
   icon: typeof LayoutDashboard;
   badgeCountKey?: "openRequests";
+  /** When true, only user managers (admin / Geschäftsleitung) see this item. */
+  requiresUserManager?: boolean;
 };
 
 export const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Kandidaten", href: "/kandidaten", icon: Users },
+  { label: "Portal-Prüfungen", href: "/portal-pruefungen", icon: ClipboardCheck },
   { label: "Kunden", href: "/kunden", icon: Building2 },
   { label: "Vakanzen", href: "/vakanzen", icon: Briefcase },
   { label: "Anfragen", href: "/anfragen", icon: Inbox, badgeCountKey: "openRequests" },
@@ -30,5 +34,10 @@ export const navItems: NavItem[] = [
   { label: "Verträge", href: "/vertraege", icon: FileSignature },
   { label: "Verrechnungssatzrechner", href: "/rechner", icon: Calculator },
   { label: "Reporting", href: "/reporting", icon: BarChart3 },
-  { label: "Nutzerverwaltung", href: "/nutzerverwaltung", icon: UserCog },
+  {
+    label: "Nutzerverwaltung",
+    href: "/nutzerverwaltung",
+    icon: UserCog,
+    requiresUserManager: true,
+  },
 ];

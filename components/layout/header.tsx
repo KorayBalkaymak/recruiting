@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { initials } from "@/lib/utils";
+import { LogoutMenuItem } from "@/components/layout/logout-button";
 
 type HeaderProps = {
   currentUser?: {
@@ -70,9 +71,7 @@ export function Header({ currentUser, unreadNotifications = 0 }: HeaderProps) {
           <DropdownMenuItem>Profil & Einstellungen</DropdownMenuItem>
           <DropdownMenuItem>Nutzerverwaltung</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-status-danger focus:text-status-danger">
-            Abmelden
-          </DropdownMenuItem>
+          <LogoutMenuItem />
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

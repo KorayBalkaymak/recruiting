@@ -1,40 +1,20 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import type { Database } from "@/types/supabase";
 import { createDemoClient } from "@/lib/demo/client";
 import { isDemoMode } from "@/lib/demo/mode";
 
-export function createClient() {
+/**
+ * Demo-only data/auth adapter.
+ * Live CRM uses Neon via getDb(); calling this outside demo mode is a hard error.
+ *
+ * Typed as `any` because the Row-only Database stub and the demo QueryBuilder
+ * cannot express Insert/Update without collapsing to `never` / `unknown`.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createClient(): any {
   if (isDemoMode()) {
-    return createDemoClient() as ReturnType<typeof createServerClient<Database>>;
+    return createDemoClient();
   }
 
-  const cookieStore = cookies();
-
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value, ...options });
-          } catch {
-            // set() aufgerufen aus einer Server Component — kann ignoriert werden,
-            // sofern Middleware die Session refresht.
-          }
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value: "", ...options });
-          } catch {
-            // siehe oben
-          }
-        },
-      },
-    }
+  throw new Error(
+    "createClient() ist im Live-Modus nicht verfügbar. CRM-Daten laufen über Neon/Drizzle (getDb())."
   );
 }

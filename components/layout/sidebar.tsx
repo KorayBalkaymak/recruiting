@@ -7,10 +7,14 @@ import { cn } from "@/lib/utils";
 
 type SidebarProps = {
   openRequestsCount?: number;
+  canManageUsers?: boolean;
 };
 
-export function Sidebar({ openRequestsCount = 0 }: SidebarProps) {
+export function Sidebar({ openRequestsCount = 0, canManageUsers = false }: SidebarProps) {
   const pathname = usePathname();
+  const visibleItems = navItems.filter(
+    (item) => !item.requiresUserManager || canManageUsers
+  );
 
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground">
@@ -25,7 +29,7 @@ export function Sidebar({ openRequestsCount = 0 }: SidebarProps) {
 
       <nav className="scrollbar-thin flex-1 overflow-y-auto px-3 py-4">
         <ul className="flex flex-col gap-0.5">
-          {navItems.map((item) => {
+          {visibleItems.map((item) => {
             const isActive =
               item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             const Icon = item.icon;

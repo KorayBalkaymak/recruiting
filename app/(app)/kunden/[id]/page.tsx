@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { ArrowLeft, Mail, Phone, Star } from "lucide-react";
+import { and, desc, eq } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
+import { activityLogs, vacancies } from "@/lib/db/schema";
+import { toIsoRequired } from "@/lib/db/crm";
+import { isDemoMode } from "@/lib/demo/mode";
 import { getCompanyById } from "@/lib/queries/companies";
 import { Badge } from "@/components/ui/badge";
 import { companyStatusLabels, companyInactiveReasonLabels, vacancyStatusLabels } from "@/lib/labels";
@@ -8,24 +13,72 @@ import { formatDate } from "@/lib/utils";
 import { CompanyStatusControl } from "@/components/kunden/company-status-control";
 import { CompanyNoteForm } from "@/components/kunden/company-note-form";
 
-export default async function CompanyDetailPage({ params }: { params: { id: string } }) {
-  const company = await getCompanyById(params.id);
-  const supabase = createClient();
+async function getCompanyDetailExtras(companyId: string) {
+  if (isDemoMode()) {
+    const supabase = createClient();
+    const [{ data: vacancyRows }, { data: activityRows }] = await Promise.all([
+      supabase
+        .from("vacancies")
+        .select("id, title, status, employment_type, location, created_at")
+        .eq("company_id", companyId)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("activity_logs")
+        .select("id, type, content, created_at")
+        .eq("entity_type", "company")
+        .eq("entity_id", companyId)
+        .order("created_at", { ascending: false }),
+    ]);
+    return { vacancies: vacancyRows ?? [], activity: activityRows ?? [] };
+  }
 
-  const [{ data: vacancies }, { data: activity }] = await Promise.all([
-    supabase
-      .from("vacancies")
-      .select("id, title, status, employment_type, location, created_at")
-      .eq("company_id", params.id)
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("activity_logs")
-      .select("id, type, content, created_at")
-      .eq("entity_type", "company")
-      .eq("entity_id", params.id)
-      .order("created_at", { ascending: false }),
+  const db = getDb();
+  const [vacancyRows, activityRows] = await Promise.all([
+    db
+      .select({
+        id: vacancies.id,
+        title: vacancies.title,
+        status: vacancies.status,
+        employmentType: vacancies.employmentType,
+        location: vacancies.location,
+        createdAt: vacancies.createdAt,
+      })
+      .from(vacancies)
+      .where(eq(vacancies.companyId, companyId))
+      .orderBy(desc(vacancies.createdAt)),
+    db
+      .select({
+        id: activityLogs.id,
+        type: activityLogs.type,
+        content: activityLogs.content,
+        createdAt: activityLogs.createdAt,
+      })
+      .from(activityLogs)
+      .where(and(eq(activityLogs.entityType, "company"), eq(activityLogs.entityId, companyId)))
+      .orderBy(desc(activityLogs.createdAt)),
   ]);
 
+  return {
+    vacancies: vacancyRows.map((v) => ({
+      id: v.id,
+      title: v.title,
+      status: v.status,
+      employment_type: v.employmentType,
+      location: v.location,
+      created_at: toIsoRequired(v.createdAt),
+    })),
+    activity: activityRows.map((a) => ({
+      id: a.id,
+      type: a.type,
+      content: a.content,
+      created_at: toIsoRequired(a.createdAt),
+    })),
+  };
+}
+
+export default async function CompanyDetailPage({ params }: { params: { id: string } }) {
+  const company = await getCompanyById(params.id);
+  const { vacancies: companyVacancies, activity } = await getCompanyDetailExtras(params.id);
   const statusInfo = companyStatusLabels[company.status as keyof typeof companyStatusLabels];
 
   return (
@@ -60,11 +113,11 @@ export default async function CompanyDetailPage({ params }: { params: { id: stri
             <div className="border-b border-surface-border px-5 py-3">
               <h2 className="text-sm font-medium text-ink">Vakanzen</h2>
             </div>
-            {(!vacancies || vacancies.length === 0) ? (
+            {companyVacancies.length === 0 ? (
               <p className="px-5 py-6 text-sm text-ink-muted">Noch keine Vakanzen erfasst.</p>
             ) : (
               <ul className="divide-y divide-surface-border">
-                {vacancies.map((v) => {
+                {companyVacancies.map((v: { id: string; title: string; status: string }) => {
                   const vStatus = vacancyStatusLabels[v.status as keyof typeof vacancyStatusLabels];
                   return (
                     <li key={v.id} className="flex items-center justify-between px-5 py-3 text-sm">
@@ -86,11 +139,11 @@ export default async function CompanyDetailPage({ params }: { params: { id: stri
             <div className="px-5 py-4">
               <CompanyNoteForm companyId={company.id} />
             </div>
-            {(!activity || activity.length === 0) ? (
+            {activity.length === 0 ? (
               <p className="px-5 pb-6 text-sm text-ink-muted">Noch keine Aktivitäten erfasst.</p>
             ) : (
               <ul className="divide-y divide-surface-border">
-                {activity.map((a) => (
+                {activity.map((a: { id: string; content: string; created_at: string }) => (
                   <li key={a.id} className="px-5 py-3 text-sm">
                     <p className="text-ink">{a.content}</p>
                     <p className="text-xs text-ink-muted">{formatDate(a.created_at)}</p>

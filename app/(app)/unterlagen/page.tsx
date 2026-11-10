@@ -1,26 +1,99 @@
 import Link from "next/link";
 import { FileText, Download, Eye } from "lucide-react";
+import { desc, eq, isNotNull } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
+import { candidates, companies, contracts, offersCalculations } from "@/lib/db/schema";
+import { num, toIsoRequired } from "@/lib/db/crm";
+import { isDemoMode } from "@/lib/demo/mode";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
-export default async function UnterlagenPage() {
-  const supabase = createClient();
+async function getUnterlagenData() {
+  if (isDemoMode()) {
+    const supabase = createClient();
+    const [{ data: candidateRows }, { data: offerRows }, { data: contractRows }] = await Promise.all([
+      supabase
+        .from("candidates")
+        .select("id, first_name, last_name, anonymized_title, updated_at")
+        .not("anonymized_title", "is", null)
+        .order("updated_at", { ascending: false }),
+      supabase
+        .from("offers_calculations")
+        .select("id, currency, recommended_hourly_rate, status, created_at, company:companies(name)")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("contracts")
+        .select("id, contract_number, status, currency, fee, created_at, company:companies(name)")
+        .order("created_at", { ascending: false }),
+    ]);
+    return {
+      candidates: candidateRows ?? [],
+      offers: offerRows ?? [],
+      contracts: contractRows ?? [],
+    };
+  }
 
-  const [{ data: candidates }, { data: offers }, { data: contracts }] = await Promise.all([
-    supabase
-      .from("candidates")
-      .select("id, first_name, last_name, anonymized_title, updated_at")
-      .not("anonymized_title", "is", null)
-      .order("updated_at", { ascending: false }),
-    supabase
-      .from("offers_calculations")
-      .select("id, currency, recommended_hourly_rate, status, created_at, company:companies(name)")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("contracts")
-      .select("id, contract_number, status, currency, fee, created_at, company:companies(name)")
-      .order("created_at", { ascending: false }),
+  const db = getDb();
+  const [candidateRows, offerRows, contractRows] = await Promise.all([
+    db
+      .select({
+        id: candidates.id,
+        firstName: candidates.firstName,
+        lastName: candidates.lastName,
+        anonymizedTitle: candidates.anonymizedTitle,
+        updatedAt: candidates.updatedAt,
+      })
+      .from(candidates)
+      .where(isNotNull(candidates.anonymizedTitle))
+      .orderBy(desc(candidates.updatedAt)),
+    db
+      .select({
+        offer: offersCalculations,
+        companyName: companies.name,
+      })
+      .from(offersCalculations)
+      .leftJoin(companies, eq(companies.id, offersCalculations.companyId))
+      .orderBy(desc(offersCalculations.createdAt)),
+    db
+      .select({
+        contract: contracts,
+        companyName: companies.name,
+      })
+      .from(contracts)
+      .leftJoin(companies, eq(companies.id, contracts.companyId))
+      .orderBy(desc(contracts.createdAt)),
   ]);
+
+  return {
+    candidates: candidateRows.map((c) => ({
+      id: c.id,
+      first_name: c.firstName,
+      last_name: c.lastName,
+      anonymized_title: c.anonymizedTitle,
+      updated_at: toIsoRequired(c.updatedAt),
+    })),
+    offers: offerRows.map(({ offer: o, companyName }) => ({
+      id: o.id,
+      currency: o.currency,
+      recommended_hourly_rate: num(o.recommendedHourlyRate),
+      status: o.status,
+      created_at: toIsoRequired(o.createdAt),
+      company: { name: companyName },
+    })),
+    contracts: contractRows.map(({ contract: c, companyName }) => ({
+      id: c.id,
+      contract_number: c.contractNumber,
+      status: c.status,
+      currency: c.currency,
+      fee: num(c.fee),
+      created_at: toIsoRequired(c.createdAt),
+      company: { name: companyName },
+    })),
+  };
+}
+
+export default async function UnterlagenPage() {
+  const { candidates: candidateDocs, offers, contracts: contractDocs } = await getUnterlagenData();
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,19 +107,27 @@ export default async function UnterlagenPage() {
       <DocumentSection
         title="Anonymisierte Kandidaten-Exposés"
         emptyLabel="Noch keine Exposés erstellt."
-        rows={(candidates ?? []).map((c) => ({
-          id: c.id,
-          primary: c.anonymized_title ?? `${c.first_name} ${c.last_name}`,
-          secondary: formatDate(c.updated_at),
-          viewHref: `/kandidaten/${c.id}/pdf`,
-          downloadHref: `/kandidaten/${c.id}/pdf?download=1`,
-        }))}
+        rows={candidateDocs.map(
+          (c: {
+            id: string;
+            anonymized_title: string | null;
+            first_name: string;
+            last_name: string;
+            updated_at: string;
+          }) => ({
+            id: c.id,
+            primary: c.anonymized_title ?? `${c.first_name} ${c.last_name}`,
+            secondary: formatDate(c.updated_at),
+            viewHref: `/kandidaten/${c.id}/pdf`,
+            downloadHref: `/kandidaten/${c.id}/pdf?download=1`,
+          })
+        )}
       />
 
       <DocumentSection
         title="Angebote (Verrechnungssatzrechner)"
         emptyLabel="Noch keine Angebote erstellt."
-        rows={(offers ?? []).map((o: any) => ({
+        rows={offers.map((o: any) => ({
           id: o.id,
           primary: `${o.company?.name ?? "Ohne Kunde"} — ${formatCurrency(o.recommended_hourly_rate, o.currency)}/Std.`,
           secondary: `${o.status} · ${formatDate(o.created_at)}`,
@@ -58,7 +139,7 @@ export default async function UnterlagenPage() {
       <DocumentSection
         title="Verträge"
         emptyLabel="Noch keine Verträge erstellt."
-        rows={(contracts ?? []).map((c: any) => ({
+        rows={contractDocs.map((c: any) => ({
           id: c.id,
           primary: `${c.contract_number} — ${c.company?.name ?? "Ohne Kunde"}`,
           secondary: `${c.status} · ${formatCurrency(c.fee, c.currency)} · ${formatDate(c.created_at)}`,

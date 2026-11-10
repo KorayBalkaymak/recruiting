@@ -1,29 +1,84 @@
-import { createClient } from "@/lib/supabase/server";
+import { count, desc, eq, inArray, ne } from "drizzle-orm";
 import { Building2, Briefcase, Users, SendHorizonal } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
+import { activityLogs, candidates, companies, vacancies, vacancySubmissions } from "@/lib/db/schema";
+import { toIsoRequired } from "@/lib/db/crm";
+import { isDemoMode } from "@/lib/demo/mode";
 
 async function getDashboardData() {
-  const supabase = createClient();
+  if (isDemoMode()) {
+    const supabase = createClient();
 
-  const [{ count: activeCandidates }, { count: openVacancies }, { count: activeCompanies }, { count: pendingSubmissions }] =
-    await Promise.all([
+    const [
+      { count: activeCandidates },
+      { count: openVacancies },
+      { count: activeCompanies },
+      { count: pendingSubmissions },
+    ] = await Promise.all([
       supabase.from("candidates").select("id", { count: "exact", head: true }).neq("status", "inaktiv"),
-      supabase.from("vacancies").select("id", { count: "exact", head: true }).in("status", ["offen", "in_bearbeitung"]),
+      supabase
+        .from("vacancies")
+        .select("id", { count: "exact", head: true })
+        .in("status", ["offen", "in_bearbeitung"]),
       supabase.from("companies").select("id", { count: "exact", head: true }).eq("status", "aktiv"),
-      supabase.from("vacancy_submissions").select("id", { count: "exact", head: true }).in("status", ["angefragt", "in_pruefung"]),
+      supabase
+        .from("vacancy_submissions")
+        .select("id", { count: "exact", head: true })
+        .in("status", ["angefragt", "in_pruefung"]),
     ]);
 
-  const { data: recentActivity } = await supabase
-    .from("activity_logs")
-    .select("id, type, content, created_at")
-    .order("created_at", { ascending: false })
-    .limit(6);
+    const { data: recentActivity } = await supabase
+      .from("activity_logs")
+      .select("id, type, content, created_at")
+      .order("created_at", { ascending: false })
+      .limit(6);
+
+    return {
+      activeCandidates: activeCandidates ?? 0,
+      openVacancies: openVacancies ?? 0,
+      activeCompanies: activeCompanies ?? 0,
+      pendingSubmissions: pendingSubmissions ?? 0,
+      recentActivity: recentActivity ?? [],
+    };
+  }
+
+  const db = getDb();
+  const [[activeCandidates], [openVacancies], [activeCompanies], [pendingSubmissions], recent] =
+    await Promise.all([
+      db.select({ n: count() }).from(candidates).where(ne(candidates.status, "inaktiv")),
+      db
+        .select({ n: count() })
+        .from(vacancies)
+        .where(inArray(vacancies.status, ["offen", "in_bearbeitung"])),
+      db.select({ n: count() }).from(companies).where(eq(companies.status, "aktiv")),
+      db
+        .select({ n: count() })
+        .from(vacancySubmissions)
+        .where(inArray(vacancySubmissions.status, ["angefragt", "in_pruefung"])),
+      db
+        .select({
+          id: activityLogs.id,
+          type: activityLogs.type,
+          content: activityLogs.content,
+          createdAt: activityLogs.createdAt,
+        })
+        .from(activityLogs)
+        .orderBy(desc(activityLogs.createdAt))
+        .limit(6),
+    ]);
 
   return {
-    activeCandidates: activeCandidates ?? 0,
-    openVacancies: openVacancies ?? 0,
-    activeCompanies: activeCompanies ?? 0,
-    pendingSubmissions: pendingSubmissions ?? 0,
-    recentActivity: recentActivity ?? [],
+    activeCandidates: Number(activeCandidates?.n ?? 0),
+    openVacancies: Number(openVacancies?.n ?? 0),
+    activeCompanies: Number(activeCompanies?.n ?? 0),
+    pendingSubmissions: Number(pendingSubmissions?.n ?? 0),
+    recentActivity: recent.map((a) => ({
+      id: a.id,
+      type: a.type,
+      content: a.content,
+      created_at: toIsoRequired(a.createdAt),
+    })),
   };
 }
 
@@ -72,7 +127,7 @@ export default async function DashboardPage() {
           </p>
         ) : (
           <ul className="divide-y divide-surface-border">
-            {data.recentActivity.map((activity) => (
+            {data.recentActivity.map((activity: { id: string; content: string; created_at: string }) => (
               <li key={activity.id} className="flex items-center justify-between px-5 py-3 text-sm">
                 <span className="text-ink">{activity.content}</span>
                 <span className="shrink-0 pl-4 text-xs text-ink-muted">
