@@ -22,12 +22,14 @@ export function parseExplicitDemoFlag(value: string | undefined | null): boolean
 /**
  * Live auth must not fall back to demo. Call when entering live-only paths
  * if you need a clear misconfiguration error (optional helper for callers).
+ *
+ * Full DATABASE_URL validation (incl. quote-stripping) happens in getDb().
  */
 export function assertLiveAuthConfigured(): void {
   if (isDemoMode()) {
     throw new Error("Live-Auth ist im Demo-Modus nicht verfügbar.");
   }
-  if (!process.env.DATABASE_URL) {
+  if (!process.env.DATABASE_URL?.trim()) {
     throw new Error("DATABASE_URL muss für den Live-Betrieb gesetzt sein.");
   }
   const secret = process.env.BETTER_AUTH_SECRET;

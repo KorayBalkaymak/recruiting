@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --experimental-strip-types --test lib/candidate/*.test.ts lib/demo/*.test.ts lib/auth/*.test.ts lib/storage/*.test.ts lib/mail/*.test.ts lib/security/*.test.ts",
+    "test": "node --experimental-strip-types --test lib/candidate/*.test.ts lib/demo/*.test.ts lib/auth/*.test.ts lib/db/*.test.ts lib/storage/*.test.ts lib/mail/*.test.ts lib/security/*.test.ts",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "supabase:types": "supabase gen types typescript --local > types/supabase.ts"

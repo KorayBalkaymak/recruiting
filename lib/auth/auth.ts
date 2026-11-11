@@ -5,6 +5,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
+import { normalizeDatabaseUrl } from "@/lib/db/database-url";
 import * as schema from "@/lib/db/schema";
 import { isDemoMode } from "@/lib/demo/mode";
 import { isCandidateSignup } from "./candidate-context";
@@ -23,9 +24,8 @@ function requireAuthEnv() {
   if (!baseURL) {
     throw new Error("BETTER_AUTH_URL oder NEXT_PUBLIC_APP_URL muss gesetzt sein.");
   }
-  if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL muss für Better Auth gesetzt sein.");
-  }
+  // Validates / strips accidental quotes (common Vercel paste issue).
+  normalizeDatabaseUrl(process.env.DATABASE_URL);
   return { secret, baseURL };
 }
 

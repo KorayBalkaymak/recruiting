@@ -16,7 +16,7 @@ Setzen / prüfen (keine Secrets committen):
 | Bereich | Pflicht | Optional |
 |---------|---------|----------|
 | Modus | `NEXT_PUBLIC_DEMO_MODE=false` (oder unset) | — |
-| Neon | `DATABASE_URL` | — |
+| Neon | `DATABASE_URL` (ohne Anführungszeichen in Vercel) | — |
 | Better Auth | `BETTER_AUTH_SECRET` (≥32), `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL` | — |
 | Private Docs (B2 bevorzugt) | `B2_KEY_ID`, `B2_APPLICATION_KEY`, `B2_BUCKET_NAME`, `B2_ENDPOINT`, `B2_REGION` | R2-Fallback: `R2_*` |
 | Resend | `RESEND_API_KEY`, `EMAIL_FROM` | `EMAIL_REPLY_TO`, `EMAIL_NOTIFY_TO` |
