@@ -16,6 +16,8 @@ export type DatabaseUrlDiagnosis = {
   hasHost: boolean;
   hasUser: boolean;
   hasDatabase: boolean;
+  /** True when raw parse fails but userinfo encoding would make Neon accept it. */
+  fixedByUserinfoEncoding: boolean;
   wrapper:
     | "none"
     | "double-quote"
@@ -93,6 +95,44 @@ export function parseNeonConnectionString(connectionString: string): URL | null 
   }
 }
 
+function decodeUriComponentSafe(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+/**
+ * Percent-encode user/password so raw `#`, `/`, `?` etc. in Neon passwords
+ * do not break `new URL()` (common Vercel paste without encoding).
+ *
+ * Uses the last `@` before the host so `#`/`?` inside the password are kept
+ * in the userinfo segment.
+ */
+export function encodeDatabaseUrlUserinfo(connectionString: string): string {
+  const schemeMatch = connectionString.match(/^(postgres(?:ql)?:\/\/)/i);
+  if (!schemeMatch) return connectionString;
+
+  const scheme = schemeMatch[1];
+  const afterScheme = connectionString.slice(scheme.length);
+  const at = afterScheme.lastIndexOf("@");
+  if (at <= 0) return connectionString;
+
+  const userinfo = afterScheme.slice(0, at);
+  const hostPathQuery = afterScheme.slice(at + 1);
+  const colon = userinfo.indexOf(":");
+  const user = colon === -1 ? userinfo : userinfo.slice(0, colon);
+  const password = colon === -1 ? null : userinfo.slice(colon + 1);
+
+  const encUser = encodeURIComponent(decodeUriComponentSafe(user));
+  const encPassword =
+    password == null ? null : encodeURIComponent(decodeUriComponentSafe(password));
+  const nextUserinfo = encPassword == null ? encUser : `${encUser}:${encPassword}`;
+
+  return `${scheme}${nextUserinfo}@${hostPathQuery}`;
+}
+
 /** Safe, non-secret diagnosis for logs / error messages. */
 export function diagnoseDatabaseUrl(raw: string | undefined | null): DatabaseUrlDiagnosis {
   if (raw == null) {
@@ -104,6 +144,7 @@ export function diagnoseDatabaseUrl(raw: string | undefined | null): DatabaseUrl
       hasHost: false,
       hasUser: false,
       hasDatabase: false,
+      fixedByUserinfoEncoding: false,
       wrapper: "none",
       firstCharCode: null,
     };
@@ -112,7 +153,11 @@ export function diagnoseDatabaseUrl(raw: string | undefined | null): DatabaseUrl
   const trimmed = raw.replace(/^\uFEFF/, "").trim();
   const wrapper = detectWrapper(trimmed);
   const normalized = stripWrappers(raw);
-  const parsed = normalized ? parseNeonConnectionString(normalized) : null;
+  const parsedDirect = normalized ? parseNeonConnectionString(normalized) : null;
+  const encoded = normalized ? encodeDatabaseUrlUserinfo(normalized) : "";
+  const parsedEncoded =
+    !parsedDirect && encoded ? parseNeonConnectionString(encoded) : null;
+  const parsed = parsedDirect ?? parsedEncoded;
   const first = trimmed[0];
 
   return {
@@ -123,6 +168,7 @@ export function diagnoseDatabaseUrl(raw: string | undefined | null): DatabaseUrl
     hasHost: Boolean(parsed?.hostname),
     hasUser: Boolean(parsed?.username),
     hasDatabase: Boolean(parsed?.pathname && parsed.pathname !== "/"),
+    fixedByUserinfoEncoding: parsedDirect == null && parsedEncoded != null,
     wrapper,
     firstCharCode: first ? first.charCodeAt(0) : null,
   };
@@ -136,6 +182,7 @@ export function formatDatabaseUrlDiagnosis(d: DatabaseUrlDiagnosis): string {
     `wrapper=${d.wrapper}`,
     `schemeOk=${d.schemeOk}`,
     `neonParseOk=${d.neonParseOk}`,
+    `fixedByUserinfoEncoding=${d.fixedByUserinfoEncoding}`,
     `hasHost=${d.hasHost}`,
     `hasUser=${d.hasUser}`,
     `hasDatabase=${d.hasDatabase}`,
@@ -151,7 +198,7 @@ export function normalizeDatabaseUrl(raw: string | undefined | null): string {
     throw new Error("DATABASE_URL ist nicht gesetzt.");
   }
 
-  const value = stripWrappers(raw as string);
+  let value = stripWrappers(raw as string);
   if (!value) {
     throw new Error(
       `DATABASE_URL ist leer. (${formatDatabaseUrlDiagnosis(diagnosis)})`
@@ -160,14 +207,19 @@ export function normalizeDatabaseUrl(raw: string | undefined | null): string {
 
   if (!/^postgres(ql)?:\/\//i.test(value)) {
     throw new Error(
-      `DATABASE_URL muss mit postgresql:// oder postgres:// beginnen (in Vercel ohne Anführungszeichen). (${formatDatabaseUrlDiagnosis(diagnosis)})`
+      `DATABASE_URL muss mit postgresql:// oder postgres:// beginnen. (${formatDatabaseUrlDiagnosis(diagnosis)})`
     );
+  }
+
+  // Raw `#` `/` `?` in passwords break Node/Neon URL parsing — encode userinfo.
+  if (!parseNeonConnectionString(value)) {
+    value = encodeDatabaseUrlUserinfo(value);
   }
 
   const parsed = parseNeonConnectionString(value);
   if (!parsed) {
     throw new Error(
-      `DATABASE_URL ist ungültig (ERR_INVALID_URL). In Vercel den Neon-Connection-String ohne Anführungszeichen/Backticks eintragen. (${formatDatabaseUrlDiagnosis(diagnosis)})`
+      `DATABASE_URL ist ungültig (ERR_INVALID_URL). Oft Ursache: Sonderzeichen im Passwort (# / ?) — Neon-URI encoded kopieren oder Passwort URL-encoden. (${formatDatabaseUrlDiagnosis(diagnosis)})`
     );
   }
 

@@ -40,6 +40,26 @@ describe("normalizeDatabaseUrl", () => {
   it("rejects non-postgres schemes", () => {
     assert.throws(() => normalizeDatabaseUrl("https://example.com/db"), /postgresql/);
   });
+
+  it("encodes raw # / ? in passwords so Neon can parse the URL", () => {
+    const host = "ep-x.eu-central-1.aws.neon.tech";
+    for (const pass of ["foo#bar", "foo/bar", "foo?bar"]) {
+      const raw = `postgresql://neondb_owner:${pass}@${host}/neondb?sslmode=require`;
+      const normalized = normalizeDatabaseUrl(raw);
+      assert.match(normalized, /postgresql:\/\/neondb_owner:[^@]+@ep-x/);
+      assert.ok(parseNeonConnectionString(normalized));
+      assert.equal(
+        decodeURIComponent(normalized.split("://")[1]!.split("@")[0]!.split(":")[1]!),
+        pass
+      );
+    }
+  });
+
+  it("does not double-encode already-encoded passwords", () => {
+    const raw =
+      "postgresql://u:foo%23bar@ep-x.eu-central-1.aws.neon.tech/neondb?sslmode=require";
+    assert.equal(normalizeDatabaseUrl(raw), raw);
+  });
 });
 
 describe("resolveDatabaseUrl", () => {
