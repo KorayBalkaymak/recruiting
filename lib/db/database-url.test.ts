@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  classifyUrlShape,
   diagnoseDatabaseUrl,
   neonHttpSqlEndpoint,
   normalizeDatabaseUrl,
   parseNeonConnectionString,
   resolveDatabaseUrl,
+  toNeonConnectionParams,
 } from "./database-url.ts";
 
 describe("normalizeDatabaseUrl", () => {
@@ -133,5 +135,27 @@ describe("neonHttpSqlEndpoint", () => {
       neonHttpSqlEndpoint("ep-plain-leaf-bekvp7pg.c-9.us-east-2.aws.neon.tech"),
       "https://api.c-9.us-east-2.aws.neon.tech/sql"
     );
+  });
+});
+
+describe("classifyUrlShape", () => {
+  it("detects quoted postgres and https shapes without exposing values", () => {
+    assert.equal(classifyUrlShape('"postgresql://u:p@h/db"'), "quoted");
+    assert.equal(classifyUrlShape("postgresql://u:p@h/db"), "postgres");
+    assert.equal(classifyUrlShape("https://api.example/sql"), "https");
+    assert.equal(classifyUrlShape("api.example/sql"), "missing-scheme");
+  });
+});
+
+describe("toNeonConnectionParams", () => {
+  it("extracts host user database from a normalized URL", () => {
+    const params = toNeonConnectionParams(
+      "postgresql://neondb_owner:p%23x@ep-x.c-9.us-east-2.aws.neon.tech/neondb?sslmode=require"
+    );
+    assert.equal(params.host, "ep-x.c-9.us-east-2.aws.neon.tech");
+    assert.equal(params.user, "neondb_owner");
+    assert.equal(params.password, "p#x");
+    assert.equal(params.database, "neondb");
+    assert.equal(params.sslMode, "require");
   });
 });
