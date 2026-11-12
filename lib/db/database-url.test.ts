@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   diagnoseDatabaseUrl,
+  neonHttpSqlEndpoint,
   normalizeDatabaseUrl,
   parseNeonConnectionString,
   resolveDatabaseUrl,
@@ -13,17 +14,27 @@ describe("normalizeDatabaseUrl", () => {
     assert.equal(normalizeDatabaseUrl(url), url);
   });
 
-  it("strips surrounding double quotes (Vercel paste)", () => {
-    const inner = "postgresql://user:pass@host/db?sslmode=require&channel_binding=require";
-    assert.equal(normalizeDatabaseUrl(`"${inner}"`), inner);
+  it("strips surrounding double quotes and channel_binding", () => {
+    const raw =
+      '"postgresql://user:pass@host/db?sslmode=require&channel_binding=require"';
+    assert.equal(
+      normalizeDatabaseUrl(raw),
+      "postgresql://user:pass@host/db?sslmode=require"
+    );
   });
 
-  it("strips smart quotes, backticks, BOM and CR", () => {
+  it("strips smart quotes, backticks, BOM, CR and trailing sentence dot", () => {
     const inner = "postgresql://user:pass@host/db";
     assert.equal(normalizeDatabaseUrl(`\u201C${inner}\u201D`), inner);
     assert.equal(normalizeDatabaseUrl(`\`${inner}\``), inner);
     assert.equal(normalizeDatabaseUrl(`\uFEFF${inner}`), inner);
     assert.equal(normalizeDatabaseUrl(`${inner}\r`), inner);
+    assert.equal(
+      normalizeDatabaseUrl(
+        "postgresql://user:pass@host/db?sslmode=require&channel_binding=require."
+      ),
+      "postgresql://user:pass@host/db?sslmode=require"
+    );
   });
 
   it("strips surrounding single quotes and whitespace", () => {
@@ -112,6 +123,15 @@ describe("parseNeonConnectionString", () => {
     assert.equal(
       parseNeonConnectionString('"postgresql://user:pass@host/db"'),
       null
+    );
+  });
+});
+
+describe("neonHttpSqlEndpoint", () => {
+  it("rewrites first DNS label to api", () => {
+    assert.equal(
+      neonHttpSqlEndpoint("ep-plain-leaf-bekvp7pg.c-9.us-east-2.aws.neon.tech"),
+      "https://api.c-9.us-east-2.aws.neon.tech/sql"
     );
   });
 });

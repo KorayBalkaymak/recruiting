@@ -8,6 +8,9 @@ import { getDb } from "@/lib/db";
 import { vacancies } from "@/lib/db/schema";
 import { isDemoMode } from "@/lib/demo/mode";
 
+/** Avoid build-time prerender requiring DATABASE_URL on Vercel. */
+export const dynamic = "force-dynamic";
+
 async function getOpenRequestsCount() {
   if (isDemoMode()) {
     const supabase = createClient();

@@ -2,10 +2,8 @@
  * Normalize DATABASE_URL for Neon / Node `URL` parsing.
  *
  * Local `.env` loaders strip surrounding quotes; Vercel/UI pastes often keep them
- * (`"postgresql://..."`), which yields ERR_INVALID_URL inside @neondatabase/serverless.
- *
- * On Vercel + Neon integration, a valid URL may live in POSTGRES_URL /
- * DATABASE_URL_UNPOOLED while DATABASE_URL was pasted incorrectly.
+ * or add trailing punctuation / zero-width chars — that yields ERR_INVALID_URL
+ * inside @neondatabase/serverless.
  */
 
 export type DatabaseUrlDiagnosis = {
@@ -16,8 +14,9 @@ export type DatabaseUrlDiagnosis = {
   hasHost: boolean;
   hasUser: boolean;
   hasDatabase: boolean;
-  /** True when raw parse fails but userinfo encoding would make Neon accept it. */
   fixedByUserinfoEncoding: boolean;
+  strippedChannelBinding: boolean;
+  strippedTrailingDot: boolean;
   wrapper:
     | "none"
     | "double-quote"
@@ -27,8 +26,8 @@ export type DatabaseUrlDiagnosis = {
     | "backslash-quote"
     | "bom"
     | "other";
-  /** First non-whitespace char code only — never the secret itself. */
   firstCharCode: number | null;
+  lastCharCode: number | null;
   source?: string;
 };
 
@@ -59,9 +58,15 @@ function detectWrapper(value: string): DatabaseUrlDiagnosis["wrapper"] {
   return "none";
 }
 
-function stripWrappers(raw: string): string {
-  let value = raw.replace(/^\uFEFF/, "").trim();
-  // Repeat a few times for nested / duplicated paste artifacts.
+/** Remove BOM, quotes, control/zero-width chars, CR/LF, accidental trailing `.` */
+export function stripWrappers(raw: string): {
+  value: string;
+  strippedTrailingDot: boolean;
+} {
+  let value = raw.replace(/^\uFEFF/, "");
+  value = value.replace(/[\u0000-\u001F\u007F\u200B-\u200D\uFEFF]/g, "");
+  value = value.trim();
+
   for (let i = 0; i < 3; i++) {
     const before = value;
     if (
@@ -75,16 +80,21 @@ function stripWrappers(raw: string): string {
     if (value.startsWith('\\"') && value.endsWith('\\"')) {
       value = value.slice(2, -2).trim();
     }
-    // Strip accidental CR from copy/paste (keep intentional query string).
-    value = value.replace(/\r\n/g, "").replace(/\r/g, "").trim();
     if (value === before) break;
   }
-  return value;
+
+  // Chat/docs paste often appends a sentence period after the URI.
+  let strippedTrailingDot = false;
+  if (value.endsWith(".") && /[a-z0-9]$/i.test(value.slice(0, -1))) {
+    value = value.slice(0, -1);
+    strippedTrailingDot = true;
+  }
+
+  return { value, strippedTrailingDot };
 }
 
 /**
  * Same parse approach as @neondatabase/serverless (URLFromPgConnectionString).
- * Returns null when the driver would throw ERR_INVALID_URL.
  */
 export function parseNeonConnectionString(connectionString: string): URL | null {
   try {
@@ -103,13 +113,6 @@ function decodeUriComponentSafe(value: string): string {
   }
 }
 
-/**
- * Percent-encode user/password so raw `#`, `/`, `?` etc. in Neon passwords
- * do not break `new URL()` (common Vercel paste without encoding).
- *
- * Uses the last `@` before the host so `#`/`?` inside the password are kept
- * in the userinfo segment.
- */
 export function encodeDatabaseUrlUserinfo(connectionString: string): string {
   const schemeMatch = connectionString.match(/^(postgres(?:ql)?:\/\/)/i);
   if (!schemeMatch) return connectionString;
@@ -133,7 +136,31 @@ export function encodeDatabaseUrlUserinfo(connectionString: string): string {
   return `${scheme}${nextUserinfo}@${hostPathQuery}`;
 }
 
-/** Safe, non-secret diagnosis for logs / error messages. */
+/** Neon HTTP driver does not need channel_binding; drop it to avoid paste/driver quirks. */
+export function stripChannelBindingParam(connectionString: string): {
+  value: string;
+  stripped: boolean;
+} {
+  try {
+    const protocol = new URL(connectionString).protocol;
+    const asHttp = new URL("http:" + connectionString.slice(protocol.length));
+    if (!asHttp.searchParams.has("channel_binding")) {
+      return { value: connectionString, stripped: false };
+    }
+    asHttp.searchParams.delete("channel_binding");
+    const next = protocol + asHttp.href.slice("http:".length);
+    return { value: next, stripped: true };
+  } catch {
+    const cleaned = connectionString
+      .replace(/([?&])channel_binding=[^&]*&?/i, "$1")
+      .replace(/[?&]$/, "");
+    return {
+      value: cleaned,
+      stripped: cleaned !== connectionString,
+    };
+  }
+}
+
 export function diagnoseDatabaseUrl(raw: string | undefined | null): DatabaseUrlDiagnosis {
   if (raw == null) {
     return {
@@ -145,20 +172,27 @@ export function diagnoseDatabaseUrl(raw: string | undefined | null): DatabaseUrl
       hasUser: false,
       hasDatabase: false,
       fixedByUserinfoEncoding: false,
+      strippedChannelBinding: false,
+      strippedTrailingDot: false,
       wrapper: "none",
       firstCharCode: null,
+      lastCharCode: null,
     };
   }
 
   const trimmed = raw.replace(/^\uFEFF/, "").trim();
   const wrapper = detectWrapper(trimmed);
-  const normalized = stripWrappers(raw);
-  const parsedDirect = normalized ? parseNeonConnectionString(normalized) : null;
-  const encoded = normalized ? encodeDatabaseUrlUserinfo(normalized) : "";
-  const parsedEncoded =
-    !parsedDirect && encoded ? parseNeonConnectionString(encoded) : null;
-  const parsed = parsedDirect ?? parsedEncoded;
+  const { value: normalized, strippedTrailingDot } = stripWrappers(raw);
+  let candidate = normalized;
+  let fixedByUserinfoEncoding = false;
+  if (candidate && !parseNeonConnectionString(candidate)) {
+    candidate = encodeDatabaseUrlUserinfo(candidate);
+    fixedByUserinfoEncoding = true;
+  }
+  const channel = candidate ? stripChannelBindingParam(candidate) : { value: "", stripped: false };
+  const parsed = channel.value ? parseNeonConnectionString(channel.value) : null;
   const first = trimmed[0];
+  const last = trimmed[trimmed.length - 1];
 
   return {
     present: true,
@@ -168,9 +202,12 @@ export function diagnoseDatabaseUrl(raw: string | undefined | null): DatabaseUrl
     hasHost: Boolean(parsed?.hostname),
     hasUser: Boolean(parsed?.username),
     hasDatabase: Boolean(parsed?.pathname && parsed.pathname !== "/"),
-    fixedByUserinfoEncoding: parsedDirect == null && parsedEncoded != null,
+    fixedByUserinfoEncoding,
+    strippedChannelBinding: channel.stripped,
+    strippedTrailingDot,
     wrapper,
     firstCharCode: first ? first.charCodeAt(0) : null,
+    lastCharCode: last ? last.charCodeAt(0) : null,
   };
 }
 
@@ -183,10 +220,13 @@ export function formatDatabaseUrlDiagnosis(d: DatabaseUrlDiagnosis): string {
     `schemeOk=${d.schemeOk}`,
     `neonParseOk=${d.neonParseOk}`,
     `fixedByUserinfoEncoding=${d.fixedByUserinfoEncoding}`,
+    `strippedChannelBinding=${d.strippedChannelBinding}`,
+    `strippedTrailingDot=${d.strippedTrailingDot}`,
     `hasHost=${d.hasHost}`,
     `hasUser=${d.hasUser}`,
     `hasDatabase=${d.hasDatabase}`,
     `firstCharCode=${d.firstCharCode ?? "n/a"}`,
+    `lastCharCode=${d.lastCharCode ?? "n/a"}`,
   ]
     .filter(Boolean)
     .join(" ");
@@ -198,7 +238,7 @@ export function normalizeDatabaseUrl(raw: string | undefined | null): string {
     throw new Error("DATABASE_URL ist nicht gesetzt.");
   }
 
-  let value = stripWrappers(raw as string);
+  let { value, strippedTrailingDot } = stripWrappers(raw as string);
   if (!value) {
     throw new Error(
       `DATABASE_URL ist leer. (${formatDatabaseUrlDiagnosis(diagnosis)})`
@@ -211,15 +251,21 @@ export function normalizeDatabaseUrl(raw: string | undefined | null): string {
     );
   }
 
-  // Raw `#` `/` `?` in passwords break Node/Neon URL parsing — encode userinfo.
   if (!parseNeonConnectionString(value)) {
     value = encodeDatabaseUrlUserinfo(value);
   }
 
+  const channel = stripChannelBindingParam(value);
+  value = channel.value;
+
   const parsed = parseNeonConnectionString(value);
   if (!parsed) {
     throw new Error(
-      `DATABASE_URL ist ungültig (ERR_INVALID_URL). Oft Ursache: Sonderzeichen im Passwort (# / ?) — Neon-URI encoded kopieren oder Passwort URL-encoden. (${formatDatabaseUrlDiagnosis(diagnosis)})`
+      `DATABASE_URL ist ungültig (ERR_INVALID_URL). (${formatDatabaseUrlDiagnosis({
+        ...diagnosis,
+        strippedTrailingDot,
+        strippedChannelBinding: channel.stripped,
+      })})`
     );
   }
 
@@ -231,6 +277,8 @@ export function normalizeDatabaseUrl(raw: string | undefined | null): string {
         hasHost: Boolean(parsed.hostname),
         hasUser: Boolean(parsed.username),
         hasDatabase: Boolean(parsed.pathname && parsed.pathname !== "/"),
+        strippedTrailingDot,
+        strippedChannelBinding: channel.stripped,
       })})`
     );
   }
@@ -238,9 +286,6 @@ export function normalizeDatabaseUrl(raw: string | undefined | null): string {
   return value;
 }
 
-/**
- * Resolve a usable Neon connection string from env (never logs the value).
- */
 export function resolveDatabaseUrl(
   env: NodeJS.ProcessEnv = process.env
 ): { url: string; source: string; diagnosis: DatabaseUrlDiagnosis } {
@@ -252,7 +297,7 @@ export function resolveDatabaseUrl(
     const diagnosis = { ...diagnoseDatabaseUrl(raw), source: key };
     try {
       const url = normalizeDatabaseUrl(raw);
-      return { url, source: key, diagnosis };
+      return { url, source: key, diagnosis: { ...diagnoseDatabaseUrl(url), source: key, length: raw.length, wrapper: diagnosis.wrapper } };
     } catch (error) {
       attempts.push(
         `${key}: ${error instanceof Error ? error.message : "invalid"}`
@@ -269,4 +314,10 @@ export function resolveDatabaseUrl(
   throw new Error(
     `Keine gültige Datenbank-URL gefunden. Versuche:\n- ${attempts.join("\n- ")}`
   );
+}
+
+/** Build Neon HTTP SQL endpoint host (safe; no secrets). */
+export function neonHttpSqlEndpoint(hostname: string): string {
+  const apiHost = hostname.replace(/^[^.]+\./, "api.");
+  return `https://${apiHost}/sql`;
 }
