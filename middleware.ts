@@ -5,6 +5,7 @@ import { verifyDemoStaffSessionToken } from "@/lib/demo/staff-session";
 import { findDemoUserById } from "@/lib/demo/store";
 import { isInternalRole } from "@/lib/auth/roles";
 import { resolveLivePrincipal } from "@/lib/auth/live-edge-session";
+import { shouldAllowUnauthenticatedDbHealth } from "@/lib/auth/db-health-bypass";
 import {
   classifyPath,
   decideRouteAccess,
@@ -51,6 +52,11 @@ export async function middleware(request: NextRequest) {
 
   // Better Auth handler must remain reachable without recursive session checks.
   if (classifyPath(pathname) === "auth_api") {
+    return NextResponse.next();
+  }
+
+  // Temporary DB probe only — exact path + explicit ENABLE_DB_HEALTH=true.
+  if (shouldAllowUnauthenticatedDbHealth(pathname, process.env.ENABLE_DB_HEALTH)) {
     return NextResponse.next();
   }
 

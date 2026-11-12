@@ -20,6 +20,8 @@ describe("route classification (BA4.2)", () => {
     assert.equal(classifyPath("/kandidaten/abc/pdf"), "staff");
     assert.equal(classifyPath("/rechner/pdf/xyz"), "staff");
     assert.equal(classifyPath("/api/portal-pruefungen/1/cv"), "staff");
+    // Health DB stays staff in policy; middleware may bypass only with ENABLE_DB_HEALTH=true.
+    assert.equal(classifyPath("/api/health/db"), "staff");
     assert.equal(classifyPath("/brand-new-module"), "staff");
   });
 
