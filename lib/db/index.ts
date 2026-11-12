@@ -3,10 +3,13 @@ import "server-only";
 import { neon, neonConfig } from "@neondatabase/serverless";
 import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import {
+  classifyUrlShape,
+  diagnoseDatabaseUrl,
   formatDatabaseUrlDiagnosis,
   neonHttpSqlEndpoint,
-  parseNeonConnectionString,
   resolveDatabaseUrl,
+  summarizeDbError,
+  toNeonConnectionParams,
 } from "./database-url";
 import * as schema from "./schema";
 
@@ -14,46 +17,60 @@ export type Database = NeonHttpDatabase<typeof schema>;
 
 const globalForDb = globalThis as unknown as { cmsDb?: Database };
 
+function configureNeonHttpTransport(host: string) {
+  // Function form only — never assign the postgres URI (or any env value) to fetchEndpoint.
+  neonConfig.fetchEndpoint = (hostname) => neonHttpSqlEndpoint(hostname || host);
+
+  neonConfig.fetchFunction = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url =
+      typeof input === "string"
+        ? input
+        : input instanceof URL
+          ? input.href
+          : input.url;
+    const shape = classifyUrlShape(url);
+    if (shape !== "https") {
+      throw new Error(
+        `[db] Neon HTTP-Endpoint abgelehnt (shape=${shape}, len=${url?.length ?? 0}). Erwartet https://api…/sql.`
+      );
+    }
+    try {
+      return await fetch(input, init);
+    } catch (error) {
+      throw new Error(`[db] Neon fetch fehlgeschlagen. ${summarizeDbError(error)}`);
+    }
+  };
+}
+
 export function getDb(): Database {
   if (globalForDb.cmsDb) return globalForDb.cmsDb;
 
+  const rawDiagnosis = diagnoseDatabaseUrl(process.env.DATABASE_URL);
+  console.info(`[db] raw DATABASE_URL ${formatDatabaseUrlDiagnosis(rawDiagnosis)}`);
+
   const { url, source, diagnosis } = resolveDatabaseUrl(process.env);
-  const parsed = parseNeonConnectionString(url);
-  if (!parsed?.hostname) {
-    throw new Error(
-      `DATABASE_URL Host fehlt nach Normalisierung. (${formatDatabaseUrlDiagnosis({
-        ...diagnosis,
-        source,
-      })})`
-    );
-  }
+  const params = toNeonConnectionParams(url);
 
-  // Explicit endpoint avoids ambiguous host rewrites on newer Neon `c-N` hostnames.
-  const endpoint = neonHttpSqlEndpoint(parsed.hostname);
-  try {
-    // Validate before first query (surfaces ERR_INVALID_URL clearly in logs).
-    // eslint-disable-next-line no-new
-    new URL(endpoint);
-  } catch {
-    throw new Error(
-      `Neon HTTP-Endpoint ungültig (host=${parsed.hostname}). (${formatDatabaseUrlDiagnosis({
-        ...diagnosis,
-        source,
-      })})`
-    );
-  }
-
-  neonConfig.fetchEndpoint = endpoint;
+  configureNeonHttpTransport(params.host);
 
   console.info(
-    `[db] using ${source} endpoint_host=${new URL(endpoint).hostname} (${formatDatabaseUrlDiagnosis({
-      ...diagnosis,
-      source,
-    })})`
+    `[db] using ${source} host=${params.host} db=${params.database} endpoint=${neonHttpSqlEndpoint(params.host)} (${formatDatabaseUrlDiagnosis(
+      {
+        ...diagnosis,
+        source,
+      }
+    )})`
   );
 
   try {
-    const database = drizzle(neon(url), { schema });
+    // Discrete params — connection string never becomes the HTTP fetch URL.
+    const sql = neon({
+      host: params.host,
+      user: params.user,
+      password: params.password,
+      database: params.database,
+    });
+    const database = drizzle(sql, { schema });
     globalForDb.cmsDb = database;
     return database;
   } catch (error) {
@@ -61,7 +78,7 @@ export function getDb(): Database {
       `Neon-Client Init fehlgeschlagen. (${formatDatabaseUrlDiagnosis({
         ...diagnosis,
         source,
-      })}) Original: ${error instanceof Error ? error.message : "unknown"}`
+      })}) ${summarizeDbError(error)}`
     );
   }
 }

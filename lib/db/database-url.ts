@@ -251,9 +251,9 @@ export function normalizeDatabaseUrl(raw: string | undefined | null): string {
     );
   }
 
-  if (!parseNeonConnectionString(value)) {
-    value = encodeDatabaseUrlUserinfo(value);
-  }
+  // Always re-encode userinfo. Neon passwords often contain @ # / ? and paste
+  // variants only sometimes fail the first URL parse.
+  value = encodeDatabaseUrlUserinfo(value);
 
   const channel = stripChannelBindingParam(value);
   value = channel.value;
@@ -318,6 +318,81 @@ export function resolveDatabaseUrl(
 
 /** Build Neon HTTP SQL endpoint host (safe; no secrets). */
 export function neonHttpSqlEndpoint(hostname: string): string {
-  const apiHost = hostname.replace(/^[^.]+\./, "api.");
+  const host = hostname.trim().replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+  if (!host || /[/\s"']/.test(host)) {
+    throw new Error(`Ungültiger Neon-Hostname für HTTP-Endpoint.`);
+  }
+  const apiHost = host.replace(/^[^.]+\./, "api.");
   return `https://${apiHost}/sql`;
+}
+
+/** Classify a URL-ish string for logs — never returns the raw value. */
+export function classifyUrlShape(value: string | undefined | null): string {
+  if (value == null) return "nullish";
+  if (value.length === 0) return "empty";
+  const trimmed = value.replace(/^\uFEFF/, "").trim();
+  if (!trimmed) return "whitespace";
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return "quoted";
+  }
+  if (/^postgres(ql)?:\/\//i.test(trimmed)) return "postgres";
+  if (/^https:\/\//i.test(trimmed)) return "https";
+  if (/^http:\/\//i.test(trimmed)) return "http";
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return "missing-scheme";
+  return "other-scheme";
+}
+
+export type NeonConnectionParams = {
+  host: string;
+  user: string;
+  password: string;
+  database: string;
+  sslMode: string | null;
+};
+
+/** Discrete Neon params — avoids handing a fragile URI string through fetch paths. */
+export function toNeonConnectionParams(connectionString: string): NeonConnectionParams {
+  const parsed = parseNeonConnectionString(connectionString);
+  if (!parsed?.hostname || !parsed.username || !parsed.pathname || parsed.pathname === "/") {
+    throw new Error("Neon-Connection-Parameter unvollständig nach Normalisierung.");
+  }
+  const database = parsed.pathname.replace(/^\//, "").split("/")[0] ?? "";
+  if (!database) {
+    throw new Error("Neon-Database-Name fehlt nach Normalisierung.");
+  }
+  return {
+    host: parsed.hostname,
+    user: decodeUriComponentSafe(parsed.username),
+    password: decodeUriComponentSafe(parsed.password),
+    database,
+    sslMode: parsed.searchParams.get("sslmode"),
+  };
+}
+
+/** Safe summary of a thrown DB/fetch error (no secrets). */
+export function summarizeDbError(error: unknown): string {
+  const parts: string[] = [];
+  let current: unknown = error;
+  for (let depth = 0; depth < 5 && current; depth++) {
+    if (current instanceof Error) {
+      parts.push(
+        `d${depth}:${current.name}:${current.message.slice(0, 160).replace(/postgresql:\/\/[^\s]+/gi, "postgresql://[redacted]")}`
+      );
+      const withInput = current as Error & { input?: unknown; code?: string };
+      if (withInput.code) parts.push(`code=${withInput.code}`);
+      if (withInput.input != null) {
+        parts.push(`inputShape=${classifyUrlShape(String(withInput.input))}`);
+        parts.push(`inputLen=${String(withInput.input).length}`);
+      }
+      const source = (current as Error & { sourceError?: unknown }).sourceError;
+      current = source ?? current.cause;
+      continue;
+    }
+    parts.push(`d${depth}:${typeof current}`);
+    break;
+  }
+  return parts.join(" | ");
 }
