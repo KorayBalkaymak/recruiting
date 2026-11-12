@@ -1,0 +1,13 @@
+---
+description: Git-Branch-/PR-Workflow und Vercel-Freigabepflicht
+alwaysApply: true
+---
+
+# Git & Deploy
+
+- Nicht direkt auf `main` entwickeln; Feature-Branch pro Aufgabe.
+- Vor Commit und Push: User-Freigabe einholen.
+- Nur beabsichtigte Dateien stagen; keine Secrets/`.env*`.
+- PRs mit Summary + Testplan; Production-Deploy nur nach ausdrücklicher Freigabe.
+- Preview-Deployments für Branches nutzen und prüfen, wenn erreichbar.
+- Kein Force-Push auf `main`; keine destruktiven Git-Operationen ohne Auftrag.
