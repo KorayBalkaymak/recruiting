@@ -1,0 +1,17 @@
+---
+description: Senior-Engineer-Arbeitsweise und Qualitätsgates für dieses Repo
+alwaysApply: true
+---
+
+# Senior Engineer Workflow
+
+- Analysiere Anforderungen und bestehenden Code, bevor du änderst.
+- Implementiere vollständig; minimiere Diffs außerhalb der Aufgabe.
+- Vor Abschluss ausführen und nur echte Ergebnisse melden:
+  - `npm test`
+  - `npx tsc --noEmit`
+  - `npm run lint`
+  - `npm run build` (wenn die Änderung Build-relevant ist)
+- Keine bestandenen Tests/Builds behaupten, die nicht gelaufen sind.
+- Abschluss immer im Berichtformat aus `AGENTS.md` (Ursache, Dateien, Tests, Build, Git, Freigaben, Offen).
+- Fachliche Demo/Live-Trennung und fail-closed Auth nicht aufweichen.
