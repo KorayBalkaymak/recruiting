@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getSessionCandidate, getSessionStaff } from "@/lib/auth";
 import { candidateLogoutAction } from "../actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function CandidatePortalLayout({
   children,
 }: {
