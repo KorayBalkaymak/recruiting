@@ -14,30 +14,14 @@ import { CANDIDATE_ROLE, isInternalRole, type InternalRole } from "./roles";
 import { buildCandidateProvisionPlan } from "./provision-candidate";
 import { deliverPasswordSetupEmail } from "@/lib/mail/send";
 import { PASSWORD_TOKEN_TTL_SECONDS } from "@/lib/mail/secure-token";
-
-function normalizeAppBaseUrl(raw: string): string {
-  let value = raw.replace(/^\uFEFF/, "").trim();
-  if (
-    (value.startsWith('"') && value.endsWith('"')) ||
-    (value.startsWith("'") && value.endsWith("'"))
-  ) {
-    value = value.slice(1, -1).trim();
-  }
-  if (!/^https?:\/\//i.test(value)) {
-    throw new Error(
-      "BETTER_AUTH_URL/NEXT_PUBLIC_APP_URL muss mit http:// oder https:// beginnen (ohne Anführungszeichen)."
-    );
-  }
-  try {
-    return new URL(value).origin;
-  } catch {
-    throw new Error("BETTER_AUTH_URL/NEXT_PUBLIC_APP_URL ist keine gültige URL.");
-  }
-}
+import { normalizeAppBaseUrl } from "./app-base-url";
 
 function requireAuthEnv() {
   const secret = process.env.BETTER_AUTH_SECRET;
-  const rawBaseURL = process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL;
+  const rawBaseURL =
+    process.env.BETTER_AUTH_URL?.trim() ||
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined);
   if (!secret || secret.length < 32) {
     throw new Error("BETTER_AUTH_SECRET fehlt oder ist zu kurz (mind. 32 Zeichen).");
   }
