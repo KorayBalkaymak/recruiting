@@ -12,7 +12,18 @@ const globalForDb = globalThis as unknown as { cmsDb?: Database };
 export function getDb(): Database {
   if (globalForDb.cmsDb) return globalForDb.cmsDb;
 
-  const { url } = resolveDatabaseUrl(process.env);
+  const { url, source, diagnosis } = resolveDatabaseUrl(process.env);
+  // Safe shape only — never log the connection string itself.
+  console.info(
+    `[db] using ${source} (${[
+      `wrapper=${diagnosis.wrapper}`,
+      `schemeOk=${diagnosis.schemeOk}`,
+      `neonParseOk=${diagnosis.neonParseOk}`,
+      `fixedByUserinfoEncoding=${diagnosis.fixedByUserinfoEncoding}`,
+      `hasHost=${diagnosis.hasHost}`,
+      `len=${diagnosis.length}`,
+    ].join(" ")})`
+  );
   const database = drizzle(neon(url), { schema });
   globalForDb.cmsDb = database;
   return database;
