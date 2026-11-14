@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { collectAuthTrustedOrigins, normalizeAppBaseUrl } from "./app-base-url.ts";
+import {
+  collectAuthTrustedOrigins,
+  normalizeAppBaseUrl,
+  resolveAuthBaseUrl,
+} from "./app-base-url.ts";
 
 describe("normalizeAppBaseUrl", () => {
   it("keeps https origins", () => {
@@ -26,5 +30,17 @@ describe("collectAuthTrustedOrigins", () => {
     } as NodeJS.ProcessEnv);
     assert.ok(origins.includes("https://app.example.com"));
     assert.ok(origins.includes("https://app-git-main-user.vercel.app"));
+  });
+});
+
+describe("resolveAuthBaseUrl", () => {
+  it("skips localhost on Vercel and uses VERCEL_URL", () => {
+    const origin = resolveAuthBaseUrl({
+      VERCEL: "1",
+      BETTER_AUTH_URL: "http://localhost:3000",
+      NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+      VERCEL_URL: "my-app.vercel.app",
+    } as NodeJS.ProcessEnv);
+    assert.equal(origin, "https://my-app.vercel.app");
   });
 });

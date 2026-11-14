@@ -14,21 +14,14 @@ import { CANDIDATE_ROLE, isInternalRole, type InternalRole } from "./roles";
 import { buildCandidateProvisionPlan } from "./provision-candidate";
 import { deliverPasswordSetupEmail } from "@/lib/mail/send";
 import { PASSWORD_TOKEN_TTL_SECONDS } from "@/lib/mail/secure-token";
-import { collectAuthTrustedOrigins, normalizeAppBaseUrl } from "./app-base-url";
+import { collectAuthTrustedOrigins, resolveAuthBaseUrl } from "./app-base-url";
 
 function requireAuthEnv() {
   const secret = process.env.BETTER_AUTH_SECRET;
-  const rawBaseURL =
-    process.env.BETTER_AUTH_URL?.trim() ||
-    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined);
   if (!secret || secret.length < 32) {
     throw new Error("BETTER_AUTH_SECRET fehlt oder ist zu kurz (mind. 32 Zeichen).");
   }
-  if (!rawBaseURL) {
-    throw new Error("BETTER_AUTH_URL oder NEXT_PUBLIC_APP_URL muss gesetzt sein.");
-  }
-  const baseURL = normalizeAppBaseUrl(rawBaseURL);
+  const baseURL = resolveAuthBaseUrl(process.env);
   // Validates / strips quotes; also accepts Vercel Neon POSTGRES_URL fallbacks.
   resolveDatabaseUrl(process.env);
   return { secret, baseURL };
@@ -87,7 +80,25 @@ function createAuth() {
     appName: "CMS Recruiting-Plattform",
     baseURL,
     secret,
-    trustedOrigins: collectAuthTrustedOrigins(process.env),
+    trustedOrigins: async (request) => {
+      const origins = collectAuthTrustedOrigins(process.env);
+      const header = request?.headers.get("origin") || request?.headers.get("referer");
+      if (!header) return origins;
+      try {
+        const origin = new URL(header).origin;
+        const host = new URL(origin).hostname;
+        const vercelHost = process.env.VERCEL_URL?.replace(/^https?:\/\//, "").split("/")[0];
+        const prodHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.replace(/^https?:\/\//, "").split(
+          "/"
+        )[0];
+        if (host && (host === vercelHost || host === prodHost || origins.includes(origin))) {
+          if (!origins.includes(origin)) origins.push(origin);
+        }
+      } catch {
+        // ignore malformed origin
+      }
+      return origins;
+    },
     database: drizzleAdapter(db, {
       provider: "pg",
       schema: {
