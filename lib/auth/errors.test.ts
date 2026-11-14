@@ -31,4 +31,11 @@ describe("toSafeAuthMessage", () => {
     });
     assert.match(toSafeAuthMessage(nested), /Datenbankverbindung/);
   });
+
+  it("tells operators when no DATABASE_URL is set", () => {
+    assert.match(
+      toSafeAuthMessage(new Error("Keine Datenbank-URL gesetzt. Erwartet eine von: DATABASE_URL.")),
+      /Keine DATABASE_URL/
+    );
+  });
 });

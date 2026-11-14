@@ -73,11 +73,17 @@ export function toSafeAuthMessage(error: unknown) {
   }
 
   const message = combinedMessage(error);
-  if (/BETTER_AUTH|NEXT_PUBLIC_APP_URL|nicht gesetzt|zu kurz|localhost/i.test(message)) {
+  if (/BETTER_AUTH|NEXT_PUBLIC_APP_URL|zu kurz|localhost/i.test(message) && !/DATABASE_URL|Neon|Failed query/i.test(message)) {
     return "Auth-Konfiguration unvollständig. BETTER_AUTH_URL auf die Live-URL setzen (nicht localhost).";
   }
-  if (/DATABASE_URL|Neon|ERR_INVALID_URL|Invalid URL|Failed query|fetch fehlgeschlagen/i.test(message)) {
-    return "Datenbankverbindung fehlgeschlagen. DATABASE_URL prüfen.";
+  if (/Keine Datenbank-URL gesetzt/i.test(message)) {
+    return "Keine DATABASE_URL in dieser Vercel-Umgebung. Unter Settings → Environment Variables für Production setzen, dann Redeploy.";
+  }
+  if (/DATABASE_URL|Neon|ERR_INVALID_URL|Invalid URL|Failed query|fetch fehlgeschlagen|HTTP-Endpoint/i.test(message)) {
+    const hint = message.match(/wrapper=\S+|neonParseOk=\S+|source=\S+|present=\S+/g)?.slice(0, 6).join(" ");
+    return hint
+      ? `Datenbankverbindung fehlgeschlagen (${hint}). In Vercel den Connection String ohne Anführungszeichen einfügen.`
+      : "Datenbankverbindung fehlgeschlagen. DATABASE_URL in Vercel ohne Anführungszeichen setzen und neu deployen.";
   }
 
   return "Die Anfrage konnte nicht verarbeitet werden.";
