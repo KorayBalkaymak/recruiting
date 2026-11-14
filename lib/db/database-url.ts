@@ -287,6 +287,19 @@ export function normalizeDatabaseUrl(raw: string | undefined | null): string {
   return value;
 }
 
+/** First non-empty DB env var, for logs and user-facing hints (no secrets). */
+export function diagnoseConfiguredDatabaseUrl(
+  env: NodeJS.ProcessEnv = process.env
+): DatabaseUrlDiagnosis {
+  for (const key of DATABASE_URL_ENV_CANDIDATES) {
+    const raw = env[key];
+    if (raw != null && String(raw).trim()) {
+      return { ...diagnoseDatabaseUrl(raw), source: key };
+    }
+  }
+  return diagnoseDatabaseUrl(undefined);
+}
+
 export function resolveDatabaseUrl(
   env: NodeJS.ProcessEnv = process.env
 ): { url: string; source: string; diagnosis: DatabaseUrlDiagnosis } {
