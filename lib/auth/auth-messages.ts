@@ -81,14 +81,15 @@ export function toSafeAuthMessage(error: unknown, dbUrl?: DatabaseUrlHint) {
   }
 
   const message = combinedMessage(error);
-  if (/BETTER_AUTH|NEXT_PUBLIC_APP_URL|zu kurz|localhost/i.test(message) && !/DATABASE_URL|Neon|Failed query/i.test(message)) {
-    return "Auth-Konfiguration unvollständig. BETTER_AUTH_URL auf die Live-URL setzen (nicht localhost).";
+  if (/BETTER_AUTH|NEXT_PUBLIC_APP_URL|zu kurz/i.test(message) && !/DATABASE_URL|Neon|Failed query/i.test(message)) {
+    return "Auth-Konfiguration unvollständig. BETTER_AUTH_URL muss zur Adresse in der Browserzeile passen (inkl. Port).";
+  }
+  if (/ERR_INVALID_URL|Invalid URL/i.test(message) && !/Failed query|Neon|DATABASE_URL/i.test(message)) {
+    return "Auth-URL ungültig. BETTER_AUTH_URL und NEXT_PUBLIC_APP_URL auf dieselbe Origin setzen wie im Browser, Dev-Server neu starten.";
   }
   if (
     /Keine Datenbank-URL gesetzt/i.test(message) ||
-    /DATABASE_URL|Neon|ERR_INVALID_URL|Invalid URL|Failed query|fetch fehlgeschlagen|HTTP-Endpoint/i.test(
-      message
-    )
+    /DATABASE_URL|Neon|Failed query|fetch fehlgeschlagen|HTTP-Endpoint/i.test(message)
   ) {
     return databaseFailureCopy(message, dbUrl);
   }

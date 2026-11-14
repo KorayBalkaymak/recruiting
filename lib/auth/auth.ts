@@ -101,6 +101,8 @@ function createAuth() {
     },
     database: drizzleAdapter(db, {
       provider: "pg",
+      // neon-http has no interactive transactions; sequential writes stay fail-closed.
+      transaction: false,
       schema: {
         user: schema.authUser,
         session: schema.authSession,

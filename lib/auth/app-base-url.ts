@@ -93,5 +93,15 @@ export function collectAuthTrustedOrigins(
     if (onVercel && isLoopbackOrigin(origin)) continue;
     origins.add(origin);
   }
+  if (!onVercel) {
+    for (const origin of [
+      "http://localhost:3000",
+      "http://localhost:3002",
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:3002",
+    ]) {
+      origins.add(origin);
+    }
+  }
   return [...origins];
 }
