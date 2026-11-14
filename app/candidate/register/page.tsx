@@ -9,7 +9,7 @@ export default async function CandidateRegisterPage({
   searchParams: { error?: string };
 }) {
   const staff = await getSessionStaff();
-  if (staff) redirect("/");
+  if (staff) redirect("/uebersicht");
   const candidate = await getSessionCandidate();
   if (candidate) redirect("/candidate/dashboard");
 

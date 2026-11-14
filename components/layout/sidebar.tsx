@@ -31,7 +31,9 @@ export function Sidebar({ openRequestsCount = 0, canManageUsers = false }: Sideb
         <ul className="flex flex-col gap-0.5">
           {visibleItems.map((item) => {
             const isActive =
-              item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              item.href === "/uebersicht"
+                ? pathname === "/uebersicht"
+                : pathname.startsWith(item.href);
             const Icon = item.icon;
             const badgeCount =
               item.badgeCountKey === "openRequests" ? openRequestsCount : undefined;

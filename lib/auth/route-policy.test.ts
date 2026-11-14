@@ -15,7 +15,8 @@ describe("route classification (BA4.2)", () => {
     assert.equal(classifyPath("/candidate/register"), "candidate_login");
     assert.equal(classifyPath("/candidate/dashboard"), "candidate");
     assert.equal(classifyPath("/api/candidate/cv"), "candidate");
-    assert.equal(classifyPath("/"), "staff");
+    assert.equal(classifyPath("/"), "public");
+    assert.equal(classifyPath("/uebersicht"), "staff");
     assert.equal(classifyPath("/kandidaten"), "staff");
     assert.equal(classifyPath("/kandidaten/abc/pdf"), "staff");
     assert.equal(classifyPath("/rechner/pdf/xyz"), "staff");
@@ -40,7 +41,8 @@ describe("route access decisions (BA4.2)", () => {
       decideRouteAccess({ pathname: "/candidate/login", principal: "anonymous" }).action,
       "allow"
     );
-    const staffHome = decideRouteAccess({ pathname: "/", principal: "anonymous" });
+    assert.equal(decideRouteAccess({ pathname: "/", principal: "anonymous" }).action, "allow");
+    const staffHome = decideRouteAccess({ pathname: "/uebersicht", principal: "anonymous" });
     assert.deepEqual(staffHome, { action: "redirect", location: "/login" });
     const candDash = decideRouteAccess({
       pathname: "/candidate/dashboard",
@@ -51,6 +53,7 @@ describe("route access decisions (BA4.2)", () => {
 
   it("allows staff on staff routes and blocks candidate area", () => {
     assert.equal(decideRouteAccess({ pathname: "/", principal: "staff" }).action, "allow");
+    assert.equal(decideRouteAccess({ pathname: "/uebersicht", principal: "staff" }).action, "allow");
     assert.equal(
       decideRouteAccess({ pathname: "/kandidaten/x/pdf", principal: "staff" }).action,
       "allow"
@@ -61,7 +64,7 @@ describe("route access decisions (BA4.2)", () => {
     );
     assert.deepEqual(decideRouteAccess({ pathname: "/candidate/dashboard", principal: "staff" }), {
       action: "redirect",
-      location: "/",
+      location: "/uebersicht",
     });
     assert.deepEqual(decideRouteAccess({ pathname: "/api/candidate/cv", principal: "staff" }), {
       action: "unauthorized",
@@ -110,7 +113,7 @@ describe("route access decisions (BA4.2)", () => {
   it("redirects authenticated users away from the other area login pages", () => {
     assert.deepEqual(decideRouteAccess({ pathname: "/login", principal: "staff" }), {
       action: "redirect",
-      location: "/",
+      location: "/uebersicht",
     });
     assert.equal(
       decideRouteAccess({ pathname: "/login/set-password", principal: "staff" }).action,
@@ -126,7 +129,7 @@ describe("route access decisions (BA4.2)", () => {
     });
     assert.deepEqual(decideRouteAccess({ pathname: "/candidate/login", principal: "staff" }), {
       action: "redirect",
-      location: "/",
+      location: "/uebersicht",
     });
   });
 });

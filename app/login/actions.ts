@@ -34,7 +34,7 @@ export async function loginAction(formData: FormData) {
     if (error) {
       redirect(`/login?error=${encodeURIComponent("Ungültige Anmeldedaten")}`);
     }
-    redirect("/");
+    redirect("/uebersicht");
   }
 
   try {
@@ -57,7 +57,7 @@ export async function loginAction(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent(toSafeAuthMessage(error))}`);
   }
 
-  redirect("/");
+  redirect("/uebersicht");
 }
 
 export async function logoutAction() {

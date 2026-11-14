@@ -33,7 +33,7 @@ try {
     await page.getByLabel("E-Mail").fill("anna.recruiter@cms-platform.de");
     await page.getByLabel("Passwort").fill("demo1234");
     await page.getByRole("button", { name: "Anmelden" }).click();
-    await page.waitForURL((url) => url.pathname === "/" || url.pathname === "", {
+    await page.waitForURL((url) => url.pathname === "/uebersicht", {
       timeout: 15000,
     });
     pass("staff-login");
@@ -102,7 +102,7 @@ try {
     await page.getByLabel("E-Mail").fill("anna.recruiter@cms-platform.de");
     await page.getByLabel("Passwort").fill("demo1234");
     await page.getByRole("button", { name: "Anmelden" }).click();
-    await page.waitForURL((url) => url.pathname === "/" || url.pathname === "", {
+    await page.waitForURL((url) => url.pathname === "/uebersicht", {
       timeout: 15000,
     });
     await page.goto(`${base}/portal-pruefungen`);

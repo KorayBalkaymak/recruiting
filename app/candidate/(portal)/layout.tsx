@@ -12,7 +12,7 @@ export default async function CandidatePortalLayout({
 }) {
   const staff = await getSessionStaff();
   if (staff) {
-    redirect("/");
+    redirect("/uebersicht");
   }
 
   const candidate = await getSessionCandidate();

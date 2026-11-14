@@ -23,7 +23,7 @@ export type NavItem = {
 };
 
 export const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
+  { label: "Dashboard", href: "/uebersicht", icon: LayoutDashboard },
   { label: "Kandidaten", href: "/kandidaten", icon: Users },
   { label: "Portal-Prüfungen", href: "/portal-pruefungen", icon: ClipboardCheck },
   { label: "Kunden", href: "/kunden", icon: Building2 },

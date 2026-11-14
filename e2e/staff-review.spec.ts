@@ -6,7 +6,7 @@ test.describe("Staff-Review und Statusänderung (Demo)", () => {
     await page.getByLabel("E-Mail").fill("anna.recruiter@cms-platform.de");
     await page.getByLabel("Passwort").fill("demo1234");
     await page.getByRole("button", { name: "Anmelden" }).click();
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/uebersicht$/);
 
     await page.goto("/portal-pruefungen");
     await expect(page.getByRole("heading", { name: /Portal-Prüfungen/i })).toBeVisible();

@@ -6,7 +6,7 @@ test.describe("Mitarbeiter-Login (Demo)", () => {
     await page.getByLabel("E-Mail").fill("anna.recruiter@cms-platform.de");
     await page.getByLabel("Passwort").fill("demo1234");
     await page.getByRole("button", { name: "Anmelden" }).click();
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/uebersicht$/);
     await expect(page.getByText(/Dashboard|Übersicht|Willkommen|Kandidaten/i).first()).toBeVisible({
       timeout: 15_000,
     });
