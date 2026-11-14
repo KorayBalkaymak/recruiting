@@ -24,4 +24,11 @@ describe("toSafeAuthMessage", () => {
     const error = Object.assign(new Error("x"), { name: "AuthError", code: "UNAUTHENTICATED" });
     assert.equal(toSafeAuthMessage(error), "Anmeldung erforderlich.");
   });
+
+  it("maps nested Invalid URL causes", () => {
+    const nested = Object.assign(new Error("Failed query: select 1"), {
+      cause: new Error("TypeError: Invalid URL"),
+    });
+    assert.match(toSafeAuthMessage(nested), /Datenbankverbindung/);
+  });
 });

@@ -38,9 +38,19 @@ export async function loginAction(formData: FormData) {
   }
 
   try {
+    const requestHeaders = headers();
+    const originHost = (() => {
+      const raw = requestHeaders.get("origin") || requestHeaders.get("x-forwarded-host") || requestHeaders.get("host");
+      try {
+        return raw ? new URL(raw.includes("://") ? raw : `https://${raw}`).hostname : "n/a";
+      } catch {
+        return "invalid";
+      }
+    })();
+    console.info(`[auth] staff login origin_host=${originHost} vercel=${process.env.VERCEL ?? "0"}`);
     await getAuth().api.signInEmail({
       body: { email: email.toLowerCase(), password },
-      headers: headers(),
+      headers: requestHeaders,
     });
   } catch (error) {
     console.error(`[auth] staff login failed ${summarizeAuthError(error)}`);
