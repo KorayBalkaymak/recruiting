@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { loginAction } from "./actions";
+import { isDemoMode } from "@/lib/demo/mode";
 
 export default function LoginPage({
   searchParams,
@@ -73,10 +74,12 @@ export default function LoginPage({
           </Link>
         </p>
 
-        <p className="mt-5 text-xs leading-relaxed text-ink-muted">
-          Demo: <span className="font-medium text-ink">anna.recruiter@cms-platform.de</span> /
-          Passwort <span className="font-medium text-ink">demo1234</span>
-        </p>
+        {isDemoMode() ? (
+          <p className="mt-5 text-xs leading-relaxed text-ink-muted">
+            Demo: <span className="font-medium text-ink">anna.recruiter@cms-platform.de</span> /
+            Passwort <span className="font-medium text-ink">demo1234</span>
+          </p>
+        ) : null}
       </div>
     </div>
   );

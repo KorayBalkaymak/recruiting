@@ -14,7 +14,7 @@ import { CANDIDATE_ROLE, isInternalRole, type InternalRole } from "./roles";
 import { buildCandidateProvisionPlan } from "./provision-candidate";
 import { deliverPasswordSetupEmail } from "@/lib/mail/send";
 import { PASSWORD_TOKEN_TTL_SECONDS } from "@/lib/mail/secure-token";
-import { normalizeAppBaseUrl } from "./app-base-url";
+import { collectAuthTrustedOrigins, normalizeAppBaseUrl } from "./app-base-url";
 
 function requireAuthEnv() {
   const secret = process.env.BETTER_AUTH_SECRET;
@@ -87,6 +87,7 @@ function createAuth() {
     appName: "CMS Recruiting-Plattform",
     baseURL,
     secret,
+    trustedOrigins: collectAuthTrustedOrigins(process.env),
     database: drizzleAdapter(db, {
       provider: "pg",
       schema: {
@@ -136,6 +137,8 @@ function createAuth() {
       database: {
         generateId: () => crypto.randomUUID(),
       },
+      trustedProxyHeaders: Boolean(process.env.VERCEL),
+      useSecureCookies: baseURL.startsWith("https://"),
     },
     databaseHooks: {
       user: {

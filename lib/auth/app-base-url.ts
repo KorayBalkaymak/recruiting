@@ -30,3 +30,30 @@ export function normalizeAppBaseUrl(raw: string): string {
     throw new Error("BETTER_AUTH_URL/NEXT_PUBLIC_APP_URL ist keine gültige URL.");
   }
 }
+
+function tryOrigin(raw: string | undefined | null): string | null {
+  if (!raw?.trim()) return null;
+  try {
+    return normalizeAppBaseUrl(raw);
+  } catch {
+    return null;
+  }
+}
+
+/** Origins Better Auth may accept for CSRF/cookies (Vercel preview + production). */
+export function collectAuthTrustedOrigins(
+  env: NodeJS.ProcessEnv = process.env
+): string[] {
+  const origins = new Set<string>();
+  for (const raw of [
+    env.BETTER_AUTH_URL,
+    env.NEXT_PUBLIC_APP_URL,
+    env.VERCEL_URL,
+    env.VERCEL_PROJECT_PRODUCTION_URL,
+    env.VERCEL_BRANCH_URL,
+  ]) {
+    const origin = tryOrigin(raw);
+    if (origin) origins.add(origin);
+  }
+  return [...origins];
+}
