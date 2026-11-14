@@ -1,11 +1,12 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   getAuth,
   requireCandidate,
   runAsCandidateSignup,
+  summarizeAuthError,
   toSafeAuthMessage,
 } from "@/lib/auth";
 import { DEMO_CANDIDATE_COOKIE, isDemoMode } from "@/lib/demo/mode";
@@ -93,8 +94,10 @@ export async function candidateRegisterAction(formData: FormData) {
     });
     await getAuth().api.signInEmail({
       body: { email, password },
+      headers: headers(),
     });
   } catch (error) {
+    console.error(`[auth] candidate register failed ${summarizeAuthError(error)}`);
     redirect(`/candidate/register?error=${encodeURIComponent(toSafeAuthMessage(error))}`);
   }
 
@@ -137,8 +140,10 @@ export async function candidateLoginAction(formData: FormData) {
   try {
     await getAuth().api.signInEmail({
       body: { email, password },
+      headers: headers(),
     });
   } catch (error) {
+    console.error(`[auth] candidate login failed ${summarizeAuthError(error)}`);
     redirect(`/candidate/login?error=${encodeURIComponent(toSafeAuthMessage(error))}`);
   }
 

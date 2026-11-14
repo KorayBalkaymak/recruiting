@@ -9,7 +9,7 @@ export {
   resolveBoundCandidateId,
 } from "./actor-binding";
 export { runAsCandidateSignup, isCandidateSignup } from "./candidate-context";
-export { AuthError, toAuthHttpError, toSafeAuthMessage } from "./errors";
+export { AuthError, summarizeAuthError, toAuthHttpError, toSafeAuthMessage } from "./errors";
 export {
   requireAdmin,
   requireCandidate,

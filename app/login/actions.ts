@@ -1,8 +1,9 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getAuth, toSafeAuthMessage } from "@/lib/auth";
+import { getAuth, summarizeAuthError, toSafeAuthMessage } from "@/lib/auth";
 import { isDemoMode } from "@/lib/demo/mode";
 import { RATE_LIMITS, enforceRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
 import { getRequestClientIp } from "@/lib/security/request-ip";
@@ -38,9 +39,11 @@ export async function loginAction(formData: FormData) {
 
   try {
     await getAuth().api.signInEmail({
-      body: { email, password },
+      body: { email: email.toLowerCase(), password },
+      headers: headers(),
     });
   } catch (error) {
+    console.error(`[auth] staff login failed ${summarizeAuthError(error)}`);
     redirect(`/login?error=${encodeURIComponent(toSafeAuthMessage(error))}`);
   }
 

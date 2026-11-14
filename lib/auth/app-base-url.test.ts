@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { normalizeAppBaseUrl } from "./app-base-url.ts";
+import { collectAuthTrustedOrigins, normalizeAppBaseUrl } from "./app-base-url.ts";
 
 describe("normalizeAppBaseUrl", () => {
   it("keeps https origins", () => {
@@ -14,5 +14,17 @@ describe("normalizeAppBaseUrl", () => {
 
   it("rejects non-http schemes", () => {
     assert.throws(() => normalizeAppBaseUrl("ftp://example.com"), /http\(s\)/);
+  });
+});
+
+describe("collectAuthTrustedOrigins", () => {
+  it("includes Vercel hosts without exposing secrets", () => {
+    const origins = collectAuthTrustedOrigins({
+      BETTER_AUTH_URL: "https://app.example.com",
+      VERCEL_URL: "app-git-main-user.vercel.app",
+      VERCEL_PROJECT_PRODUCTION_URL: "app.example.com",
+    } as NodeJS.ProcessEnv);
+    assert.ok(origins.includes("https://app.example.com"));
+    assert.ok(origins.includes("https://app-git-main-user.vercel.app"));
   });
 });
