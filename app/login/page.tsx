@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { loginAction } from "./actions";
 import { isDemoMode } from "@/lib/demo/mode";
+import {
+  AuthAlert,
+  MarketingAuthShell,
+  authButtonClass,
+  authInputClass,
+  authLabelClass,
+} from "@/components/marketing/auth-shell";
 
 export default function LoginPage({
   searchParams,
@@ -8,85 +15,70 @@ export default function LoginPage({
   searchParams: { error?: string; message?: string };
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface-subtle px-4">
-      <div className="w-full max-w-sm rounded-lg border border-surface-border bg-white p-8 shadow-panel">
-        <div className="mb-6 flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-sm font-semibold text-white">
-            CMS
-          </div>
-          <span className="text-sm font-medium text-ink">Recruiting-Plattform</span>
+    <MarketingAuthShell
+      audience="recruiter"
+      kicker="Intern"
+      title="Recruiter-Anmeldung"
+      description="Zugang zum CMS-Arbeitsbereich: Kunden, Vakanzen, Pipeline und Portal-Prüfungen. Nur für das interne Team."
+    >
+      {searchParams.message ? <AuthAlert tone="ok">{searchParams.message}</AuthAlert> : null}
+      {searchParams.error ? <AuthAlert tone="error">{searchParams.error}</AuthAlert> : null}
+
+      <form action={loginAction} className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="email" className={authLabelClass}>
+            E-Mail
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="username"
+            placeholder="recruiter@cms-platform.de"
+            className={authInputClass}
+          />
         </div>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="password" className={authLabelClass}>
+            Passwort
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            autoComplete="current-password"
+            className={authInputClass}
+          />
+        </div>
+        <button type="submit" className={authButtonClass}>
+          Anmelden
+        </button>
+      </form>
 
-        <h1 className="mb-1 text-lg font-semibold text-ink">Anmelden</h1>
-        <p className="mb-6 text-sm text-ink-muted">
-          Interner Recruiter-Bereich von CMS Talents.
+      <p className="mt-4 text-sm">
+        <Link href="/login/forgot-password" className="font-medium text-white/80 hover:text-white">
+          Passwort vergessen?
+        </Link>
+      </p>
+
+      {isDemoMode() ? (
+        <p className="mt-5 text-xs leading-relaxed text-white/40">
+          Demo: anna.recruiter@cms-platform.de / demo1234
         </p>
+      ) : null}
 
-        {searchParams.message && (
-          <p className="mb-4 rounded-md bg-emerald-50 px-3 py-2 text-sm text-status-done">
-            {searchParams.message}
-          </p>
-        )}
-
-        {searchParams.error && (
-          <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-status-danger">
-            {searchParams.error}
-          </p>
-        )}
-
-        <form action={loginAction} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="text-sm font-medium text-ink">
-              E-Mail
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              placeholder="max.kam@cms-platform.de"
-              className="rounded-md border border-surface-border px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="password" className="text-sm font-medium text-ink">
-              Passwort
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="rounded-md border border-surface-border px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-            />
-          </div>
-          <button
-            type="submit"
-            className="mt-2 rounded-md bg-brand px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
-          >
-            Anmelden
-          </button>
-        </form>
-
-        <p className="mt-4 text-sm">
-          <Link href="/login/forgot-password" className="font-medium text-brand hover:underline">
-            Passwort vergessen?
-          </Link>
-        </p>
-
-        {isDemoMode() ? (
-          <p className="mt-5 text-xs leading-relaxed text-ink-muted">
-            Demo: <span className="font-medium text-ink">anna.recruiter@cms-platform.de</span> /
-            Passwort <span className="font-medium text-ink">demo1234</span>
-          </p>
-        ) : null}
-
-        <p className="mt-6 text-center text-xs text-ink-muted">
-          <Link href="/" className="hover:text-ink">
-            Zur Startseite
-          </Link>
-        </p>
-      </div>
-    </div>
+      <p className="mt-6 text-xs text-white/35">
+        Kandidat?{" "}
+        <Link href="/candidate/login" className="text-white/70 hover:text-white">
+          Zum Portal
+        </Link>
+        {" · "}
+        <Link href="/" className="text-white/70 hover:text-white">
+          Startseite
+        </Link>
+      </p>
+    </MarketingAuthShell>
   );
 }
