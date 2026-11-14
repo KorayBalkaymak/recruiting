@@ -12,6 +12,13 @@ describe("toSafeAuthMessage", () => {
     assert.equal(toSafeAuthMessage(error), "Ungültige Anmeldedaten.");
   });
 
+  it("maps a missing Better Auth secret without calling it a URL mismatch", () => {
+    assert.match(
+      toSafeAuthMessage(new Error("BETTER_AUTH_SECRET fehlt oder ist zu kurz (mind. 32 Zeichen).")),
+      /BETTER_AUTH_SECRET fehlt/
+    );
+  });
+
   it("maps origin failures to a config hint", () => {
     const error = APIError.from("FORBIDDEN", {
       message: "origin",
