@@ -41,7 +41,7 @@ export default async function NutzerverwaltungPage() {
     await requireUserManager();
   } catch (error) {
     if (error instanceof AuthError) {
-      redirect("/");
+      redirect("/uebersicht");
     }
     throw error;
   }

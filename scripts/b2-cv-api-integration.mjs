@@ -269,7 +269,7 @@ main().catch((error) => {
     await pageStaff.getByLabel("E-Mail").fill(staffEmail);
     await pageStaff.getByLabel("Passwort").fill(password);
     await pageStaff.getByRole("button", { name: "Anmelden" }).click();
-    await pageStaff.waitForURL((u) => u.pathname === "/" || u.pathname === "", {
+    await pageStaff.waitForURL((u) => u.pathname === "/uebersicht", {
       timeout: 30_000,
     });
 

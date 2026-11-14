@@ -11,7 +11,7 @@ export default async function CandidateLoginPage({
   searchParams: { error?: string };
 }) {
   const staff = await getSessionStaff();
-  if (staff) redirect("/");
+  if (staff) redirect("/uebersicht");
   const candidate = await getSessionCandidate();
   if (candidate) redirect("/candidate/dashboard");
 
@@ -87,6 +87,12 @@ export default async function CandidateLoginPage({
             Demo: {DEMO_CANDIDATE_LOGIN_HINT.email} / {DEMO_CANDIDATE_LOGIN_HINT.password}
           </p>
         )}
+
+        <p className="mt-6 text-center text-xs text-ink-muted">
+          <Link href="/" className="hover:text-ink">
+            Zur Startseite
+          </Link>
+        </p>
       </div>
     </div>
   );

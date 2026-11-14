@@ -1,5 +1,8 @@
 export type PrincipalKind = "anonymous" | "staff" | "candidate";
 
+/** Internal CRM home after staff login. Public marketing lives at `/`. */
+export const STAFF_HOME = "/uebersicht";
+
 export type RouteClass =
   | "public"
   | "auth_api"
@@ -18,6 +21,7 @@ export type RouteDecision =
  * Unknown / new app routes default to `staff` (must be authenticated internal).
  */
 export function classifyPath(pathname: string): RouteClass {
+  if (pathname === "/") return "public";
   if (pathname.startsWith("/api/auth")) return "auth_api";
 
   if (
@@ -83,7 +87,7 @@ export function decideRouteAccess(input: {
     if (input.principal === "staff") {
       // Allow password-setup while authenticated.
       if (input.pathname.startsWith("/login/set-password")) return { action: "allow" };
-      return { action: "redirect", location: "/" };
+      return { action: "redirect", location: STAFF_HOME };
     }
     if (input.principal === "candidate") {
       return { action: "redirect", location: "/candidate/dashboard" };
@@ -96,7 +100,7 @@ export function decideRouteAccess(input: {
       return { action: "redirect", location: "/candidate/dashboard" };
     }
     if (input.principal === "staff") {
-      return { action: "redirect", location: "/" };
+      return { action: "redirect", location: STAFF_HOME };
     }
     return { action: "allow" };
   }
@@ -105,7 +109,7 @@ export function decideRouteAccess(input: {
     if (input.principal === "candidate") return { action: "allow" };
     if (input.principal === "staff") {
       if (apiLike) return { action: "unauthorized", status: 403 };
-      return { action: "redirect", location: "/" };
+      return { action: "redirect", location: STAFF_HOME };
     }
     if (apiLike) return { action: "unauthorized", status: 401 };
     return { action: "redirect", location: "/candidate/login" };

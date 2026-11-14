@@ -19,7 +19,7 @@ export default function LoginPage({
 
         <h1 className="mb-1 text-lg font-semibold text-ink">Anmelden</h1>
         <p className="mb-6 text-sm text-ink-muted">
-          Melde dich mit deinem internen Konto an.
+          Interner Recruiter-Bereich von CMS Talents.
         </p>
 
         {searchParams.message && (
@@ -80,6 +80,12 @@ export default function LoginPage({
             Passwort <span className="font-medium text-ink">demo1234</span>
           </p>
         ) : null}
+
+        <p className="mt-6 text-center text-xs text-ink-muted">
+          <Link href="/" className="hover:text-ink">
+            Zur Startseite
+          </Link>
+        </p>
       </div>
     </div>
   );

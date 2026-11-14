@@ -18,8 +18,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CMS — Recruiting-Plattform",
-  description: "B2B-Recruiting- & CMS-Plattform",
+  title: "CMS Talents — Präzises B2B-Recruiting",
+  description:
+    "CMS Talents verbindet Unternehmen mit geprüften Fachkräften. Recruiter-Arbeitsbereich und Kandidatenportal auf einer Plattform.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
