@@ -49,7 +49,8 @@ export async function loginAction(formData: FormData) {
       headers: headers(),
     });
   } catch (error) {
-    console.error(`[auth] staff login failed ${summarizeAuthError(error)}`);
+    const { summarizeDbError } = await import("@/lib/db/database-url");
+    console.error(`[auth] staff login failed ${summarizeAuthError(error)} ${summarizeDbError(error)}`);
     const { diagnoseConfiguredDatabaseUrl } = await import("@/lib/db/database-url");
     redirect(
       `/login?error=${encodeURIComponent(toSafeAuthMessage(error, diagnoseConfiguredDatabaseUrl()))}`

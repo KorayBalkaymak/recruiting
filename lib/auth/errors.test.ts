@@ -25,6 +25,17 @@ describe("toSafeAuthMessage", () => {
     assert.equal(toSafeAuthMessage(error), "Anmeldung erforderlich.");
   });
 
+  it("does not treat a bare Invalid URL as a DATABASE_URL quote problem", () => {
+    const copy = toSafeAuthMessage(new Error("TypeError: Invalid URL"), {
+      present: true,
+      wrapper: "none",
+      schemeOk: true,
+      neonParseOk: true,
+    });
+    assert.match(copy, /Auth-URL ungültig/);
+    assert.doesNotMatch(copy, /Anführungszeichen/);
+  });
+
   it("maps nested Invalid URL causes without blaming quotes when the URL is valid", () => {
     const nested = Object.assign(new Error("Failed query: select 1"), {
       cause: new Error("TypeError: Invalid URL"),

@@ -22,6 +22,14 @@ describe("normalizeAppBaseUrl", () => {
 });
 
 describe("collectAuthTrustedOrigins", () => {
+  it("includes local loopback ports off Vercel", () => {
+    const origins = collectAuthTrustedOrigins({
+      BETTER_AUTH_URL: "http://localhost:3002",
+    } as NodeJS.ProcessEnv);
+    assert.ok(origins.includes("http://localhost:3002"));
+    assert.ok(origins.includes("http://localhost:3000"));
+  });
+
   it("includes Vercel hosts without exposing secrets", () => {
     const origins = collectAuthTrustedOrigins({
       BETTER_AUTH_URL: "https://app.example.com",

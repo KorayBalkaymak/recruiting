@@ -1,6 +1,6 @@
 import "server-only";
 
-import { neon } from "@neondatabase/serverless";
+import { neon, neonConfig } from "@neondatabase/serverless";
 import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import {
   diagnoseConfiguredDatabaseUrl,
@@ -10,7 +10,10 @@ import {
   summarizeDbError,
   toNeonConnectionParams,
 } from "./database-url";
+import { neonNodeFetch } from "./neon-fetch";
 import * as schema from "./schema";
+
+neonConfig.fetchFunction = neonNodeFetch;
 
 export type Database = NeonHttpDatabase<typeof schema>;
 
