@@ -28,6 +28,7 @@ describe("collectAuthTrustedOrigins", () => {
     } as NodeJS.ProcessEnv);
     assert.ok(origins.includes("http://localhost:3002"));
     assert.ok(origins.includes("http://localhost:3000"));
+    assert.ok(origins.includes("http://localhost:3003"));
   });
 
   it("includes Vercel hosts without exposing secrets", () => {

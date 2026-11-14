@@ -81,7 +81,10 @@ export function toSafeAuthMessage(error: unknown, dbUrl?: DatabaseUrlHint) {
   }
 
   const message = combinedMessage(error);
-  if (/BETTER_AUTH|NEXT_PUBLIC_APP_URL|zu kurz/i.test(message) && !/DATABASE_URL|Neon|Failed query/i.test(message)) {
+  if (/BETTER_AUTH_SECRET|zu kurz \(mind/i.test(message)) {
+    return "BETTER_AUTH_SECRET fehlt oder ist kürzer als 32 Zeichen. In .env.local setzen und den Dev-Server neu starten.";
+  }
+  if (/BETTER_AUTH|NEXT_PUBLIC_APP_URL/i.test(message) && !/DATABASE_URL|Neon|Failed query/i.test(message)) {
     return "Auth-Konfiguration unvollständig. BETTER_AUTH_URL muss zur Adresse in der Browserzeile passen (inkl. Port).";
   }
   if (/ERR_INVALID_URL|Invalid URL/i.test(message) && !/Failed query|Neon|DATABASE_URL/i.test(message)) {
