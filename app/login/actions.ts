@@ -38,11 +38,11 @@ export async function loginAction(formData: FormData) {
   }
 
   try {
-    const { diagnoseDatabaseUrl, formatDatabaseUrlDiagnosis } = await import(
+    const { diagnoseConfiguredDatabaseUrl, formatDatabaseUrlDiagnosis } = await import(
       "@/lib/db/database-url"
     );
     console.info(
-      `[auth] staff login db ${formatDatabaseUrlDiagnosis(diagnoseDatabaseUrl(process.env.DATABASE_URL))} vercel=${process.env.VERCEL ?? "0"}`
+      `[auth] staff login db ${formatDatabaseUrlDiagnosis(diagnoseConfiguredDatabaseUrl())} vercel=${process.env.VERCEL ?? "0"} env=${process.env.VERCEL_ENV ?? "n/a"}`
     );
     await getAuth().api.signInEmail({
       body: { email: email.toLowerCase(), password },
@@ -50,7 +50,10 @@ export async function loginAction(formData: FormData) {
     });
   } catch (error) {
     console.error(`[auth] staff login failed ${summarizeAuthError(error)}`);
-    redirect(`/login?error=${encodeURIComponent(toSafeAuthMessage(error))}`);
+    const { diagnoseConfiguredDatabaseUrl } = await import("@/lib/db/database-url");
+    redirect(
+      `/login?error=${encodeURIComponent(toSafeAuthMessage(error, diagnoseConfiguredDatabaseUrl()))}`
+    );
   }
 
   redirect("/uebersicht");

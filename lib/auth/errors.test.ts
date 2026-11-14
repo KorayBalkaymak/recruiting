@@ -25,16 +25,28 @@ describe("toSafeAuthMessage", () => {
     assert.equal(toSafeAuthMessage(error), "Anmeldung erforderlich.");
   });
 
-  it("maps nested Invalid URL causes", () => {
+  it("maps nested Invalid URL causes without blaming quotes when the URL is valid", () => {
     const nested = Object.assign(new Error("Failed query: select 1"), {
       cause: new Error("TypeError: Invalid URL"),
     });
-    assert.match(toSafeAuthMessage(nested), /Datenbankverbindung/);
+    const copy = toSafeAuthMessage(nested, {
+      present: true,
+      wrapper: "none",
+      schemeOk: true,
+      neonParseOk: true,
+    });
+    assert.match(copy, /Datenbankabfrage fehlgeschlagen/);
+    assert.doesNotMatch(copy, /Anführungszeichen setzen/);
   });
 
   it("tells operators when no DATABASE_URL is set", () => {
     assert.match(
-      toSafeAuthMessage(new Error("Keine Datenbank-URL gesetzt. Erwartet eine von: DATABASE_URL.")),
+      toSafeAuthMessage(new Error("Keine Datenbank-URL gesetzt. Erwartet eine von: DATABASE_URL."), {
+        present: false,
+        wrapper: "none",
+        schemeOk: false,
+        neonParseOk: false,
+      }),
       /Keine DATABASE_URL/
     );
   });
