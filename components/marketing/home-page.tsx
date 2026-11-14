@@ -28,7 +28,7 @@ const steps = [
 export function HomePage() {
   return (
     <div className="landing-shell landing-mesh min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-white/10 bg-[#0b0c0f]/80 backdrop-blur-md">
+      <header className="border-b border-white/10">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-xs font-semibold tracking-wide text-white">
