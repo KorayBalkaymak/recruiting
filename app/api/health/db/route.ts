@@ -4,6 +4,7 @@ import {
   diagnoseDatabaseUrl,
   formatDatabaseUrlDiagnosis,
   neonHttpSqlEndpoint,
+  parseNeonConnectionString,
   resolveDatabaseUrl,
   summarizeDbError,
   toNeonConnectionParams,
@@ -12,10 +13,34 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+function publicTargetFromResolvedUrl(normalizedUrl: string): {
+  host: string;
+  port: number;
+  portSource: "uri" | "default-5432";
+  database: string;
+} {
+  const params = toNeonConnectionParams(normalizedUrl);
+  const parsed = parseNeonConnectionString(normalizedUrl);
+  const uriPort = parsed?.port?.trim() ?? "";
+  if (uriPort && /^\d+$/.test(uriPort)) {
+    return {
+      host: params.host,
+      port: Number(uriPort),
+      portSource: "uri",
+      database: params.database,
+    };
+  }
+  return {
+    host: params.host,
+    port: 5432,
+    portSource: "default-5432",
+    database: params.database,
+  };
+}
+
 /**
- * Safe DB env diagnosis (no connection string values).
- * Enable with ENABLE_DB_HEALTH=true, then open /api/health/db
- * and optionally ?probe=1 to run SELECT 1.
+ * Temporary Production diagnosis (ENABLE_DB_HEALTH=true only).
+ * Returns host/port/database metadata — never URI, userinfo, or query string.
  */
 export async function GET(request: Request) {
   if (process.env.ENABLE_DB_HEALTH !== "true") {
@@ -36,26 +61,32 @@ export async function GET(request: Request) {
     };
   });
 
+  const environment = process.env.VERCEL_ENV ?? null;
+
   let resolved: {
     source: string;
     summary: string;
     host: string | null;
+    port: number | null;
+    portSource: "uri" | "default-5432" | null;
     database: string | null;
     endpoint: string | null;
   } | null = null;
   let resolveError: string | null = null;
   try {
     const r = resolveDatabaseUrl(process.env);
-    const params = toNeonConnectionParams(r.url);
+    const target = publicTargetFromResolvedUrl(r.url);
     resolved = {
       source: r.source,
       summary: formatDatabaseUrlDiagnosis({ ...r.diagnosis, source: r.source }),
-      host: params.host,
-      database: params.database,
-      endpoint: neonHttpSqlEndpoint(params.host),
+      host: target.host,
+      port: target.port,
+      portSource: target.portSource,
+      database: target.database,
+      endpoint: neonHttpSqlEndpoint(target.host),
     };
-  } catch (error) {
-    resolveError = error instanceof Error ? error.message : "resolve failed";
+  } catch {
+    resolveError = "database url missing or invalid";
   }
 
   let probe: { ok: boolean; detail: string } | null = null;
@@ -76,6 +107,12 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     ok: Boolean(resolved) && (probe ? probe.ok : true),
+    environment,
+    host: resolved?.host ?? null,
+    port: resolved?.port ?? null,
+    portSource: resolved?.portSource ?? null,
+    database: resolved?.database ?? null,
+    source: resolved?.source ?? null,
     commitHint: "Expect deploy with discrete Neon params + https fetch guard",
     demoMode: process.env.NEXT_PUBLIC_DEMO_MODE ?? null,
     betterAuthUrlSet: Boolean(
