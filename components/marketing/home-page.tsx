@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Briefcase, ShieldCheck, Users } from "lucide-react";
+import { Briefcase, ShieldCheck, Users } from "lucide-react";
 
 const pillars = [
   {
@@ -59,40 +59,24 @@ export function HomePage() {
             Talente, die zum Geschäft passen.
             <span className="mt-2 block text-white/45">Nicht zur Stellenanzeige.</span>
           </h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-white/65 sm:text-lg">
-            CMS Talents ist die Arbeitsplattform für internes Recruiting: Kunden, Vakanzen und
-            geprüfte Kandidaten in einem System — präzise, ruhig, nachvollziehbar.
-          </p>
-
-          <div className="mt-10 grid gap-4 sm:grid-cols-2">
-            <Link
-              href="/login"
-              className="group rounded-2xl border border-white/10 bg-white/[0.04] p-7 transition-colors hover:border-brand/50 hover:bg-white/[0.07]"
-            >
-              <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-brand">Intern</p>
-              <h2 className="font-heading mt-3 text-2xl font-semibold text-white">Recruiter-Bereich</h2>
-              <p className="mt-2 text-sm leading-relaxed text-white/55">
-                Pipeline, Kunden und Portal-Prüfungen. Zugang nur für das CMS-Team.
-              </p>
-              <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-white">
-                Anmelden
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </Link>
-            <Link
-              href="/candidate/login"
-              className="group rounded-2xl border border-white/10 bg-white/[0.04] p-7 transition-colors hover:border-white/25 hover:bg-white/[0.07]"
-            >
-              <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/40">Portal</p>
-              <h2 className="font-heading mt-3 text-2xl font-semibold text-white">Für Kandidaten</h2>
-              <p className="mt-2 text-sm leading-relaxed text-white/55">
-                Profil anlegen, Unterlagen hochladen, Status verfolgen — ohne Umwege.
-              </p>
-              <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-white">
-                Zum Portal
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </Link>
+          <div className="mt-8 max-w-2xl space-y-5 text-base leading-relaxed text-white/65 sm:text-lg">
+            <p>
+              CMS Talents ist die Recruiting-Marke von CMS für anspruchsvolle Besetzungen im B2B:
+              Fach- und Führungskräfte, die in ein Unternehmen wirklich hineinpassen — fachlich,
+              kulturell und wirtschaftlich. Wir vermitteln nicht nach Keyword-Liste, sondern nach
+              dem, was die Rolle im Alltag trägt.
+            </p>
+            <p>
+              Hinter der Marke steht ein internes Team aus Recruiting, Key Account und
+              Geschäftsleitung. Mandate, Vakanzen und Kandidaten laufen in einer gemeinsamen
+              Pipeline: nachvollziehbar, ohne Massenversand, ohne unklare Lebensläufe. Jedes Profil
+              wird geprüft, bevor es zum Kunden geht.
+            </p>
+            <p>
+              Talente arbeiten in einem eigenen Portal: Profil pflegen, Unterlagen einreichen,
+              Status sehen. Der Kunden- und Mandatsbereich bleibt intern. So bleibt die Zusammenarbeit
+              klar getrennt — professionell für Bewerberinnen und Bewerber, steuerbar für das CMS-Team.
+            </p>
           </div>
         </section>
 

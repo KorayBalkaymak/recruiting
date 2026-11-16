@@ -26,7 +26,7 @@ const plexMono = localFont({
 export const metadata: Metadata = {
   title: "CMS Talents — Präzises B2B-Recruiting",
   description:
-    "CMS Talents verbindet Unternehmen mit geprüften Fachkräften. Recruiter-Arbeitsbereich und Kandidatenportal auf einer Plattform.",
+    "CMS Talents vermittelt geprüfte Fach- und Führungskräfte für B2B-Mandate — intern gesteuert, mit eigenem Portal für Talente.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
