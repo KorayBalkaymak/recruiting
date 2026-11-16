@@ -1,22 +1,21 @@
 import Link from "next/link";
-import { Briefcase, ShieldCheck, Users } from "lucide-react";
 import { AboutSection } from "@/components/marketing/about-section";
 
-const pillars = [
+const principles = [
   {
-    icon: ShieldCheck,
+    n: "01",
     title: "Qualität vor Tempo",
     text: "Jedes Profil wird intern geprüft, bevor es zum Kunden geht. Keine Massenware, keine unklaren Lebensläufe.",
   },
   {
-    icon: Briefcase,
-    title: "Klare Pipeline",
-    text: "Vakanzen, Einreichungen und Status in einem Arbeitsbereich — nachvollziehbar für Recruiter, KAM und Geschäftsleitung.",
+    n: "02",
+    title: "Eine gemeinsame Pipeline",
+    text: "Mandate, Vakanzen und Status in einem Arbeitsbereich — nachvollziehbar für Recruiter, Key Account und Geschäftsleitung.",
   },
   {
-    icon: Users,
+    n: "03",
     title: "Ein Portal für Talente",
-    text: "Kandidaten pflegen Profil und Unterlagen selbst. Status bleibt transparent, ohne das interne CRM zu öffnen.",
+    text: "Kandidaten pflegen Profil und Unterlagen selbst. Der Mandatsbereich bleibt intern — klar getrennt, professionell.",
   },
 ];
 
@@ -28,25 +27,20 @@ const steps = [
 
 export function HomePage() {
   return (
-    <div className="landing-shell landing-mesh min-h-screen">
-      <header className="border-b border-white/10">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-xs font-semibold tracking-wide text-white">
-              CMS
-            </span>
-            <span className="text-sm font-medium tracking-[0.18em] text-white/90">TALENTS</span>
+    <div className="landing-shell min-h-screen">
+      <header className="border-b border-white/[0.08]">
+        <div className="landing-wrap flex h-[4.5rem] items-center justify-between">
+          <Link href="/" className="flex items-baseline gap-2.5 text-[#f3efe8]">
+            <span className="font-heading text-[1.35rem] leading-none tracking-tight">CMS</span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-white/45">Talents</span>
           </Link>
-          <nav className="flex items-center gap-2 sm:gap-3">
-            <Link
-              href="/candidate/login"
-              className="rounded-md px-3 py-2 text-sm text-white/70 transition-colors hover:text-white"
-            >
+          <nav className="flex items-center gap-8">
+            <Link href="/candidate/login" className="text-[13px] text-white/55 transition-colors hover:text-[#f3efe8]">
               Kandidaten
             </Link>
             <Link
               href="/login"
-              className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
+              className="text-[13px] text-[#f3efe8] transition-colors hover:text-brand"
             >
               Recruiter
             </Link>
@@ -55,69 +49,81 @@ export function HomePage() {
       </header>
 
       <main>
-        <section className="relative mx-auto max-w-6xl px-6 pb-16 pt-16 sm:pb-20 sm:pt-24">
-          <h1 className="font-heading max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl">
-            Talente, die zum Geschäft passen.
-            <span className="mt-2 block text-white/45">Nicht zur Stellenanzeige.</span>
-          </h1>
+        <section>
+          <div className="landing-wrap pb-24 pt-24 md:pb-32 md:pt-28">
+            <p className="landing-index">01 — Recruiting</p>
+            <h1 className="font-heading mt-6 max-w-[16ch] text-[clamp(2.6rem,6.4vw,5.4rem)] font-normal leading-[1.04] tracking-[-0.03em] text-[#f3efe8]">
+              Talente, die zum Geschäft passen.
+            </h1>
+            <p className="mt-8 max-w-[38ch] text-[16px] leading-7 text-white/50">
+              Nicht zur Stellenanzeige. Sondern zur Rolle, wie sie im Alltag wirklich getragen wird.
+            </p>
+          </div>
         </section>
 
         <AboutSection />
 
-        <section className="border-t border-white/10 bg-black/20">
-          <div className="mx-auto grid max-w-6xl gap-10 px-6 py-20 sm:grid-cols-3 sm:gap-8">
-            {pillars.map((item) => {
-              const Icon = item.icon;
-              return (
-                <article key={item.title}>
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md border border-white/10 bg-white/5">
-                    <Icon className="h-4 w-4 text-brand" strokeWidth={1.75} />
-                  </div>
-                  <h3 className="font-heading text-lg font-semibold text-white">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/55">{item.text}</p>
-                </article>
-              );
-            })}
+        <section className="border-t border-white/[0.08]">
+          <div className="landing-wrap py-24 md:py-32">
+            <p className="landing-index">03 — Haltung</p>
+            <h2 className="font-heading mt-5 max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] text-[#f3efe8] sm:text-[2.5rem]">
+              Drei Prinzipien für jede Besetzung
+            </h2>
+            <ul className="mt-16">
+              {principles.map((item) => (
+                <li
+                  key={item.n}
+                  className="grid gap-3 border-t border-white/[0.08] py-10 md:grid-cols-12 md:gap-8 md:py-12"
+                >
+                  <span className="font-heading text-sm text-brand md:col-span-2">{item.n}</span>
+                  <h3 className="font-heading text-xl font-normal tracking-tight text-[#f3efe8] md:col-span-4">
+                    {item.title}
+                  </h3>
+                  <p className="text-[15px] leading-7 text-white/50 md:col-span-6">{item.text}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-20">
-          <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-white/40">Arbeitsweise</p>
-          <h2 className="font-heading mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Drei Schritte. Kein Rauschen.
-          </h2>
-          <ol className="mt-12 grid gap-6 sm:grid-cols-3">
-            {steps.map((step) => (
-              <li
-                key={step.n}
-                className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-transparent p-6"
-              >
-                <span className="font-mono text-xs text-brand">{step.n}</span>
-                <h3 className="font-heading mt-3 text-xl font-semibold text-white">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/55">{step.text}</p>
-              </li>
-            ))}
-          </ol>
+        <section className="border-t border-white/[0.08]">
+          <div className="landing-wrap py-24 md:py-32">
+            <p className="landing-index">04 — Arbeitsweise</p>
+            <h2 className="font-heading mt-5 max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] text-[#f3efe8] sm:text-[2.5rem]">
+              Drei Schritte. Kein Rauschen.
+            </h2>
+            <ol className="mt-16 grid gap-12 md:grid-cols-3 md:gap-16">
+              {steps.map((step) => (
+                <li key={step.n}>
+                  <p className="font-heading text-sm text-brand">{step.n}</p>
+                  <h3 className="font-heading mt-5 text-[1.65rem] font-normal tracking-tight text-[#f3efe8]">
+                    {step.title}
+                  </h3>
+                  <p className="mt-3 max-w-[34ch] text-[15px] leading-7 text-white/50">{step.text}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
         </section>
 
-        <section className="border-t border-white/10">
-          <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 px-6 py-16 sm:flex-row sm:items-center">
-            <div>
-              <h2 className="font-heading text-2xl font-semibold text-white">Bereit für den nächsten Schritt?</h2>
-              <p className="mt-2 max-w-md text-sm text-white/55">
-                Recruiter arbeiten intern. Talente starten im Portal. Beides bleibt getrennt — so bleibt es professionell.
-              </p>
+        <section className="border-t border-white/[0.08]">
+          <div className="landing-wrap grid gap-10 py-24 md:grid-cols-12 md:items-end md:py-32">
+            <div className="md:col-span-7">
+              <p className="landing-index">05 — Zugang</p>
+              <h2 className="font-heading mt-5 max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] text-[#f3efe8] sm:text-[2.75rem]">
+                Recruiter intern. Talente im Portal.
+              </h2>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-x-8 gap-y-3 md:col-span-5 md:justify-end">
               <Link
                 href="/candidate/register"
-                className="rounded-md border border-white/15 px-4 py-2.5 text-sm font-medium text-white/85 hover:border-white/30"
+                className="text-[14px] text-white/70 underline decoration-white/20 underline-offset-8 transition-colors hover:text-[#f3efe8] hover:decoration-brand"
               >
                 Als Kandidat registrieren
               </Link>
               <Link
                 href="/login"
-                className="rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-hover"
+                className="text-[14px] text-[#f3efe8] underline decoration-brand underline-offset-8"
               >
                 Recruiter-Login
               </Link>
@@ -126,10 +132,10 @@ export function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-8 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
-          <p>CMS Talents · Internes Recruiting & Kandidatenportal</p>
-          <p>Zugriff nur für berechtigte Nutzer.</p>
+      <footer className="border-t border-white/[0.08]">
+        <div className="landing-wrap flex flex-col gap-2 py-8 text-[12px] text-white/35 sm:flex-row sm:items-center sm:justify-between">
+          <p>CMS Talents</p>
+          <p>Internes Recruiting und Kandidatenportal</p>
         </div>
       </footer>
     </div>

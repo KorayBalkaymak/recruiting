@@ -21,32 +21,22 @@ export function AboutSection() {
           observer.disconnect();
         }
       },
-      { threshold: 0.22 }
+      { threshold: 0.18 }
     );
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
   return (
-    <section ref={ref} className="landing-about border-t border-white/10">
-      <div className="landing-about-glow" aria-hidden />
-      <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-32">
-        <p className="landing-about-kicker">
-          <span className="landing-about-kicker-line" aria-hidden />
-          Die Marke
-        </p>
-        <h2 className="font-heading landing-about-title mt-5 max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-6xl">
-          <span className="landing-about-line">Was CMS Talents</span>
-          <span className="landing-about-line landing-about-title-accent">wirklich macht.</span>
-        </h2>
-        <ul className="landing-about-roles mt-8 flex flex-wrap gap-2 sm:gap-3" aria-label="Schwerpunkte">
-          {["Passung finden", "Profile prüfen", "Mandate besetzen"].map((label) => (
-            <li key={label} className="landing-about-role">
-              {label}
-            </li>
-          ))}
-        </ul>
-        <div className="landing-about-copy mt-12 max-w-3xl space-y-6 text-base leading-relaxed text-white/68 sm:text-lg">
+    <section ref={ref} className="landing-reveal border-t border-white/[0.08]">
+      <div className="landing-wrap grid gap-12 py-24 md:grid-cols-12 md:gap-16 md:py-32">
+        <header className="md:col-span-4">
+          <p className="landing-index">02 — Die Marke</p>
+          <h2 className="font-heading mt-5 text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] text-[#f3efe8] sm:text-[2.5rem]">
+            Was CMS Talents macht
+          </h2>
+        </header>
+        <div className="landing-copy space-y-8 md:col-span-8 md:pt-10">
           {paragraphs.map((text, index) => (
             <p key={index} style={{ ["--i" as string]: index }}>
               {text}
