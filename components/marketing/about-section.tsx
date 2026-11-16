@@ -30,9 +30,9 @@ export function AboutSection() {
   return (
     <section ref={ref} className="landing-reveal border-t border-white/[0.08]">
       <div className="landing-wrap grid gap-12 py-24 md:grid-cols-12 md:gap-16 md:py-32">
-        <header className="md:col-span-4 md:border-l md:border-brand md:pl-7">
+        <header className="md:col-span-4 md:border-l md:border-[#7a2430] md:pl-7">
           <p className="landing-index">02 — Die Marke</p>
-          <h2 className="font-heading mt-5 text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] text-[#f3efe8] sm:text-[2.5rem]">
+          <h2 className="landing-ink font-heading mt-5 text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] sm:text-[2.5rem]">
             Was CMS Talents macht
           </h2>
         </header>

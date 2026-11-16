@@ -38,15 +38,24 @@
   }
 
   .landing-shell {
-    background-color: #14110e;
+    --landing-black: #0b0b0b;
+    --landing-white: #f7f4ef;
+    --landing-gold: #c6a35a;
+    --landing-burgundy: #7a2430;
+    background-color: var(--landing-black);
     background-image:
-      linear-gradient(#ff5500, #ff5500),
-      radial-gradient(1000px 420px at 8% -8%, rgba(255, 85, 0, 0.2), transparent 58%),
-      radial-gradient(720px 360px at 92% 18%, rgba(255, 85, 0, 0.08), transparent 52%);
+      linear-gradient(var(--landing-gold), var(--landing-gold)),
+      radial-gradient(1000px 420px at 8% -8%, rgba(122, 36, 48, 0.45), transparent 58%),
+      radial-gradient(720px 360px at 92% 18%, rgba(198, 163, 90, 0.12), transparent 52%);
     background-size: 100% 2px, auto, auto;
     background-repeat: no-repeat;
     background-position: 0 0, 0 0, 100% 0;
-    color: #f3efe8;
+    color: var(--landing-white);
+  }
+
+  .landing-shell ::selection {
+    background: var(--landing-burgundy);
+    color: var(--landing-white);
   }
 
   .landing-wrap {
@@ -59,26 +68,40 @@
     font-weight: 500;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #ff5500;
+    color: var(--landing-gold);
+  }
+
+  .landing-gold {
+    color: var(--landing-gold);
+  }
+
+  .landing-ink {
+    color: var(--landing-white);
+  }
+
+  .landing-rule {
+    background: var(--landing-gold);
   }
 
   .landing-access {
-    background: linear-gradient(180deg, rgba(255, 85, 0, 0.12), rgba(255, 85, 0, 0.04));
+    background: linear-gradient(180deg, rgba(122, 36, 48, 0.42), rgba(122, 36, 48, 0.12));
+    border-color: rgba(198, 163, 90, 0.28);
   }
 
   .landing-cta {
     display: inline-flex;
     align-items: center;
-    background: #ff5500;
-    color: #fff7f2;
+    background: var(--landing-burgundy);
+    color: var(--landing-white);
     padding: 0.7rem 1.15rem;
     font-size: 14px;
     line-height: 1;
-    transition: background-color 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
 
   .landing-cta:hover {
-    background: #e64a00;
+    background: #611c26;
+    color: var(--landing-gold);
   }
 
   .landing-copy {
