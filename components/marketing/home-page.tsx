@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Briefcase, ShieldCheck, Users } from "lucide-react";
+import { AboutSection } from "@/components/marketing/about-section";
 
 const pillars = [
   {
@@ -54,31 +55,14 @@ export function HomePage() {
       </header>
 
       <main>
-        <section className="relative mx-auto max-w-6xl px-6 pb-20 pt-16 sm:pb-28 sm:pt-24">
+        <section className="relative mx-auto max-w-6xl px-6 pb-16 pt-16 sm:pb-20 sm:pt-24">
           <h1 className="font-heading max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl">
             Talente, die zum Geschäft passen.
             <span className="mt-2 block text-white/45">Nicht zur Stellenanzeige.</span>
           </h1>
-          <div className="mt-8 max-w-2xl space-y-5 text-base leading-relaxed text-white/65 sm:text-lg">
-            <p>
-              CMS Talents ist die Recruiting-Marke von CMS für anspruchsvolle Besetzungen im B2B:
-              Fach- und Führungskräfte, die in ein Unternehmen wirklich hineinpassen — fachlich,
-              kulturell und wirtschaftlich. Wir vermitteln nicht nach Keyword-Liste, sondern nach
-              dem, was die Rolle im Alltag trägt.
-            </p>
-            <p>
-              Hinter der Marke steht ein internes Team aus Recruiting, Key Account und
-              Geschäftsleitung. Mandate, Vakanzen und Kandidaten laufen in einer gemeinsamen
-              Pipeline: nachvollziehbar, ohne Massenversand, ohne unklare Lebensläufe. Jedes Profil
-              wird geprüft, bevor es zum Kunden geht.
-            </p>
-            <p>
-              Talente arbeiten in einem eigenen Portal: Profil pflegen, Unterlagen einreichen,
-              Status sehen. Der Kunden- und Mandatsbereich bleibt intern. So bleibt die Zusammenarbeit
-              klar getrennt — professionell für Bewerberinnen und Bewerber, steuerbar für das CMS-Team.
-            </p>
-          </div>
         </section>
+
+        <AboutSection />
 
         <section className="border-t border-white/10 bg-black/20">
           <div className="mx-auto grid max-w-6xl gap-10 px-6 py-20 sm:grid-cols-3 sm:gap-8">
