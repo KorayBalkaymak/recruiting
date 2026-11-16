@@ -28,17 +28,17 @@ const steps = [
 export function HomePage() {
   return (
     <div className="landing-shell min-h-screen">
-      <header className="border-b border-white/[0.08]">
+      <header className="landing-header landing-on-light">
         <div className="landing-wrap flex h-[4.5rem] items-center justify-between">
           <Link href="/" className="landing-ink flex items-baseline gap-2.5">
             <span className="font-heading text-[1.35rem] leading-none tracking-tight">CMS</span>
             <span className="landing-gold text-[11px] font-medium uppercase tracking-[0.22em]">Talents</span>
           </Link>
           <nav className="flex items-center gap-8">
-            <Link href="/candidate/login" className="text-[13px] text-white/55 transition-colors hover:text-[#f7f4ef]">
+            <Link href="/candidate/login" className="landing-muted text-[13px] transition-colors hover:text-[#141c6b]">
               Kandidaten
             </Link>
-            <Link href="/login" className="landing-gold text-[13px] transition-colors hover:text-[#f7f4ef]">
+            <Link href="/login" className="landing-gold text-[13px] transition-colors hover:text-[#141c6b]">
               Recruiter
             </Link>
           </nav>
@@ -46,13 +46,13 @@ export function HomePage() {
       </header>
 
       <main>
-        <section>
+        <section className="landing-hero landing-on-dark">
           <div className="landing-wrap pb-24 pt-24 md:pb-32 md:pt-28">
             <p className="landing-index">01 — Recruiting</p>
             <h1 className="landing-ink font-heading mt-6 max-w-[16ch] text-[clamp(2.6rem,6.4vw,5.4rem)] font-normal leading-[1.04] tracking-[-0.03em]">
               Talente, die zum Geschäft passen.
             </h1>
-            <p className="mt-8 max-w-[38ch] text-[16px] leading-7 text-white/50">
+            <p className="landing-muted mt-8 max-w-[38ch] text-[16px] leading-7">
               Nicht zur Stellenanzeige. Sondern zur Rolle, wie sie im Alltag wirklich getragen wird.
             </p>
           </div>
@@ -60,7 +60,7 @@ export function HomePage() {
 
         <AboutSection />
 
-        <section className="border-t border-white/[0.08]">
+        <section className="landing-navy landing-on-dark">
           <div className="landing-wrap py-24 md:py-32">
             <p className="landing-index">03 — Haltung</p>
             <h2 className="landing-ink font-heading mt-5 max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] sm:text-[2.5rem]">
@@ -70,20 +70,20 @@ export function HomePage() {
               {principles.map((item) => (
                 <li
                   key={item.n}
-                  className="grid gap-3 border-t border-white/[0.08] py-10 md:grid-cols-12 md:gap-8 md:py-12"
+                  className="grid gap-3 border-t border-white/15 py-10 md:grid-cols-12 md:gap-8 md:py-12"
                 >
                   <span className="landing-gold font-heading text-sm md:col-span-2">{item.n}</span>
                   <h3 className="landing-ink font-heading text-xl font-normal tracking-tight md:col-span-4">
                     {item.title}
                   </h3>
-                  <p className="text-[15px] leading-7 text-white/50 md:col-span-6">{item.text}</p>
+                  <p className="landing-muted text-[15px] leading-7 md:col-span-6">{item.text}</p>
                 </li>
               ))}
             </ul>
           </div>
         </section>
 
-        <section className="border-t border-white/[0.08]">
+        <section className="landing-light landing-on-light">
           <div className="landing-wrap py-24 md:py-32">
             <p className="landing-index">04 — Arbeitsweise</p>
             <h2 className="landing-ink font-heading mt-5 max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] sm:text-[2.5rem]">
@@ -97,14 +97,14 @@ export function HomePage() {
                   <h3 className="landing-ink font-heading mt-5 text-[1.65rem] font-normal tracking-tight">
                     {step.title}
                   </h3>
-                  <p className="mt-3 max-w-[34ch] text-[15px] leading-7 text-white/50">{step.text}</p>
+                  <p className="landing-muted mt-3 max-w-[34ch] text-[15px] leading-7">{step.text}</p>
                 </li>
               ))}
             </ol>
           </div>
         </section>
 
-        <section className="landing-access border-t">
+        <section className="landing-sky landing-on-dark">
           <div className="landing-wrap grid gap-10 py-24 md:grid-cols-12 md:items-end md:py-32">
             <div className="md:col-span-7">
               <p className="landing-index">05 — Zugang</p>
@@ -115,7 +115,7 @@ export function HomePage() {
             <div className="flex flex-wrap items-center gap-x-8 gap-y-4 md:col-span-5 md:justify-end">
               <Link
                 href="/candidate/register"
-                className="text-[14px] text-white/70 underline decoration-[#c6a35a]/50 underline-offset-8 transition-colors hover:text-[#f7f4ef] hover:decoration-[#c6a35a]"
+                className="text-[14px] text-white/80 underline decoration-[#c6a35a]/70 underline-offset-8 transition-colors hover:text-white hover:decoration-[#c6a35a]"
               >
                 Als Kandidat registrieren
               </Link>
@@ -127,8 +127,8 @@ export function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/[0.08]">
-        <div className="landing-wrap flex flex-col gap-2 py-8 text-[12px] text-white/35 sm:flex-row sm:items-center sm:justify-between">
+      <footer className="landing-footer">
+        <div className="landing-wrap flex flex-col gap-2 py-8 text-[12px] sm:flex-row sm:items-center sm:justify-between">
           <p>CMS Talents</p>
           <p>Internes Recruiting und Kandidatenportal</p>
         </div>
