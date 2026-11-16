@@ -58,16 +58,27 @@
     margin-inline: auto;
   }
 
+  .landing-sky-gloss {
+    background-color: var(--landing-sky);
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.05) 36%,
+        rgba(0, 0, 0, 0.14) 100%
+      ),
+      linear-gradient(180deg, #3c88bc 0%, #3c88bc 42%, #2f74a3 100%);
+  }
+
   .landing-header {
-    background: var(--landing-white);
-    border-bottom: 1px solid rgba(20, 28, 107, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: inset 0 2px 0 var(--landing-gold);
   }
 
   .landing-hero {
     background:
-      radial-gradient(900px 420px at 12% -10%, rgba(60, 136, 188, 0.55), transparent 58%),
-      linear-gradient(165deg, #141c6b 0%, #1a2788 52%, #3c88bc 130%);
+      radial-gradient(900px 420px at 12% -10%, rgba(110, 180, 222, 0.55), transparent 58%),
+      linear-gradient(165deg, #141c6b 0%, #1a2788 48%, #3c88bc 100%);
     color: var(--landing-paper);
   }
 
@@ -82,7 +93,6 @@
   }
 
   .landing-sky {
-    background: var(--landing-sky);
     color: var(--landing-paper);
   }
 

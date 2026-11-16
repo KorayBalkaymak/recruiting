@@ -28,17 +28,17 @@ const steps = [
 export function HomePage() {
   return (
     <div className="landing-shell min-h-screen">
-      <header className="landing-header landing-on-light">
+      <header className="landing-header landing-sky-gloss landing-on-dark">
         <div className="landing-wrap flex h-[4.5rem] items-center justify-between">
           <Link href="/" className="landing-ink flex items-baseline gap-2.5">
             <span className="font-heading text-[1.35rem] leading-none tracking-tight">CMS</span>
             <span className="landing-gold text-[11px] font-medium uppercase tracking-[0.22em]">Talents</span>
           </Link>
           <nav className="flex items-center gap-8">
-            <Link href="/candidate/login" className="landing-muted text-[13px] transition-colors hover:text-[#141c6b]">
+            <Link href="/candidate/login" className="landing-muted text-[13px] transition-colors hover:text-white">
               Kandidaten
             </Link>
-            <Link href="/login" className="landing-gold text-[13px] transition-colors hover:text-[#141c6b]">
+            <Link href="/login" className="landing-gold text-[13px] transition-colors hover:text-white">
               Recruiter
             </Link>
           </nav>
@@ -72,7 +72,7 @@ export function HomePage() {
                   key={item.n}
                   className="grid items-center gap-3 border-t border-white/15 py-10 md:grid-cols-12 md:gap-8 md:py-12"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3C88BC] font-heading text-sm text-white md:col-span-2">
+                  <span className="landing-sky-gloss flex h-10 w-10 items-center justify-center rounded-full font-heading text-sm text-white md:col-span-2">
                     {index + 1}
                   </span>
                   <h3 className="landing-ink font-heading text-xl font-normal tracking-tight md:col-span-4">
@@ -106,7 +106,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="landing-sky landing-on-dark">
+        <section className="landing-sky landing-sky-gloss landing-on-dark">
           <div className="landing-wrap grid gap-10 py-24 md:grid-cols-12 md:items-end md:py-32">
             <div className="md:col-span-7">
               <p className="landing-index">05 — Zugang</p>
