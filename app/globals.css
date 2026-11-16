@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --navy: #0f1d2c;
+  --navy-deep: #0a111b;
+  --navy-lift: #142b3d;
+  --cyan: #32cfdc;
+  --cyan-bright: #52e0db;
+  --cyan-deep: #108a9c;
+  --paper: #fafbfc;
+  --line: #e8edf1;
+  --ink: #202b38;
+  --ink-muted: #626d78;
+  --special-black: #050505;
+}
+
 @layer base {
   html {
     color-scheme: light;
@@ -12,12 +26,11 @@
   }
 
   ::selection {
-    @apply bg-brand/20;
+    background: rgba(50, 207, 220, 0.28);
   }
 
-  /* Sichtbarer Fokus-Ring für Tastaturnutzung */
   :focus-visible {
-    outline: 2px solid #ff5500;
+    outline: 2px solid #32cfdc;
     outline-offset: 2px;
   }
 }
@@ -26,31 +39,33 @@
   /* Dünne, ruhige Scrollbar für Datengrids und die Sidebar */
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #d6dae1 transparent;
+    scrollbar-color: #c5d0d8 transparent;
   }
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #d6dae1;
+    background-color: #c5d0d8;
     border-radius: 999px;
   }
 
   .landing-shell {
-    --landing-navy: #141c6b;
-    --landing-sky: #3c88bc;
+    --landing-navy: #0f1d2c;
+    --landing-navy-deep: #0a111b;
+    --landing-navy-lift: #142b3d;
+    --landing-sky: #32cfdc;
     --landing-white: #ffffff;
-    --landing-paper: #f7f4ef;
-    --landing-gold: #c6a35a;
-    --landing-burgundy: #7a2430;
-    background: var(--landing-white);
+    --landing-paper: #fafbfc;
+    --landing-gold: #32cfdc;
+    --landing-burgundy: #108a9c;
+    background: var(--landing-paper);
     color: var(--landing-navy);
   }
 
   .landing-shell ::selection {
-    background: var(--landing-navy);
-    color: var(--landing-white);
+    background: rgba(50, 207, 220, 0.35);
+    color: var(--landing-navy);
   }
 
   .landing-wrap {
@@ -63,22 +78,22 @@
     background-image:
       linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.2) 0%,
-        rgba(255, 255, 255, 0.05) 36%,
-        rgba(0, 0, 0, 0.14) 100%
+        rgba(255, 255, 255, 0.28) 0%,
+        rgba(255, 255, 255, 0.06) 36%,
+        rgba(16, 138, 156, 0.35) 100%
       ),
-      linear-gradient(180deg, #3c88bc 0%, #3c88bc 42%, #2f74a3 100%);
+      linear-gradient(180deg, #52e0db 0%, #32cfdc 48%, #108a9c 100%);
   }
 
   .landing-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: inset 0 2px 0 var(--landing-gold);
+    background: var(--landing-navy);
+    border-bottom: 1px solid rgba(50, 207, 220, 0.22);
   }
 
   .landing-hero {
     background:
-      radial-gradient(900px 420px at 12% -10%, rgba(110, 180, 222, 0.55), transparent 58%),
-      linear-gradient(165deg, #141c6b 0%, #1a2788 48%, #3c88bc 100%);
+      radial-gradient(900px 420px at 12% -10%, rgba(50, 207, 220, 0.22), transparent 58%),
+      linear-gradient(165deg, #0a111b 0%, #0f1d2c 48%, #142b3d 100%);
     color: var(--landing-paper);
   }
 
@@ -93,12 +108,12 @@
   }
 
   .landing-sky {
-    color: var(--landing-paper);
+    color: var(--landing-navy);
   }
 
   .landing-footer {
-    background: var(--landing-navy);
-    color: rgba(247, 244, 239, 0.55);
+    background: var(--landing-navy-deep);
+    color: rgba(255, 255, 255, 0.5);
   }
 
   .landing-index {
@@ -122,11 +137,11 @@
   }
 
   .landing-muted {
-    color: rgba(247, 244, 239, 0.62);
+    color: rgba(255, 255, 255, 0.62);
   }
 
   .landing-on-light .landing-muted {
-    color: rgba(20, 28, 107, 0.62);
+    color: #626d78;
   }
 
   .landing-rule {
@@ -136,23 +151,24 @@
   .landing-cta {
     display: inline-flex;
     align-items: center;
-    background: var(--landing-navy);
-    color: var(--landing-white);
+    background: var(--landing-sky);
+    color: var(--landing-navy);
     padding: 0.7rem 1.15rem;
     font-size: 14px;
     line-height: 1;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
   }
 
   .landing-cta:hover {
-    background: #0e1452;
-    color: var(--landing-gold);
+    background: #108a9c;
+    color: #ffffff;
   }
 
   .landing-copy {
     font-size: 1.0625rem;
     line-height: 1.75;
-    color: rgba(20, 28, 107, 0.72);
+    color: #626d78;
   }
 
   .landing-copy p {

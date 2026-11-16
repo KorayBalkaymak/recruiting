@@ -3,12 +3,12 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const plexSans = localFont({
+const inter = localFont({
   src: [
-    { path: "./fonts/ibm-plex-sans-latin-400-normal.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/ibm-plex-sans-latin-500-normal.woff2", weight: "500", style: "normal" },
-    { path: "./fonts/ibm-plex-sans-latin-600-normal.woff2", weight: "600", style: "normal" },
-    { path: "./fonts/ibm-plex-sans-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/inter-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/inter-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/inter-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/inter-latin-700-normal.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-sans",
   display: "swap",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="de" className={`${plexSans.variable} ${plexMono.variable}`}>
+    <html lang="de" className={`${inter.variable} ${plexMono.variable}`}>
       <body className="font-sans">
         <Providers>{children}</Providers>
       </body>

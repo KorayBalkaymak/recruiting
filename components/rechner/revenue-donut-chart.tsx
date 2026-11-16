@@ -27,7 +27,7 @@ export function RevenueDonutChart({
           cy="75"
           r={RADIUS}
           fill="none"
-          stroke="#FFEDE3"
+          stroke="#E7FAFC"
           strokeWidth={STROKE}
         />
         <circle
@@ -35,15 +35,15 @@ export function RevenueDonutChart({
           cy="75"
           r={RADIUS}
           fill="none"
-          stroke="#FF5500"
+          stroke="#32CFDC"
           strokeWidth={STROKE}
           strokeDasharray={`${candidateDash} ${CIRCUMFERENCE - candidateDash}`}
           strokeLinecap="butt"
         />
       </svg>
       <div className="flex flex-col gap-3 text-sm">
-        <LegendRow color="#FF5500" label="Kandidaten-Stundensatz" value={formatCurrency(candidateShare, currency)} />
-        <LegendRow color="#FFEDE3" textColor="#FF5500" label="Unternehmensdeckung" value={formatCurrency(marginShare, currency)} />
+        <LegendRow color="#32CFDC" label="Kandidaten-Stundensatz" value={formatCurrency(candidateShare, currency)} />
+        <LegendRow color="#E7FAFC" textColor="#32CFDC" label="Unternehmensdeckung" value={formatCurrency(marginShare, currency)} />
       </div>
     </div>
   );
@@ -64,7 +64,7 @@ function LegendRow({
     <div className="flex items-center gap-2">
       <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
       <span className="text-ink-muted">{label}</span>
-      <span className="font-medium" style={{ color: textColor ?? "#16181D" }}>
+      <span className="font-medium" style={{ color: textColor ?? "#202B38" }}>
         {value}
       </span>
     </div>

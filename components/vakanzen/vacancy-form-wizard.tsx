@@ -87,7 +87,7 @@ export function VacancyFormWizard({ companies }: { companies: Company[] }) {
               className={cn(
                 "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium",
                 i < step
-                  ? "bg-brand text-white"
+                  ? "bg-brand text-navy"
                   : i === step
                   ? "border-2 border-brand text-brand"
                   : "border border-surface-border text-ink-muted"

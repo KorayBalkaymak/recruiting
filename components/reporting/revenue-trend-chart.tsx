@@ -11,10 +11,10 @@ export function RevenueTrendChart({
   return (
     <ResponsiveContainer width="100%" height={260}>
       <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#E7EAEE" vertical={false} />
-        <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#5B616E" }} axisLine={{ stroke: "#E7EAEE" }} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E8EDF1" vertical={false} />
+        <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#626D78" }} axisLine={{ stroke: "#E8EDF1" }} />
         <YAxis
-          tick={{ fontSize: 11, fill: "#5B616E" }}
+          tick={{ fontSize: 11, fill: "#626D78" }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v) => formatCurrency(v)}
@@ -22,9 +22,9 @@ export function RevenueTrendChart({
         />
         <Tooltip
           formatter={(value: number) => formatCurrency(value)}
-          contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E7EAEE" }}
+          contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E8EDF1" }}
         />
-        <Line type="monotone" dataKey="revenue" name="Umsatz" stroke="#FF5500" strokeWidth={2} dot={false} />
+        <Line type="monotone" dataKey="revenue" name="Umsatz" stroke="#32CFDC" strokeWidth={2} dot={false} />
         <Line type="monotone" dataKey="margin" name="Deckungsbeitrag" stroke="#16A34A" strokeWidth={2} dot={false} />
       </LineChart>
     </ResponsiveContainer>
