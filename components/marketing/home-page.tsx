@@ -32,7 +32,7 @@ export function HomePage() {
         <div className="landing-wrap flex h-[4.5rem] items-center justify-between">
           <Link href="/" className="flex items-baseline gap-2.5 text-[#f3efe8]">
             <span className="font-heading text-[1.35rem] leading-none tracking-tight">CMS</span>
-            <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-white/45">Talents</span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-brand">Talents</span>
           </Link>
           <nav className="flex items-center gap-8">
             <Link href="/candidate/login" className="text-[13px] text-white/55 transition-colors hover:text-[#f3efe8]">
@@ -40,7 +40,7 @@ export function HomePage() {
             </Link>
             <Link
               href="/login"
-              className="text-[13px] text-[#f3efe8] transition-colors hover:text-brand"
+              className="text-[13px] text-brand transition-colors hover:text-brand-hover"
             >
               Recruiter
             </Link>
@@ -96,6 +96,7 @@ export function HomePage() {
               {steps.map((step) => (
                 <li key={step.n}>
                   <p className="font-heading text-sm text-brand">{step.n}</p>
+                  <span className="mt-4 block h-px w-8 bg-brand" aria-hidden />
                   <h3 className="font-heading mt-5 text-[1.65rem] font-normal tracking-tight text-[#f3efe8]">
                     {step.title}
                   </h3>
@@ -106,7 +107,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="border-t border-white/[0.08]">
+        <section className="landing-access border-t border-brand/25">
           <div className="landing-wrap grid gap-10 py-24 md:grid-cols-12 md:items-end md:py-32">
             <div className="md:col-span-7">
               <p className="landing-index">05 — Zugang</p>
@@ -114,17 +115,14 @@ export function HomePage() {
                 Recruiter intern. Talente im Portal.
               </h2>
             </div>
-            <div className="flex flex-wrap gap-x-8 gap-y-3 md:col-span-5 md:justify-end">
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-4 md:col-span-5 md:justify-end">
               <Link
                 href="/candidate/register"
-                className="text-[14px] text-white/70 underline decoration-white/20 underline-offset-8 transition-colors hover:text-[#f3efe8] hover:decoration-brand"
+                className="text-[14px] text-white/70 underline decoration-brand/40 underline-offset-8 transition-colors hover:text-[#f3efe8] hover:decoration-brand"
               >
                 Als Kandidat registrieren
               </Link>
-              <Link
-                href="/login"
-                className="text-[14px] text-[#f3efe8] underline decoration-brand underline-offset-8"
-              >
+              <Link href="/login" className="landing-cta">
                 Recruiter-Login
               </Link>
             </div>
