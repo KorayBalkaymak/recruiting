@@ -86,8 +86,8 @@
   }
 
   .landing-header {
-    background: var(--landing-navy);
-    border-bottom: 1px solid rgba(50, 207, 220, 0.22);
+    background: var(--landing-white);
+    border-bottom: 1px solid var(--line);
   }
 
   .landing-hero {

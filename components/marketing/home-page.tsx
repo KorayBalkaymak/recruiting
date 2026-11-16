@@ -28,17 +28,17 @@ const steps = [
 export function HomePage() {
   return (
     <div className="landing-shell min-h-screen">
-      <header className="landing-header landing-on-dark">
+      <header className="landing-header landing-on-light">
         <div className="landing-wrap flex h-[4.5rem] items-center justify-between">
           <Link href="/" className="landing-ink flex items-baseline gap-2.5">
             <span className="font-heading text-[1.35rem] leading-none tracking-tight">CMS</span>
             <span className="landing-gold text-[11px] font-medium uppercase tracking-[0.22em]">Talents</span>
           </Link>
           <nav className="flex items-center gap-8">
-            <Link href="/candidate/login" className="landing-muted text-[13px] transition-colors hover:text-white">
+            <Link href="/candidate/login" className="landing-muted text-[13px] transition-colors hover:text-navy">
               Kandidaten
             </Link>
-            <Link href="/login" className="landing-gold text-[13px] transition-colors hover:text-white">
+            <Link href="/login" className="landing-gold text-[13px] transition-colors hover:text-navy">
               Recruiter
             </Link>
           </nav>
