@@ -67,12 +67,14 @@ export function HomePage() {
               Drei Prinzipien für jede Besetzung
             </h2>
             <ul className="mt-16">
-              {principles.map((item) => (
+              {principles.map((item, index) => (
                 <li
                   key={item.n}
-                  className="grid gap-3 border-t border-white/15 py-10 md:grid-cols-12 md:gap-8 md:py-12"
+                  className="grid items-center gap-3 border-t border-white/15 py-10 md:grid-cols-12 md:gap-8 md:py-12"
                 >
-                  <span className="landing-gold font-heading text-sm md:col-span-2">{item.n}</span>
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3C88BC] font-heading text-sm text-white md:col-span-2">
+                    {index + 1}
+                  </span>
                   <h3 className="landing-ink font-heading text-xl font-normal tracking-tight md:col-span-4">
                     {item.title}
                   </h3>
