@@ -10,6 +10,7 @@
     "test": "node --experimental-strip-types --test lib/candidate/*.test.ts lib/demo/*.test.ts lib/auth/*.test.ts lib/db/*.test.ts lib/storage/*.test.ts lib/mail/*.test.ts lib/security/*.test.ts",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "supabase:types": "supabase gen types typescript --local > types/supabase.ts"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
     "better-auth": "^1.7.18",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "dotenv": "^18.0.10",
     "drizzle-orm": "^0.45.4",
     "lucide-react": "^0.446.0",
     "next": "14.2.13",
