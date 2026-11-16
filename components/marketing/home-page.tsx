@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Briefcase, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { ArrowRight, Briefcase, ShieldCheck, Users } from "lucide-react";
 
 const pillars = [
   {
@@ -55,11 +55,7 @@ export function HomePage() {
 
       <main>
         <section className="relative mx-auto max-w-6xl px-6 pb-20 pt-16 sm:pb-28 sm:pt-24">
-          <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.22em] text-white/60">
-            <Sparkles className="h-3 w-3 text-brand" strokeWidth={2} />
-            B2B Recruiting
-          </p>
-          <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl">
+          <h1 className="font-heading max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl">
             Talente, die zum Geschäft passen.
             <span className="mt-2 block text-white/45">Nicht zur Stellenanzeige.</span>
           </h1>
@@ -74,7 +70,7 @@ export function HomePage() {
               className="group rounded-2xl border border-white/10 bg-white/[0.04] p-7 transition-colors hover:border-brand/50 hover:bg-white/[0.07]"
             >
               <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-brand">Intern</p>
-              <h2 className="mt-3 text-2xl font-semibold text-white">Recruiter-Bereich</h2>
+              <h2 className="font-heading mt-3 text-2xl font-semibold text-white">Recruiter-Bereich</h2>
               <p className="mt-2 text-sm leading-relaxed text-white/55">
                 Pipeline, Kunden und Portal-Prüfungen. Zugang nur für das CMS-Team.
               </p>
@@ -88,7 +84,7 @@ export function HomePage() {
               className="group rounded-2xl border border-white/10 bg-white/[0.04] p-7 transition-colors hover:border-white/25 hover:bg-white/[0.07]"
             >
               <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/40">Portal</p>
-              <h2 className="mt-3 text-2xl font-semibold text-white">Für Kandidaten</h2>
+              <h2 className="font-heading mt-3 text-2xl font-semibold text-white">Für Kandidaten</h2>
               <p className="mt-2 text-sm leading-relaxed text-white/55">
                 Profil anlegen, Unterlagen hochladen, Status verfolgen — ohne Umwege.
               </p>
@@ -109,7 +105,7 @@ export function HomePage() {
                   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md border border-white/10 bg-white/5">
                     <Icon className="h-4 w-4 text-brand" strokeWidth={1.75} />
                   </div>
-                  <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+                  <h3 className="font-heading text-lg font-semibold text-white">{item.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-white/55">{item.text}</p>
                 </article>
               );
@@ -119,7 +115,7 @@ export function HomePage() {
 
         <section className="mx-auto max-w-6xl px-6 py-20">
           <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-white/40">Arbeitsweise</p>
-          <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          <h2 className="font-heading mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             Drei Schritte. Kein Rauschen.
           </h2>
           <ol className="mt-12 grid gap-6 sm:grid-cols-3">
@@ -129,7 +125,7 @@ export function HomePage() {
                 className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-transparent p-6"
               >
                 <span className="font-mono text-xs text-brand">{step.n}</span>
-                <h3 className="mt-3 text-xl font-semibold text-white">{step.title}</h3>
+                <h3 className="font-heading mt-3 text-xl font-semibold text-white">{step.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-white/55">{step.text}</p>
               </li>
             ))}
@@ -139,7 +135,7 @@ export function HomePage() {
         <section className="border-t border-white/10">
           <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 px-6 py-16 sm:flex-row sm:items-center">
             <div>
-              <h2 className="text-2xl font-semibold text-white">Bereit für den nächsten Schritt?</h2>
+              <h2 className="font-heading text-2xl font-semibold text-white">Bereit für den nächsten Schritt?</h2>
               <p className="mt-2 max-w-md text-sm text-white/55">
                 Recruiter arbeiten intern. Talente starten im Portal. Beides bleibt getrennt — so bleibt es professionell.
               </p>
