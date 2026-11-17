@@ -1,23 +1,6 @@
 import Link from "next/link";
 import { AboutSection } from "@/components/marketing/about-section";
-
-const principles = [
-  {
-    n: "01",
-    title: "Qualität vor Tempo",
-    text: "Jedes Profil wird intern geprüft, bevor es zum Kunden geht. Keine Massenware, keine unklaren Lebensläufe.",
-  },
-  {
-    n: "02",
-    title: "Eine gemeinsame Pipeline",
-    text: "Mandate, Vakanzen und Status in einem Arbeitsbereich — nachvollziehbar für Recruiter, Key Account und Geschäftsleitung.",
-  },
-  {
-    n: "03",
-    title: "Ein Portal für Talente",
-    text: "Kandidaten pflegen Profil und Unterlagen selbst. Der Mandatsbereich bleibt intern — klar getrennt, professionell.",
-  },
-];
+import { PrinciplesSection } from "@/components/marketing/principles-section";
 
 const steps = [
   { n: "01", title: "Verstehen", text: "Rolle, Markt und Erwartung des Kunden werden festgehalten — nicht nur ein Jobtitel." },
@@ -60,30 +43,7 @@ export function HomePage() {
 
         <AboutSection />
 
-        <section className="landing-navy landing-on-dark">
-          <div className="landing-wrap py-24 md:py-32">
-            <p className="landing-index">03 — Haltung</p>
-            <h2 className="landing-ink font-heading mt-5 max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] sm:text-[2.5rem]">
-              Drei Prinzipien für jede Besetzung
-            </h2>
-            <ul className="mt-16">
-              {principles.map((item, index) => (
-                <li
-                  key={item.n}
-                  className="grid items-center gap-3 border-t border-white/15 py-10 md:grid-cols-12 md:gap-8 md:py-12"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand font-heading text-sm text-navy md:col-span-2">
-                    {index + 1}
-                  </span>
-                  <h3 className="landing-ink font-heading text-xl font-normal tracking-tight md:col-span-4">
-                    {item.title}
-                  </h3>
-                  <p className="landing-muted text-[15px] leading-7 md:col-span-6">{item.text}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <PrinciplesSection />
 
         <section className="landing-light landing-on-light">
           <div className="landing-wrap py-24 md:py-32">

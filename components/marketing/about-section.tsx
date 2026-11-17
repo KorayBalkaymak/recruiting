@@ -28,7 +28,7 @@ export function AboutSection() {
   }, []);
 
   return (
-    <section ref={ref} className="landing-reveal landing-light landing-on-light">
+    <section ref={ref} className="landing-reveal landing-black landing-on-dark">
       <div className="landing-wrap grid gap-12 py-24 md:grid-cols-12 md:gap-16 md:py-32">
         <header className="md:col-span-4 md:border-l md:border-brand md:pl-7">
           <p className="landing-index">02 — Die Marke</p>

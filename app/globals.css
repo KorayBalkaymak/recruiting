@@ -91,14 +91,17 @@
   }
 
   .landing-hero {
-    background:
-      radial-gradient(900px 420px at 12% -10%, rgba(50, 207, 220, 0.22), transparent 58%),
-      linear-gradient(165deg, #0a111b 0%, #0f1d2c 48%, #142b3d 100%);
+    background: linear-gradient(180deg, #050505 0%, #0a111b 46%, #0f1d2c 100%);
     color: var(--landing-paper);
   }
 
   .landing-navy {
     background: var(--landing-navy);
+    color: var(--landing-paper);
+  }
+
+  .landing-black {
+    background: #050505;
     color: var(--landing-paper);
   }
 
@@ -171,6 +174,10 @@
     color: #626d78;
   }
 
+  .landing-on-dark .landing-copy {
+    color: rgba(255, 255, 255, 0.68);
+  }
+
   .landing-copy p {
     max-width: 42rem;
   }
@@ -187,11 +194,91 @@
     transform: none;
   }
 
+  .principles-pin {
+    height: 280vh;
+  }
+
+  .principles-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .principles-progress {
+    height: 1px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .principles-progress > span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left center;
+    background: #32cfdc;
+    will-change: transform;
+  }
+
+  .principles-viewport {
+    overflow: hidden;
+  }
+
+  .principles-track {
+    display: flex;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    will-change: transform;
+  }
+
+  .principles-card {
+    position: relative;
+    flex: 0 0 min(82vw, 34rem);
+    padding: 2rem 0 0.5rem;
+    border-top: 1px solid rgba(50, 207, 220, 0.28);
+    transform-origin: left center;
+    will-change: transform, opacity;
+  }
+
+  .principles-num {
+    display: block;
+    font-size: clamp(3.5rem, 8vw, 6.5rem);
+    font-weight: 500;
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    color: #32cfdc;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .landing-reveal .landing-copy p {
       opacity: 1;
       transform: none;
       transition: none;
+    }
+
+    .principles-pin {
+      height: auto;
+    }
+
+    .principles-sticky {
+      position: relative;
+      height: auto;
+      overflow: visible;
+    }
+
+    .principles-track {
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .principles-card {
+      flex-basis: auto;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .principles-progress > span {
+      transform: none;
     }
   }
 }
