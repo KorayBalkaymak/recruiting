@@ -48,12 +48,15 @@ export function MarketingAuthShell({
   return (
     <div className="landing-shell landing-hero min-h-screen">
       <header className="landing-header">
-        <div className="landing-wrap flex h-16 items-center">
+        <div className="landing-wrap flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center bg-brand text-xs font-semibold tracking-wide text-navy">
               CMS
             </span>
             <span className="text-sm font-medium tracking-[0.18em] text-navy">TALENTS</span>
+          </Link>
+          <Link href="/login" className="text-[13px] text-ink-muted transition-colors hover:text-navy">
+            Recruiter anmelden
           </Link>
         </div>
       </header>
