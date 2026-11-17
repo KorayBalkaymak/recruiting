@@ -6,6 +6,8 @@ import {
   authButtonClass,
   authInputClass,
   authLabelClass,
+  authLinkClass,
+  authMutedClass,
 } from "@/components/marketing/auth-shell";
 
 export default function SetPasswordPage({
@@ -26,10 +28,10 @@ export default function SetPasswordPage({
 
       {!token ? (
         <div className="flex flex-col gap-4">
-          <p className="text-sm text-white/55">
+          <p className={authMutedClass}>
             Dieser Link ist ungültig oder unvollständig. Bitte nutze den Link aus der Einladungs-E-Mail.
           </p>
-          <Link href="/login" className="text-sm font-medium text-white hover:underline">
+          <Link href="/login" className={`text-sm ${authLinkClass}`}>
             Zur Anmeldung
           </Link>
         </div>

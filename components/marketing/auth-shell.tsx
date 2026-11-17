@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-export const authLabelClass = "text-sm font-medium text-white/75";
+export const authLabelClass =
+  "text-[11px] font-medium uppercase tracking-[0.16em] text-navy";
 export const authInputClass =
-  "w-full rounded-md border border-white/15 bg-white/[0.06] px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand";
+  "h-11 w-full rounded-none border border-surface-border bg-surface-subtle px-3.5 text-sm text-ink placeholder:text-ink-muted transition-colors focus:border-brand focus:bg-white focus:outline-none";
 export const authButtonClass =
-  "mt-1 rounded-md bg-brand px-3 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-brand-hover hover:text-white";
+  "mt-1 h-11 w-full rounded-none bg-brand text-sm font-semibold tracking-wide text-navy transition-colors hover:bg-brand-hover hover:text-white";
+export const authLinkClass = "font-medium text-navy transition-colors hover:text-brand-deep";
+export const authMutedClass = "text-sm text-ink-muted";
+export const authFineClass = "text-xs text-ink-muted";
 
 export function AuthAlert({
   tone,
@@ -17,10 +21,10 @@ export function AuthAlert({
   return (
     <p
       className={cn(
-        "mb-4 rounded-md border px-3 py-2 text-sm",
+        "mb-5 border px-3.5 py-2.5 text-sm",
         tone === "error"
-          ? "border-red-400/25 bg-red-500/10 text-red-200"
-          : "border-emerald-400/25 bg-emerald-500/10 text-emerald-200"
+          ? "border-red-200 bg-red-50 text-red-700"
+          : "border-emerald-200 bg-emerald-50 text-emerald-800"
       )}
     >
       {children}
@@ -48,7 +52,7 @@ export function MarketingAuthShell({
       <header className="landing-header">
         <div className="landing-wrap flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-xs font-semibold tracking-wide text-navy">
+            <span className="flex h-8 w-8 items-center justify-center bg-brand text-xs font-semibold tracking-wide text-navy">
               CMS
             </span>
             <span className="text-sm font-medium tracking-[0.18em] text-navy">TALENTS</span>
@@ -57,7 +61,7 @@ export function MarketingAuthShell({
             <Link
               href="/candidate/login"
               className={cn(
-                "rounded-md px-3 py-2 text-sm transition-colors",
+                "px-3 py-2 text-sm transition-colors",
                 recruiterActive ? "text-ink-muted hover:text-navy" : "bg-brand text-navy"
               )}
             >
@@ -66,7 +70,7 @@ export function MarketingAuthShell({
             <Link
               href="/login"
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "px-3 py-2 text-sm font-medium transition-colors",
                 recruiterActive
                   ? "bg-brand text-navy hover:bg-brand-hover hover:text-white"
                   : "text-ink-muted hover:text-navy"
@@ -85,7 +89,7 @@ export function MarketingAuthShell({
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">{title}</h1>
             <p className="mt-4 text-sm leading-relaxed text-white/55 sm:text-base">{description}</p>
           </div>
-          <div className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-7">
+          <div className="w-full border border-surface-border border-t-[3px] border-t-brand bg-white p-8 sm:p-10">
             {children}
           </div>
         </div>

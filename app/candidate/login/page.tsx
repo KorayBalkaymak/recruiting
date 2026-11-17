@@ -8,8 +8,11 @@ import {
   AuthAlert,
   MarketingAuthShell,
   authButtonClass,
+  authFineClass,
   authInputClass,
   authLabelClass,
+  authLinkClass,
+  authMutedClass,
 } from "@/components/marketing/auth-shell";
 
 export default async function CandidateLoginPage({
@@ -63,35 +66,32 @@ export default async function CandidateLoginPage({
         </button>
       </form>
 
-      <p className="mt-4 text-sm">
-        <Link
-          href="/login/forgot-password?from=candidate"
-          className="font-medium text-white/80 hover:text-white"
-        >
+      <p className="mt-5">
+        <Link href="/login/forgot-password?from=candidate" className={`text-sm ${authLinkClass}`}>
           Passwort vergessen?
         </Link>
       </p>
 
-      <p className="mt-5 text-sm text-white/50">
+      <p className={`mt-5 ${authMutedClass}`}>
         Noch kein Konto?{" "}
-        <Link href="/candidate/register" className="font-medium text-white hover:underline">
+        <Link href="/candidate/register" className={authLinkClass}>
           Registrieren
         </Link>
       </p>
 
       {isDemoMode() ? (
-        <p className="mt-4 text-xs text-white/40">
+        <p className={`mt-4 ${authFineClass}`}>
           Demo: {DEMO_CANDIDATE_LOGIN_HINT.email} / {DEMO_CANDIDATE_LOGIN_HINT.password}
         </p>
       ) : null}
 
-      <p className="mt-6 text-xs text-white/35">
+      <p className={`mt-6 ${authFineClass}`}>
         Recruiter?{" "}
-        <Link href="/login" className="text-white/70 hover:text-white">
+        <Link href="/login" className={authLinkClass}>
           Interner Login
         </Link>
         {" · "}
-        <Link href="/" className="text-white/70 hover:text-white">
+        <Link href="/" className={authLinkClass}>
           Startseite
         </Link>
       </p>

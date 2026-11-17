@@ -6,8 +6,11 @@ import {
   AuthAlert,
   MarketingAuthShell,
   authButtonClass,
+  authFineClass,
   authInputClass,
   authLabelClass,
+  authLinkClass,
+  authMutedClass,
 } from "@/components/marketing/auth-shell";
 
 export default async function CandidateRegisterPage({
@@ -69,21 +72,21 @@ export default async function CandidateRegisterPage({
             autoComplete="new-password"
             className={authInputClass}
           />
-          <p className="text-xs text-white/35">Mindestens 8 Zeichen.</p>
+          <p className={authFineClass}>Mindestens 8 Zeichen.</p>
         </div>
         <button type="submit" className={authButtonClass}>
           Registrieren
         </button>
       </form>
 
-      <p className="mt-5 text-sm text-white/50">
+      <p className={`mt-5 ${authMutedClass}`}>
         Bereits registriert?{" "}
-        <Link href="/candidate/login" className="font-medium text-white hover:underline">
+        <Link href="/candidate/login" className={authLinkClass}>
           Anmelden
         </Link>
       </p>
-      <p className="mt-4 text-xs text-white/35">
-        <Link href="/" className="text-white/70 hover:text-white">
+      <p className={`mt-4 ${authFineClass}`}>
+        <Link href="/" className={authLinkClass}>
           Zur Startseite
         </Link>
       </p>

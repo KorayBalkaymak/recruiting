@@ -5,8 +5,10 @@ import {
   AuthAlert,
   MarketingAuthShell,
   authButtonClass,
+  authFineClass,
   authInputClass,
   authLabelClass,
+  authLinkClass,
 } from "@/components/marketing/auth-shell";
 
 export default function LoginPage({
@@ -57,25 +59,25 @@ export default function LoginPage({
         </button>
       </form>
 
-      <p className="mt-4 text-sm">
-        <Link href="/login/forgot-password" className="font-medium text-white/80 hover:text-white">
+      <p className="mt-5">
+        <Link href="/login/forgot-password" className={`text-sm ${authLinkClass}`}>
           Passwort vergessen?
         </Link>
       </p>
 
       {isDemoMode() ? (
-        <p className="mt-5 text-xs leading-relaxed text-white/40">
+        <p className={`mt-5 leading-relaxed ${authFineClass}`}>
           Demo: anna.recruiter@cms-platform.de / demo1234
         </p>
       ) : null}
 
-      <p className="mt-6 text-xs text-white/35">
+      <p className={`mt-6 ${authFineClass}`}>
         Kandidat?{" "}
-        <Link href="/candidate/login" className="text-white/70 hover:text-white">
+        <Link href="/candidate/login" className={authLinkClass}>
           Zum Portal
         </Link>
         {" · "}
-        <Link href="/" className="text-white/70 hover:text-white">
+        <Link href="/" className={authLinkClass}>
           Startseite
         </Link>
       </p>

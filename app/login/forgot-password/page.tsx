@@ -6,6 +6,7 @@ import {
   authButtonClass,
   authInputClass,
   authLabelClass,
+  authLinkClass,
 } from "@/components/marketing/auth-shell";
 
 export default function ForgotPasswordPage({
@@ -48,7 +49,7 @@ export default function ForgotPasswordPage({
       </form>
 
       <p className="mt-5 text-sm">
-        <Link href={backHref} className="font-medium text-white/80 hover:text-white">
+        <Link href={backHref} className={`text-sm ${authLinkClass}`}>
           {backLabel}
         </Link>
       </p>
