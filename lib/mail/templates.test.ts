@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { redactEmail, redactUrlForLog } from "./log.ts";
-import { rewriteResetCallbackUrl } from "./send-url.ts";
+import { rewriteEmailVerificationUrl, rewriteResetCallbackUrl } from "./send-url.ts";
 import {
+  buildCandidateVerificationEmail,
   buildPasswordResetEmail,
   buildPortalStatusEmail,
   buildStaffInviteEmail,
@@ -59,5 +60,25 @@ describe("mail templates + redaction (BA5.1)", () => {
       rewritten,
       "http://localhost:3000/login/set-password?token=tok_abc"
     );
+  });
+
+  it("builds candidate verification mail and drops callbackURL from the verify link", () => {
+    const mail = buildCandidateVerificationEmail({
+      to: "talent@example.com",
+      fullName: "Max Talent",
+      verifyUrl: "https://app.example/candidate/verify-email?token=abc",
+    });
+    assert.equal(mail.kind, "email_verification");
+    assert.match(mail.text, /24 Stunden/);
+    assert.equal(mail.text.includes("https://evil.example"), false);
+
+    const betterAuthUrl =
+      "http://localhost:3000/api/auth/verify-email?token=tok_verify&callbackURL=" +
+      encodeURIComponent("https://evil.example/phish");
+    assert.equal(
+      rewriteEmailVerificationUrl(betterAuthUrl, "http://localhost:3000"),
+      "http://localhost:3000/candidate/verify-email?token=tok_verify"
+    );
+    assert.throws(() => rewriteEmailVerificationUrl("https://evil.example/no-token"));
   });
 });

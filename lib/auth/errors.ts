@@ -1,5 +1,9 @@
 import { ActorAccessError } from "./actor-binding";
-export { summarizeAuthError, toSafeAuthMessage } from "./auth-messages";
+export {
+  isDuplicateSignupError,
+  summarizeAuthError,
+  toSafeAuthMessage,
+} from "./auth-messages";
 
 export class AuthError extends Error {
   readonly code: "UNAUTHENTICATED" | "FORBIDDEN";

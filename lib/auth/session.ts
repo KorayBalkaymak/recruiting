@@ -86,6 +86,7 @@ export async function getSessionCandidate(): Promise<CandidateUser | null> {
   });
   if (!session?.user) return null;
   if (!isCandidateRole(session.user.role)) return null;
+  if (session.user.emailVerified !== true) return null;
 
   const [row] = await getDb()
     .select({

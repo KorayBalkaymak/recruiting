@@ -16,7 +16,7 @@ function walkErrors(error: unknown): unknown[] {
   return seen;
 }
 
-function authApiCode(error: unknown): string | null {
+export function authApiCode(error: unknown): string | null {
   for (const item of walkErrors(error)) {
     if (!item || typeof item !== "object") continue;
     const body = "body" in item ? (item as { body?: { code?: unknown } }).body : undefined;
@@ -98,6 +98,10 @@ export function toSafeAuthMessage(error: unknown, dbUrl?: DatabaseUrlHint) {
   }
 
   return "Die Anfrage konnte nicht verarbeitet werden.";
+}
+
+export function isDuplicateSignupError(error: unknown): boolean {
+  return authApiCode(error) === "USER_ALREADY_EXISTS";
 }
 
 function databaseFailureCopy(message: string, diagnosis?: DatabaseUrlHint) {

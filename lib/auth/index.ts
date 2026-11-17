@@ -9,7 +9,24 @@ export {
   resolveBoundCandidateId,
 } from "./actor-binding";
 export { runAsCandidateSignup, isCandidateSignup } from "./candidate-context";
-export { AuthError, summarizeAuthError, toAuthHttpError, toSafeAuthMessage } from "./errors";
+export {
+  CANDIDATE_VERIFY_EMAIL_PATH,
+  EMAIL_VERIFICATION_EXPIRES_IN,
+  decideCandidateLoginAccess,
+  isVerifiedCandidateUser,
+  mapVerifyEmailError,
+  parseVerifyEmailPageStatus,
+  shouldSendCandidateVerificationEmail,
+  type CandidateLoginDecision,
+  type VerifyEmailPageStatus,
+} from "./email-verification";
+export {
+  AuthError,
+  isDuplicateSignupError,
+  summarizeAuthError,
+  toAuthHttpError,
+  toSafeAuthMessage,
+} from "./errors";
 export {
   requireAdmin,
   requireCandidate,

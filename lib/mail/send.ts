@@ -8,17 +8,18 @@ import {
 import { isDemoMode } from "@/lib/demo/mode";
 import { logMailAttempt, redactUrlForLog } from "./log";
 import {
+  buildCandidateVerificationEmail,
   buildPasswordResetEmail,
   buildPortalStatusEmail,
   buildPortalSubmittedStaffEmail,
   buildStaffInviteEmail,
 } from "./templates";
-import { rewriteResetCallbackUrl } from "./send-url";
+import { rewriteEmailVerificationUrl, rewriteResetCallbackUrl } from "./send-url";
 import { getMailTransport } from "./transport";
 import type { MailMessage, MailSendResult } from "./types";
 import { readResendConfigFromEnv } from "./config";
 
-export { rewriteResetCallbackUrl } from "./send-url";
+export { rewriteEmailVerificationUrl, rewriteResetCallbackUrl } from "./send-url";
 
 function appBaseUrl(): string {
   const base = process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "";
@@ -89,6 +90,38 @@ export async function deliverPasswordSetupEmail(input: {
         : "E-Mail-Versand ist fehlgeschlagen."
     );
   }
+}
+
+/**
+ * Better Auth `emailVerification.sendVerificationEmail` for candidates only.
+ */
+export async function deliverCandidateVerificationEmail(input: {
+  user: { email: string; name?: string | null };
+  url: string;
+  token: string;
+}): Promise<void> {
+  void input.token;
+
+  if (isDemoMode()) return;
+
+  const verifyUrl = rewriteEmailVerificationUrl(input.url, appBaseUrl());
+  void redactUrlForLog(verifyUrl);
+
+  const result = await sendMail(
+    buildCandidateVerificationEmail({
+      to: input.user.email,
+      fullName: input.user.name ?? undefined,
+      verifyUrl,
+    })
+  );
+
+  if (result.ok) return;
+
+  throw new Error(
+    result.provider === "unavailable"
+      ? "E-Mail-Versand ist nicht konfiguriert (RESEND_API_KEY / EMAIL_FROM)."
+      : "E-Mail-Versand ist fehlgeschlagen."
+  );
 }
 
 export async function notifyCandidatePortalStatus(input: {

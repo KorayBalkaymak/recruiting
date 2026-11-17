@@ -2,7 +2,8 @@ export type MailKind =
   | "staff_invite"
   | "password_reset"
   | "portal_status"
-  | "portal_submitted";
+  | "portal_submitted"
+  | "email_verification";
 
 export type MailMessage = {
   kind: MailKind;

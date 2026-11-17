@@ -12,9 +12,10 @@ import { isCandidateSignup } from "./candidate-context";
 import { isInternalInvite } from "./invite-context";
 import { CANDIDATE_ROLE, isInternalRole, type InternalRole } from "./roles";
 import { buildCandidateProvisionPlan } from "./provision-candidate";
-import { deliverPasswordSetupEmail } from "@/lib/mail/send";
+import { deliverCandidateVerificationEmail, deliverPasswordSetupEmail } from "@/lib/mail/send";
 import { PASSWORD_TOKEN_TTL_SECONDS } from "@/lib/mail/secure-token";
 import { collectAuthTrustedOrigins, resolveAuthBaseUrl } from "./app-base-url";
+import { EMAIL_VERIFICATION_EXPIRES_IN, runCandidateVerificationSend } from "./email-verification";
 
 function requireAuthEnv() {
   const secret = process.env.BETTER_AUTH_SECRET;
@@ -116,7 +117,10 @@ function createAuth() {
       /**
        * Official Better Auth option (1.7.x). Prevents signUpEmail from creating
        * a session / Set-Cookie so invite flows cannot replace the admin session.
-       * Candidate register signs in explicitly afterwards.
+       * Candidate register must not auto-login before e-mail verification.
+       *
+       * Do not set requireEmailVerification: it would also block staff invites
+       * whose emailVerified stays false by design.
        */
       autoSignIn: false,
       revokeSessionsOnPasswordReset: true,
@@ -124,6 +128,22 @@ function createAuth() {
       resetPasswordTokenExpiresIn: PASSWORD_TOKEN_TTL_SECONDS,
       sendResetPassword: async ({ user, url, token }) => {
         await deliverPasswordSetupEmail({ user, url, token });
+      },
+    },
+    emailVerification: {
+      /**
+       * sendOnSignUp is false: Better Auth wraps that send in
+       * runInBackgroundOrAwait, which swallows Resend errors.
+       * Candidate register sends explicitly and fails closed.
+       */
+      sendOnSignUp: false,
+      sendOnSignIn: false,
+      autoSignInAfterVerification: false,
+      expiresIn: EMAIL_VERIFICATION_EXPIRES_IN,
+      sendVerificationEmail: async ({ user, url, token }) => {
+        await runCandidateVerificationSend(user as { email?: string; role?: unknown }, () =>
+          deliverCandidateVerificationEmail({ user, url, token })
+        );
       },
     },
     user: {

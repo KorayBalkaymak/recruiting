@@ -18,18 +18,23 @@ export default async function CandidateRegisterPage({
 }: {
   searchParams: { error?: string };
 }) {
-  const staff = await peekStaffSession();
-  if (staff) redirect("/uebersicht");
   const candidate = await peekCandidateSession();
   if (candidate) redirect("/candidate/dashboard");
+  const staff = await peekStaffSession();
 
   return (
     <MarketingAuthShell
       audience="candidate"
       kicker="Portal"
       title="Als Talent registrieren"
-      description="Lege dein Konto an, vervollständige dein Profil und reiche es zur internen Prüfung ein."
+      description="Lege dein Konto an. Nach der Registrierung musst du deine E-Mail-Adresse bestätigen, bevor du das Portal nutzen kannst."
     >
+      {staff ? (
+        <AuthAlert tone="error">
+          Du bist intern angemeldet. Die Registrierung legt ein Kandidatenkonto an und ersetzt
+          nicht automatisch die Recruiter-Sitzung durch Portalzugang.
+        </AuthAlert>
+      ) : null}
       {searchParams.error ? <AuthAlert tone="error">{searchParams.error}</AuthAlert> : null}
 
       <form action={candidateRegisterAction} className="flex flex-col gap-4">

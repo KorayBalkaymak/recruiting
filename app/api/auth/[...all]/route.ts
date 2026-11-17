@@ -22,7 +22,9 @@ function isSensitiveAuthPath(pathname: string): boolean {
     pathname.includes("/sign-up") ||
     pathname.includes("/forget-password") ||
     pathname.includes("/request-password-reset") ||
-    pathname.includes("/reset-password")
+    pathname.includes("/reset-password") ||
+    pathname.includes("/send-verification-email") ||
+    pathname.includes("/verify-email")
   );
 }
 

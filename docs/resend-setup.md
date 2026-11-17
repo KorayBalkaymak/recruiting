@@ -6,6 +6,7 @@ Die App versendet im Live-Modus über die Resend HTTP API (`POST https://api.res
 |------|------|
 | Mitarbeiter-Einladung | Nutzerverwaltung → Einladung (Better Auth Reset-Link, Invite-Template) |
 | Passwort-Reset | `/login/forgot-password` (Staff + Kandidat via `?from=candidate`) |
+| Kandidaten-E-Mail-Verifizierung | Registrierung / erneuter Versand (`emailVerification` via Better Auth) |
 | Portal-Status | Staff ändert Kandidatenstatus → Mail an Kandidat |
 | Optional Staff-Hinweis | Profileinreichung → `EMAIL_NOTIFY_TO` |
 

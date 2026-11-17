@@ -3,13 +3,17 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
+  CANDIDATE_VERIFY_EMAIL_PATH,
+  decideCandidateLoginAccess,
   getAuth,
+  isDuplicateSignupError,
   requireCandidate,
   runAsCandidateSignup,
   summarizeAuthError,
   toSafeAuthMessage,
 } from "@/lib/auth";
-import { DEMO_CANDIDATE_COOKIE, isDemoMode } from "@/lib/demo/mode";
+import { DEMO_CANDIDATE_COOKIE, DEMO_COOKIE, isDemoMode } from "@/lib/demo/mode";
+import { demoStaffCookieOptions } from "@/lib/demo/staff-session";
 import {
   createDemoCandidateSessionToken,
   demoCandidateCookieOptions,
@@ -36,6 +40,26 @@ function clearDemoCandidateCookie() {
     ...demoCandidateCookieOptions(0),
     maxAge: 0,
   });
+}
+
+function clearDemoStaffCookie() {
+  cookies().set({
+    name: DEMO_COOKIE,
+    value: "",
+    ...demoStaffCookieOptions(0),
+    maxAge: 0,
+  });
+}
+
+async function clearExistingAuthSession() {
+  try {
+    const current = await getAuth().api.getSession({ headers: headers() });
+    if (current?.user) {
+      await getAuth().api.signOut({ headers: headers() });
+    }
+  } catch {
+    // No usable session, or Better Auth is unavailable.
+  }
 }
 
 export async function candidateRegisterAction(formData: FormData) {
@@ -71,6 +95,7 @@ export async function candidateRegisterAction(formData: FormData) {
   if (isDemoMode()) {
     try {
       const account = registerDemoCandidate({ email, password, fullName });
+      clearDemoStaffCookie();
       await setDemoCandidateCookie(account.accountId);
     } catch (error) {
       redirect(
@@ -92,16 +117,21 @@ export async function candidateRegisterAction(formData: FormData) {
         },
       });
     });
-    await getAuth().api.signInEmail({
-      body: { email, password },
-      headers: headers(),
+    await getAuth().api.sendVerificationEmail({
+      body: {
+        email,
+        callbackURL: CANDIDATE_VERIFY_EMAIL_PATH,
+      },
     });
   } catch (error) {
+    if (isDuplicateSignupError(error)) {
+      redirect(CANDIDATE_VERIFY_EMAIL_PATH);
+    }
     console.error(`[auth] candidate register failed ${summarizeAuthError(error)}`);
     redirect(`/candidate/register?error=${encodeURIComponent(toSafeAuthMessage(error))}`);
   }
 
-  redirect("/candidate/dashboard");
+  redirect(CANDIDATE_VERIFY_EMAIL_PATH);
 }
 
 export async function candidateLoginAction(formData: FormData) {
@@ -133,21 +163,76 @@ export async function candidateLoginAction(formData: FormData) {
     if (!account) {
       redirect(`/candidate/login?error=${encodeURIComponent("Ungültige Anmeldedaten")}`);
     }
+    clearDemoStaffCookie();
     await setDemoCandidateCookie(account.accountId);
     redirect("/candidate/dashboard");
   }
 
+  await clearExistingAuthSession();
+
+  let user: { role?: unknown; emailVerified?: unknown } | undefined;
   try {
-    await getAuth().api.signInEmail({
+    const signedIn = await getAuth().api.signInEmail({
       body: { email, password },
       headers: headers(),
     });
+    user = signedIn?.user as { role?: unknown; emailVerified?: unknown } | undefined;
   } catch (error) {
     console.error(`[auth] candidate login failed ${summarizeAuthError(error)}`);
     redirect(`/candidate/login?error=${encodeURIComponent(toSafeAuthMessage(error))}`);
   }
 
+  const decision = decideCandidateLoginAccess(user);
+  if (decision !== "authenticated") {
+    try {
+      await getAuth().api.signOut({ headers: headers() });
+    } catch {
+      // ignore
+    }
+    if (decision === "unverified") {
+      redirect(CANDIDATE_VERIFY_EMAIL_PATH);
+    }
+    redirect(`/candidate/login?error=${encodeURIComponent("Ungültige Anmeldedaten.")}`);
+  }
+
   redirect("/candidate/dashboard");
+}
+
+export async function candidateResendVerificationAction(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+
+  const { RATE_LIMITS, enforceRateLimit, rateLimitKey } = await import("@/lib/security/rate-limit");
+  const { getRequestClientIp } = await import("@/lib/security/request-ip");
+  const limit = await enforceRateLimit(
+    rateLimitKey({ action: "candidate_verify_email", ip: getRequestClientIp(), email }),
+    RATE_LIMITS.verifyEmail
+  );
+  if (!limit.ok) {
+    redirect(
+      `${CANDIDATE_VERIFY_EMAIL_PATH}?status=resent`
+    );
+  }
+
+  if (!email) {
+    redirect(CANDIDATE_VERIFY_EMAIL_PATH);
+  }
+
+  if (isDemoMode()) {
+    redirect(`${CANDIDATE_VERIFY_EMAIL_PATH}?status=resent`);
+  }
+
+  try {
+    await getAuth().api.sendVerificationEmail({
+      body: {
+        email,
+        callbackURL: CANDIDATE_VERIFY_EMAIL_PATH,
+      },
+    });
+  } catch (error) {
+    console.error(`[auth] candidate verify resend failed ${summarizeAuthError(error)}`);
+  }
+
+  redirect(`${CANDIDATE_VERIFY_EMAIL_PATH}?status=resent`);
 }
 
 export async function candidateLogoutAction() {

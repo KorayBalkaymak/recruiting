@@ -175,6 +175,7 @@ export const RATE_LIMITS = {
   login: { windowMs: 15 * 60 * 1000, max: 20 },
   register: { windowMs: 60 * 60 * 1000, max: 10 },
   passwordReset: { windowMs: 60 * 60 * 1000, max: 5 },
+  verifyEmail: { windowMs: 60 * 60 * 1000, max: 5 },
   cvUpload: { windowMs: 60 * 60 * 1000, max: 20 },
   authApi: { windowMs: 15 * 60 * 1000, max: 40 },
 } as const;

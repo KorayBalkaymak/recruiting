@@ -130,3 +130,31 @@ export function buildPortalSubmittedStaffEmail(input: {
 export function classifyPasswordEmailKind(isInviteContext: boolean): MailKind {
   return isInviteContext ? "staff_invite" : "password_reset";
 }
+
+export function buildCandidateVerificationEmail(input: {
+  to: string;
+  fullName?: string;
+  verifyUrl: string;
+}): MailMessage {
+  const greeting = input.fullName?.trim() ? `Hallo ${input.fullName.trim()},` : "Hallo,";
+  const subject = "E-Mail bestätigen – CMS Talents";
+  const text = [
+    greeting,
+    "",
+    "bitte bestätige deine E-Mail-Adresse, um das Kandidatenportal nutzen zu können.",
+    "Der Link ist 24 Stunden gültig und nur einmal verwendbar:",
+    input.verifyUrl,
+    "",
+    "Falls du kein Konto angelegt hast, ignoriere diese E-Mail.",
+  ].join("\n");
+
+  const html = `
+    <p>${escapeHtml(greeting)}</p>
+    <p>bitte bestätige deine E-Mail-Adresse, um das Kandidatenportal nutzen zu können.</p>
+    <p>Der Link ist 24 Stunden gültig und nur einmal verwendbar:</p>
+    <p><a href="${escapeHtml(input.verifyUrl)}">E-Mail-Adresse bestätigen</a></p>
+    <p>Falls du kein Konto angelegt hast, ignoriere diese E-Mail.</p>
+  `.trim();
+
+  return { kind: "email_verification", to: input.to, subject, text, html };
+}

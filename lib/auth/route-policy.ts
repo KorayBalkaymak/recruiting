@@ -30,7 +30,9 @@ export function classifyPath(pathname: string): RouteClass {
     pathname === "/candidate/login" ||
     pathname.startsWith("/candidate/login/") ||
     pathname === "/candidate/register" ||
-    pathname.startsWith("/candidate/register/")
+    pathname.startsWith("/candidate/register/") ||
+    pathname === "/candidate/verify-email" ||
+    pathname.startsWith("/candidate/verify-email/")
   ) {
     if (pathname.startsWith("/candidate/")) return "candidate_login";
     return "staff_login";
@@ -97,11 +99,13 @@ export function decideRouteAccess(input: {
 
   if (route === "candidate_login") {
     if (input.principal === "candidate") {
+      // Unverified sessions must still reach the confirmation page.
+      if (input.pathname === "/candidate/verify-email" || input.pathname.startsWith("/candidate/verify-email/")) {
+        return { action: "allow" };
+      }
       return { action: "redirect", location: "/candidate/dashboard" };
     }
-    if (input.principal === "staff") {
-      return { action: "redirect", location: STAFF_HOME };
-    }
+    // Staff cookies must not skip the candidate login action via redirect-home.
     return { action: "allow" };
   }
 

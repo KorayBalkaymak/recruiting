@@ -20,10 +20,9 @@ export default async function CandidateLoginPage({
 }: {
   searchParams: { error?: string };
 }) {
-  const staff = await peekStaffSession();
-  if (staff) redirect("/uebersicht");
   const candidate = await peekCandidateSession();
   if (candidate) redirect("/candidate/dashboard");
+  const staff = await peekStaffSession();
 
   return (
     <MarketingAuthShell
@@ -32,6 +31,12 @@ export default async function CandidateLoginPage({
       title="Kandidaten-Anmeldung"
       description="Melde dich an, um dein Profil zu pflegen, Unterlagen hochzuladen und den Prüfstatus zu sehen. Kein Zugang zum internen CRM."
     >
+      {staff ? (
+        <AuthAlert tone="error">
+          Du bist intern angemeldet. Eine Kandidaten-Anmeldung beendet die Recruiter-Sitzung und
+          prüft die Rolle candidate.
+        </AuthAlert>
+      ) : null}
       {searchParams.error ? <AuthAlert tone="error">{searchParams.error}</AuthAlert> : null}
 
       <form action={candidateLoginAction} className="flex flex-col gap-4">

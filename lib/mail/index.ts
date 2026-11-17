@@ -12,7 +12,7 @@ export {
   hashToken,
   issueSecureToken,
 } from "./secure-token";
-export { rewriteResetCallbackUrl } from "./send-url";
+export { rewriteEmailVerificationUrl, rewriteResetCallbackUrl } from "./send-url";
 export type { MailKind, MailMessage, MailSendResult, MailTransport } from "./types";
 
 // Server-only orchestration (getMailTransport / sendMail / deliver*) stays in

@@ -25,3 +25,27 @@ export function rewriteResetCallbackUrl(
   }
   return betterAuthUrl;
 }
+
+/**
+ * Better Auth email-verify URL is `/api/auth/verify-email?token=...&callbackURL=...`.
+ * Drop callbackURL (open-redirect) and land on the candidate confirmation page.
+ */
+export function rewriteEmailVerificationUrl(
+  betterAuthUrl: string,
+  appBaseUrl = ""
+): string {
+  try {
+    const parsed = new URL(betterAuthUrl);
+    const token = parsed.searchParams.get("token")?.trim();
+    if (!token) {
+      throw new Error("Verification URL without token");
+    }
+    const base = (appBaseUrl || parsed.origin).replace(/\/$/, "");
+    return `${base}/candidate/verify-email?token=${encodeURIComponent(token)}`;
+  } catch (error) {
+    if (error instanceof Error && error.message === "Verification URL without token") {
+      throw error;
+    }
+  }
+  throw new Error("Verification URL konnte nicht sicher umgeschrieben werden.");
+}

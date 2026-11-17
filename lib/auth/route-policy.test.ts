@@ -13,6 +13,7 @@ describe("route classification (BA4.2)", () => {
     assert.equal(classifyPath("/login/set-password"), "staff_login");
     assert.equal(classifyPath("/candidate/login"), "candidate_login");
     assert.equal(classifyPath("/candidate/register"), "candidate_login");
+    assert.equal(classifyPath("/candidate/verify-email"), "candidate_login");
     assert.equal(classifyPath("/candidate/dashboard"), "candidate");
     assert.equal(classifyPath("/api/candidate/cv"), "candidate");
     assert.equal(classifyPath("/"), "public");
@@ -38,6 +39,10 @@ describe("route access decisions (BA4.2)", () => {
     assert.equal(decideRouteAccess({ pathname: "/login", principal: "anonymous" }).action, "allow");
     assert.equal(
       decideRouteAccess({ pathname: "/candidate/login", principal: "anonymous" }).action,
+      "allow"
+    );
+    assert.equal(
+      decideRouteAccess({ pathname: "/candidate/verify-email", principal: "anonymous" }).action,
       "allow"
     );
     assert.equal(decideRouteAccess({ pathname: "/", principal: "anonymous" }).action, "allow");
@@ -123,13 +128,34 @@ describe("route access decisions (BA4.2)", () => {
       action: "redirect",
       location: "/candidate/dashboard",
     });
+    assert.equal(
+      decideRouteAccess({ pathname: "/candidate/verify-email", principal: "candidate" }).action,
+      "allow"
+    );
     assert.deepEqual(decideRouteAccess({ pathname: "/login", principal: "candidate" }), {
       action: "redirect",
       location: "/candidate/dashboard",
     });
-    assert.deepEqual(decideRouteAccess({ pathname: "/candidate/login", principal: "staff" }), {
+    assert.equal(
+      decideRouteAccess({ pathname: "/candidate/login", principal: "staff" }).action,
+      "allow"
+    );
+    assert.equal(
+      decideRouteAccess({ pathname: "/candidate/register", principal: "staff" }).action,
+      "allow"
+    );
+  });
+
+  it("does not treat a staff session as candidate portal access", () => {
+    assert.deepEqual(decideRouteAccess({ pathname: "/candidate/dashboard", principal: "staff" }), {
       action: "redirect",
       location: "/uebersicht",
     });
+    assert.deepEqual(decideRouteAccess({ pathname: "/api/candidate/cv", principal: "staff" }), {
+      action: "unauthorized",
+      status: 403,
+    });
+    assert.equal(decideRouteAccess({ pathname: "/uebersicht", principal: "staff" }).action, "allow");
+    assert.equal(decideRouteAccess({ pathname: "/login", principal: "staff" }).action, "redirect");
   });
 });
