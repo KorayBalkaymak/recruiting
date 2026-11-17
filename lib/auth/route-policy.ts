@@ -21,7 +21,7 @@ export type RouteDecision =
  * Unknown / new app routes default to `staff` (must be authenticated internal).
  */
 export function classifyPath(pathname: string): RouteClass {
-  if (pathname === "/") return "public";
+  if (pathname === "/" || pathname === "/marktplatz") return "public";
   if (pathname.startsWith("/api/auth")) return "auth_api";
 
   if (

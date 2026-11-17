@@ -154,18 +154,54 @@
   .landing-cta {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.85rem 1.35rem;
+    border: 1px solid var(--landing-sky);
     background: var(--landing-sky);
     color: var(--landing-navy);
-    padding: 0.7rem 1.15rem;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1;
     font-weight: 600;
-    transition: background-color 0.15s ease;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   }
 
   .landing-cta:hover {
     background: #108a9c;
+    border-color: #108a9c;
     color: #ffffff;
+  }
+
+  .landing-cta-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.85rem 1.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: transparent;
+    color: var(--landing-paper);
+    font-size: 13px;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .landing-cta-ghost:hover {
+    border-color: #ffffff;
+    background: #ffffff;
+    color: var(--landing-navy);
+  }
+
+  .landing-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
   }
 
   .landing-copy {

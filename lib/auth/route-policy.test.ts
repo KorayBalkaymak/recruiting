@@ -16,6 +16,7 @@ describe("route classification (BA4.2)", () => {
     assert.equal(classifyPath("/candidate/dashboard"), "candidate");
     assert.equal(classifyPath("/api/candidate/cv"), "candidate");
     assert.equal(classifyPath("/"), "public");
+    assert.equal(classifyPath("/marktplatz"), "public");
     assert.equal(classifyPath("/uebersicht"), "staff");
     assert.equal(classifyPath("/kandidaten"), "staff");
     assert.equal(classifyPath("/kandidaten/abc/pdf"), "staff");
@@ -40,6 +41,7 @@ describe("route access decisions (BA4.2)", () => {
       "allow"
     );
     assert.equal(decideRouteAccess({ pathname: "/", principal: "anonymous" }).action, "allow");
+    assert.equal(decideRouteAccess({ pathname: "/marktplatz", principal: "anonymous" }).action, "allow");
     const staffHome = decideRouteAccess({ pathname: "/uebersicht", principal: "anonymous" });
     assert.deepEqual(staffHome, { action: "redirect", location: "/login" });
     const candDash = decideRouteAccess({

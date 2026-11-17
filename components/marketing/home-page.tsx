@@ -38,6 +38,14 @@ export function HomePage() {
             <p className="landing-muted mt-8 max-w-[38ch] text-[16px] leading-7">
               Nicht zur Stellenanzeige. Sondern zur Rolle, wie sie im Alltag wirklich getragen wird.
             </p>
+            <div className="landing-hero-actions">
+              <Link href="/marktplatz" className="landing-cta-ghost">
+                Mandate entdecken
+              </Link>
+              <Link href="/candidate/register" className="landing-cta">
+                Als Talent registrieren
+              </Link>
+            </div>
           </div>
         </section>
 
