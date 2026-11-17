@@ -73,28 +73,6 @@ export function HomePage() {
             </ol>
           </div>
         </section>
-
-        <section className="landing-navy landing-on-dark">
-          <div className="landing-wrap grid gap-10 py-24 md:grid-cols-12 md:items-end md:py-32">
-            <div className="md:col-span-7">
-              <p className="landing-index">05 — Zugang</p>
-              <h2 className="landing-ink font-heading mt-5 max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] sm:text-[2.75rem]">
-                Recruiter intern. Talente im Portal.
-              </h2>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-8 gap-y-4 md:col-span-5 md:justify-end">
-              <Link
-                href="/candidate/register"
-                className="text-[14px] text-white/80 underline decoration-[#c6a35a]/70 underline-offset-8 transition-colors hover:text-white hover:decoration-[#c6a35a]"
-              >
-                Als Kandidat registrieren
-              </Link>
-              <Link href="/login" className="landing-cta">
-                Recruiter-Login
-              </Link>
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="landing-footer">
