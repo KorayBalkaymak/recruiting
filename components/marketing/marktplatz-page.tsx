@@ -27,12 +27,12 @@ export async function MarktplatzPage({
 
       <main>
         <section className="landing-hero landing-on-dark">
-          <div className="landing-wrap pb-20 pt-20 md:pb-28 md:pt-24">
-            <p className="landing-index">02 — Marktplatz</p>
-            <h1 className="landing-ink font-heading mt-6 max-w-[16ch] text-[clamp(2.4rem,5.6vw,4.8rem)] font-normal leading-[1.04] tracking-[-0.03em]">
-              Freigegebene Talente entdecken.
+          <div className="landing-wrap py-8 md:py-10">
+            <p className="landing-index">Marktplatz</p>
+            <h1 className="landing-ink font-heading mt-2 text-[1.65rem] font-normal tracking-tight sm:text-[1.9rem]">
+              Freigegebene Talente entdecken
             </h1>
-            <p className="landing-muted mt-8 max-w-[46ch] text-[16px] leading-7">
+            <p className="landing-muted mt-2 max-w-[62ch] text-[14px] leading-6">
               Hier erscheinen ausschließlich Profile, die unser Recruiting-Team geprüft und freigegeben
               hat. Filtern Sie nach Beruf — ohne Registrierung.
             </p>
@@ -40,7 +40,7 @@ export async function MarktplatzPage({
         </section>
 
         <section className="landing-light landing-on-light">
-          <div className="landing-wrap py-16 md:py-24">
+          <div className="landing-wrap py-8 md:py-10">
             <form method="get" className="flex flex-col gap-4 border border-surface-border bg-white p-5 sm:flex-row sm:items-end">
               <label className="flex min-w-0 flex-1 flex-col gap-2">
                 <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-navy">Beruf</span>
