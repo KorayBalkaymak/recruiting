@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --experimental-strip-types --test lib/candidate/*.test.ts lib/demo/*.test.ts lib/auth/*.test.ts lib/db/*.test.ts lib/storage/*.test.ts lib/mail/*.test.ts lib/security/*.test.ts",
+    "test": "node --experimental-strip-types --test lib/candidate/*.test.ts lib/demo/*.test.ts lib/auth/*.test.ts lib/db/*.test.ts lib/storage/*.test.ts lib/mail/*.test.ts lib/security/*.test.ts lib/marketplace/*.test.ts",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
