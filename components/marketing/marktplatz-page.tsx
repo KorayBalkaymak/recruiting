@@ -12,7 +12,7 @@ export async function MarktplatzPage({
   const { profiles, roles } = await listPublicMarketplace({ beruf, q });
 
   return (
-    <div className="landing-shell min-h-screen">
+    <div className="landing-shell flex min-h-screen flex-col">
       <header className="landing-header landing-on-light">
         <div className="landing-wrap flex h-[4.5rem] items-center justify-between">
           <Link href="/" className="landing-ink flex items-baseline gap-2.5">
@@ -25,7 +25,7 @@ export async function MarktplatzPage({
         </div>
       </header>
 
-      <main>
+      <main className="flex-1">
         <section className="landing-hero landing-on-dark">
           <div className="landing-wrap py-8 md:py-10">
             <p className="landing-index">Marktplatz</p>
