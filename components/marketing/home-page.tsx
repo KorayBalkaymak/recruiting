@@ -26,8 +26,7 @@ export function HomePage() {
       <main>
         <section className="landing-hero landing-on-dark">
           <div className="landing-wrap pb-24 pt-24 md:pb-32 md:pt-28">
-            <p className="landing-index">01 — Recruiting</p>
-            <h1 className="landing-ink font-heading mt-6 max-w-[16ch] text-[clamp(2.6rem,6.4vw,5.4rem)] font-normal leading-[1.04] tracking-[-0.03em]">
+            <h1 className="landing-ink font-heading max-w-[16ch] text-[clamp(2.6rem,6.4vw,5.4rem)] font-normal leading-[1.04] tracking-[-0.03em]">
               Talente, die zum Geschäft passen.
             </h1>
             <p className="landing-muted mt-8 max-w-[38ch] text-[16px] leading-7">
@@ -50,8 +49,7 @@ export function HomePage() {
 
         <section className="landing-light landing-on-light">
           <div className="landing-wrap py-24 md:py-32">
-            <p className="landing-index">04 — Arbeitsweise</p>
-            <h2 className="landing-ink font-heading mt-5 max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] sm:text-[2.5rem]">
+            <h2 className="landing-ink font-heading max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] sm:text-[2.5rem]">
               Drei Schritte. Kein Rauschen.
             </h2>
             <ol className="mt-16 grid gap-12 md:grid-cols-3 md:gap-16">

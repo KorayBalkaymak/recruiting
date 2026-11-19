@@ -77,8 +77,7 @@ export function PrinciplesSection() {
     <section ref={pinRef} className="principles-pin landing-hero landing-on-dark">
       <div className="principles-sticky">
         <div className="landing-wrap flex h-full flex-col justify-center py-16">
-          <p className="landing-index">03 — Haltung</p>
-          <h2 className="landing-ink font-heading mt-5 max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] sm:text-[2.5rem]">
+          <h2 className="landing-ink font-heading max-w-[16ch] text-[2rem] font-normal leading-[1.15] tracking-[-0.02em] sm:text-[2.5rem]">
             Drei Prinzipien für jede Besetzung
           </h2>
 
