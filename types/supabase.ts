@@ -104,6 +104,9 @@ export interface Database {
           assigned_recruiter_id: string | null;
           cv_file_path: string | null;
           exposé_file_path: string | null;
+          last_recruiter_action_at: string | null;
+          claimed_by_profile_id: string | null;
+          claimed_at: string | null;
           created_at: string;
           updated_at: string;
         };

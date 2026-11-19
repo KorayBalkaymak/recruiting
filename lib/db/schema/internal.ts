@@ -204,12 +204,19 @@ export const candidates = pgTable(
     assignedRecruiterId: uuid("assigned_recruiter_id").references(() => profiles.id),
     cvFilePath: text("cv_file_path"),
     exposeFilePath: text("exposé_file_path"),
+    lastRecruiterActionAt: timestamp("last_recruiter_action_at", tz),
+    claimedByProfileId: uuid("claimed_by_profile_id").references(() => profiles.id, {
+      onDelete: "set null",
+    }),
+    claimedAt: timestamp("claimed_at", tz),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
   (table) => [
     index("idx_candidates_status").on(table.status),
     index("idx_candidates_recruiter").on(table.assignedRecruiterId),
+    index("idx_candidates_claimed_by").on(table.claimedByProfileId),
+    index("idx_candidates_last_recruiter_action").on(table.lastRecruiterActionAt),
   ]
 );
 

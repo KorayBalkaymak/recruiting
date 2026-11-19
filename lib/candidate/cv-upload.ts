@@ -38,6 +38,10 @@ function demoMeta() {
   return globalDemoMeta.__cmsDemoCvMeta;
 }
 
+export function demoHasOriginalCv(candidateId: string) {
+  return demoMeta().has(candidateId);
+}
+
 function sha256Hex(buffer: Buffer) {
   return createHash("sha256").update(buffer).digest("hex");
 }

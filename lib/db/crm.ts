@@ -1,7 +1,8 @@
 import "server-only";
 
+import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { activityLogs } from "@/lib/db/schema";
+import { activityLogs, candidates } from "@/lib/db/schema";
 
 export type ActivityLogType =
   | "notiz"
@@ -42,4 +43,11 @@ export async function insertActivityLog(input: {
     content: input.content,
     createdBy: input.createdBy,
   });
+
+  if (input.entityType === "candidate") {
+    await db
+      .update(candidates)
+      .set({ lastRecruiterActionAt: new Date() })
+      .where(eq(candidates.id, input.entityId));
+  }
 }

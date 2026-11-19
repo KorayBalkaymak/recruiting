@@ -22,6 +22,7 @@ const LOGISTIK = "a1111111-0000-0000-0000-000000000004";
 const STEFAN = "b1111111-0000-0000-0000-000000000001";
 const LAURA = "b1111111-0000-0000-0000-000000000002";
 const DAVID = "b1111111-0000-0000-0000-000000000003";
+const CLARA = "b1111111-0000-0000-0000-000000000099";
 
 const VAC_JAVA = "c1111111-0000-0000-0000-000000000001";
 const VAC_BAU = "c1111111-0000-0000-0000-000000000002";
@@ -204,6 +205,10 @@ function createSeed(): DemoStore {
         location: "Berlin",
         assigned_recruiter_id: ANNA,
         availability_date: null,
+        cv_file_path: "demo/stefan-cv.pdf",
+        last_recruiter_action_at: daysAgo(1),
+        claimed_by_profile_id: null,
+        claimed_at: null,
         created_at: now,
         updated_at: daysAgo(1),
       },
@@ -225,6 +230,10 @@ function createSeed(): DemoStore {
         location: "München",
         assigned_recruiter_id: ANNA,
         availability_date: null,
+        cv_file_path: null,
+        last_recruiter_action_at: now,
+        claimed_by_profile_id: ANNA,
+        claimed_at: now,
         created_at: now,
         updated_at: daysAgo(2),
       },
@@ -246,8 +255,32 @@ function createSeed(): DemoStore {
         location: "Hamburg",
         assigned_recruiter_id: ANNA,
         availability_date: null,
+        cv_file_path: null,
+        last_recruiter_action_at: daysAgo(8),
+        claimed_by_profile_id: null,
+        claimed_at: null,
         created_at: now,
         updated_at: daysAgo(3),
+      },
+      {
+        id: CLARA,
+        first_name: "Clara",
+        last_name: "Kandidat",
+        email: "kandidat@example.com",
+        phone: "+49 151 4444444",
+        anonymized_title: null,
+        anonymized_profile: {},
+        status: "neu_eingegangen",
+        hourly_rate_net: null,
+        location: "Köln",
+        assigned_recruiter_id: null,
+        availability_date: null,
+        cv_file_path: null,
+        last_recruiter_action_at: null,
+        claimed_by_profile_id: null,
+        claimed_at: null,
+        created_at: daysAgo(2),
+        updated_at: daysAgo(2),
       },
     ],
     vacancies: [

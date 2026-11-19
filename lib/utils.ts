@@ -16,6 +16,18 @@ export function formatDate(value: string | Date | null | undefined) {
   return new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }).format(date);
 }
 
+export function formatDateTime(value: string | Date | null | undefined) {
+  if (!value) return "–";
+  const date = typeof value === "string" ? new Date(value) : value;
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
 export function initials(firstName?: string | null, lastName?: string | null) {
   return `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase();
 }
