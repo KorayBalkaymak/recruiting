@@ -12,7 +12,7 @@ export async function MarktplatzPage({
   const { profiles, roles } = await listPublicMarketplace({ beruf, q });
 
   return (
-    <div className="landing-shell flex min-h-screen flex-col">
+    <div className="landing-shell landing-accent-warm flex min-h-screen flex-col">
       <header className="landing-header landing-on-light">
         <div className="landing-wrap flex h-[4.5rem] items-center justify-between">
           <Link href="/" className="landing-ink flex items-baseline gap-2.5">
@@ -47,7 +47,7 @@ export async function MarktplatzPage({
                 <select
                   name="beruf"
                   defaultValue={beruf}
-                  className="h-11 w-full border border-surface-border bg-surface-subtle px-3 text-sm text-ink focus:border-brand focus:outline-none"
+                  className="landing-field h-11 w-full border border-surface-border bg-surface-subtle px-3 text-sm text-ink focus:outline-none"
                 >
                   <option value="">Alle Berufe</option>
                   {roles.map((role) => (
@@ -64,7 +64,7 @@ export async function MarktplatzPage({
                   type="search"
                   defaultValue={q}
                   placeholder="z. B. TypeScript, Köln, Controlling"
-                  className="h-11 w-full border border-surface-border bg-surface-subtle px-3 text-sm text-ink placeholder:text-ink-muted focus:border-brand focus:outline-none"
+                  className="landing-field h-11 w-full border border-surface-border bg-surface-subtle px-3 text-sm text-ink placeholder:text-ink-muted focus:outline-none"
                 />
               </label>
               <button type="submit" className="landing-cta sm:mb-0">

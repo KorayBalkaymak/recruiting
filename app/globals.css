@@ -90,6 +90,31 @@
     color: var(--landing-navy);
   }
 
+  .landing-shell.landing-accent-warm {
+    --landing-sky: #e4572e;
+    --landing-gold: #e4572e;
+    --landing-burgundy: #b83f16;
+  }
+
+  .landing-shell.landing-accent-warm ::selection {
+    background: rgba(228, 87, 46, 0.32);
+    color: var(--landing-navy);
+  }
+
+  .landing-shell.landing-accent-warm .landing-cta {
+    color: #ffffff;
+  }
+
+  .landing-shell.landing-accent-warm .landing-cta:hover {
+    background: #b83f16;
+    border-color: #b83f16;
+    color: #ffffff;
+  }
+
+  .landing-shell.landing-accent-warm .landing-field:focus {
+    border-color: #e4572e;
+  }
+
   .landing-wrap {
     width: min(1080px, calc(100% - 4rem));
     margin-inline: auto;
