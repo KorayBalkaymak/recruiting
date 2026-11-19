@@ -33,10 +33,10 @@ export function HomePage() {
               Nicht zur Stellenanzeige. Sondern zur Rolle, wie sie im Alltag wirklich getragen wird.
             </p>
             <div className="landing-hero-actions">
-              <Link href="/marktplatz" className="landing-cta">
+              <Link href="/marktplatz" className="landing-cta-ghost">
                 Mandate entdecken
               </Link>
-              <Link href="/candidate/register" className="landing-cta-ghost">
+              <Link href="/candidate/register" className="landing-cta">
                 Als Talent registrieren
               </Link>
             </div>
