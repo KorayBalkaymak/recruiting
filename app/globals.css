@@ -6,9 +6,9 @@
   --navy: #0f1d2c;
   --navy-deep: #0a111b;
   --navy-lift: #142b3d;
-  --cyan: #32cfdc;
-  --cyan-bright: #52e0db;
-  --cyan-deep: #108a9c;
+  --cyan: #e4572e;
+  --cyan-bright: #f07a4a;
+  --cyan-deep: #b83f16;
   --paper: #fafbfc;
   --line: #e8edf1;
   --ink: #202b38;
@@ -26,11 +26,11 @@
   }
 
   ::selection {
-    background: rgba(50, 207, 220, 0.28);
+    background: rgba(228, 87, 46, 0.28);
   }
 
   :focus-visible {
-    outline: 2px solid #32cfdc;
+    outline: 2px solid #e4572e;
     outline-offset: 2px;
   }
 }
@@ -76,43 +76,18 @@
     --landing-navy: #0f1d2c;
     --landing-navy-deep: #0a111b;
     --landing-navy-lift: #142b3d;
-    --landing-sky: #32cfdc;
+    --landing-sky: #e4572e;
     --landing-white: #ffffff;
     --landing-paper: #fafbfc;
-    --landing-gold: #32cfdc;
-    --landing-burgundy: #108a9c;
+    --landing-gold: #e4572e;
+    --landing-burgundy: #b83f16;
     background: var(--landing-paper);
     color: var(--landing-navy);
   }
 
   .landing-shell ::selection {
-    background: rgba(50, 207, 220, 0.35);
+    background: rgba(228, 87, 46, 0.35);
     color: var(--landing-navy);
-  }
-
-  .landing-shell.landing-accent-warm {
-    --landing-sky: #e4572e;
-    --landing-gold: #e4572e;
-    --landing-burgundy: #b83f16;
-  }
-
-  .landing-shell.landing-accent-warm ::selection {
-    background: rgba(228, 87, 46, 0.32);
-    color: var(--landing-navy);
-  }
-
-  .landing-shell.landing-accent-warm .landing-cta {
-    color: #ffffff;
-  }
-
-  .landing-shell.landing-accent-warm .landing-cta:hover {
-    background: #b83f16;
-    border-color: #b83f16;
-    color: #ffffff;
-  }
-
-  .landing-shell.landing-accent-warm .landing-field:focus {
-    border-color: #e4572e;
   }
 
   .landing-wrap {
@@ -127,9 +102,9 @@
         180deg,
         rgba(255, 255, 255, 0.28) 0%,
         rgba(255, 255, 255, 0.06) 36%,
-        rgba(16, 138, 156, 0.35) 100%
+        rgba(184, 63, 22, 0.35) 100%
       ),
-      linear-gradient(180deg, #52e0db 0%, #32cfdc 48%, #108a9c 100%);
+      linear-gradient(180deg, #f07a4a 0%, #e4572e 48%, #b83f16 100%);
   }
 
   .landing-header {
@@ -206,7 +181,7 @@
     padding: 0.85rem 1.35rem;
     border: 1px solid var(--landing-sky);
     background: var(--landing-sky);
-    color: var(--landing-navy);
+    color: #ffffff;
     font-size: 13px;
     line-height: 1;
     font-weight: 600;
@@ -216,8 +191,8 @@
   }
 
   .landing-cta:hover {
-    background: #108a9c;
-    border-color: #108a9c;
+    background: #b83f16;
+    border-color: #b83f16;
     color: #ffffff;
   }
 
@@ -280,7 +255,7 @@
   }
 
   .landing-split-card:hover {
-    border-color: rgba(50, 207, 220, 0.55);
+    border-color: rgba(228, 87, 46, 0.55);
   }
 
   .landing-copy {
@@ -332,7 +307,7 @@
     width: 100%;
     transform: scaleX(0);
     transform-origin: left center;
-    background: #32cfdc;
+    background: #e4572e;
     will-change: transform;
   }
 
@@ -350,7 +325,7 @@
     position: relative;
     flex: 0 0 min(82vw, 34rem);
     padding: 2rem 0 0.5rem;
-    border-top: 1px solid rgba(50, 207, 220, 0.28);
+    border-top: 1px solid rgba(228, 87, 46, 0.28);
     transform-origin: left center;
     will-change: transform, opacity;
   }
@@ -361,7 +336,7 @@
     font-weight: 500;
     line-height: 0.85;
     letter-spacing: -0.06em;
-    color: #32cfdc;
+    color: #e4572e;
   }
 
   @media (prefers-reduced-motion: reduce) {

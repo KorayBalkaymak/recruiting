@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
   headerBar: {
     height: 4,
-    backgroundColor: "#32CFDC",
+    backgroundColor: "#E4572E",
     marginBottom: 24,
   },
   title: {
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     marginTop: 16,
     marginBottom: 6,
-    color: "#32CFDC",
+    color: "#E4572E",
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   chip: {
-    backgroundColor: "#E7FAFC",
-    color: "#32CFDC",
+    backgroundColor: "#FDE8E1",
+    color: "#E4572E",
     fontSize: 9,
     paddingHorizontal: 8,
     paddingVertical: 3,

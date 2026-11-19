@@ -4,7 +4,7 @@ import { formatCurrency } from "@/lib/utils";
 
 const styles = StyleSheet.create({
   page: { padding: 40, fontSize: 10.5, color: "#202B38" },
-  headerBar: { height: 4, backgroundColor: "#32CFDC", marginBottom: 24 },
+  headerBar: { height: 4, backgroundColor: "#E4572E", marginBottom: 24 },
   title: { fontSize: 18, fontWeight: 700, marginBottom: 4 },
   subtitle: { fontSize: 10, color: "#626D78", marginBottom: 24 },
   row: {
@@ -17,12 +17,12 @@ const styles = StyleSheet.create({
   value: { fontWeight: 700 },
   highlightBox: {
     marginTop: 20,
-    backgroundColor: "#E7FAFC",
+    backgroundColor: "#FDE8E1",
     borderRadius: 8,
     padding: 16,
   },
-  highlightLabel: { fontSize: 9, color: "#32CFDC", textTransform: "uppercase" },
-  highlightValue: { fontSize: 22, fontWeight: 700, color: "#32CFDC", marginTop: 4 },
+  highlightLabel: { fontSize: 9, color: "#E4572E", textTransform: "uppercase" },
+  highlightValue: { fontSize: 22, fontWeight: 700, color: "#E4572E", marginTop: 4 },
   footer: {
     position: "absolute",
     bottom: 24,

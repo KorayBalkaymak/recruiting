@@ -17,7 +17,7 @@ export function PipelineFunnelChart({
           contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E8EDF1" }}
           cursor={{ fill: "#FAFBFC" }}
         />
-        <Bar dataKey="count" fill="#32CFDC" radius={[4, 4, 0, 0]} maxBarSize={48} />
+        <Bar dataKey="count" fill="#E4572E" radius={[4, 4, 0, 0]} maxBarSize={48} />
       </BarChart>
     </ResponsiveContainer>
   );

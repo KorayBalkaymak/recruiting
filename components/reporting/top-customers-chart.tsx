@@ -17,7 +17,7 @@ export function TopCustomersChart({ data }: { data: { name: string; count: numbe
           width={140}
         />
         <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E8EDF1" }} cursor={{ fill: "#FAFBFC" }} />
-        <Bar dataKey="count" fill="#32CFDC" radius={[0, 4, 4, 0]} maxBarSize={20} />
+        <Bar dataKey="count" fill="#E4572E" radius={[0, 4, 4, 0]} maxBarSize={20} />
       </BarChart>
     </ResponsiveContainer>
   );

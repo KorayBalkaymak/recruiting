@@ -24,7 +24,7 @@ export function RevenueTrendChart({
           formatter={(value: number) => formatCurrency(value)}
           contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E8EDF1" }}
         />
-        <Line type="monotone" dataKey="revenue" name="Umsatz" stroke="#32CFDC" strokeWidth={2} dot={false} />
+        <Line type="monotone" dataKey="revenue" name="Umsatz" stroke="#E4572E" strokeWidth={2} dot={false} />
         <Line type="monotone" dataKey="margin" name="Deckungsbeitrag" stroke="#16A34A" strokeWidth={2} dot={false} />
       </LineChart>
     </ResponsiveContainer>

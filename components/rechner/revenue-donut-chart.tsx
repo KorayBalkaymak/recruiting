@@ -27,7 +27,7 @@ export function RevenueDonutChart({
           cy="75"
           r={RADIUS}
           fill="none"
-          stroke="#E7FAFC"
+          stroke="#FDE8E1"
           strokeWidth={STROKE}
         />
         <circle
@@ -35,15 +35,15 @@ export function RevenueDonutChart({
           cy="75"
           r={RADIUS}
           fill="none"
-          stroke="#32CFDC"
+          stroke="#E4572E"
           strokeWidth={STROKE}
           strokeDasharray={`${candidateDash} ${CIRCUMFERENCE - candidateDash}`}
           strokeLinecap="butt"
         />
       </svg>
       <div className="flex flex-col gap-3 text-sm">
-        <LegendRow color="#32CFDC" label="Kandidaten-Stundensatz" value={formatCurrency(candidateShare, currency)} />
-        <LegendRow color="#E7FAFC" textColor="#32CFDC" label="Unternehmensdeckung" value={formatCurrency(marginShare, currency)} />
+        <LegendRow color="#E4572E" label="Kandidaten-Stundensatz" value={formatCurrency(candidateShare, currency)} />
+        <LegendRow color="#FDE8E1" textColor="#E4572E" label="Unternehmensdeckung" value={formatCurrency(marginShare, currency)} />
       </div>
     </div>
   );

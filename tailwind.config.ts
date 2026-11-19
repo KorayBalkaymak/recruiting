@@ -10,11 +10,11 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#32CFDC",
-          hover: "#108A9C",
-          light: "#E7FAFC",
-          bright: "#52E0DB",
-          deep: "#108A9C",
+          DEFAULT: "#E4572E",
+          hover: "#B83F16",
+          light: "#FDE8E1",
+          bright: "#F07A4A",
+          deep: "#B83F16",
         },
         navy: {
           DEFAULT: "#0F1D2C",
@@ -38,8 +38,8 @@ const config: Config = {
           muted: "#626D78",
         },
         status: {
-          new: "#32CFDC",
-          progress: "#108A9C",
+          new: "#E4572E",
+          progress: "#B83F16",
           done: "#16A34A",
           inactive: "#8A96A3",
           danger: "#DC2626",

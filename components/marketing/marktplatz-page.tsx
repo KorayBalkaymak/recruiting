@@ -12,7 +12,7 @@ export async function MarktplatzPage({
   const { profiles, roles } = await listPublicMarketplace({ beruf, q });
 
   return (
-    <div className="landing-shell landing-accent-warm flex min-h-screen flex-col">
+    <div className="landing-shell flex min-h-screen flex-col">
       <header className="landing-header landing-on-light">
         <div className="landing-wrap flex h-[4.5rem] items-center justify-between">
           <Link href="/" className="landing-ink flex items-baseline gap-2.5">
