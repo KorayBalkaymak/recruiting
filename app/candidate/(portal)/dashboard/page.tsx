@@ -109,11 +109,12 @@ export default async function CandidateDashboardPage() {
             <h1 className="mt-5 text-[clamp(2rem,4.4vw,3.15rem)] font-normal leading-[1.05] tracking-[-0.04em]">
               Guten Tag, {greetingName}.
             </h1>
-            <p className="mt-4 max-w-[40ch] text-[15px] leading-7 text-white/65">
-              {profile?.desiredRole
-                ? `${profile.desiredRole}${place ? ` · ${place}` : ""}`
-                : "Verwalte Profil, Unterlagen und den Stand der internen Prüfung."}
-            </p>
+            {profile?.desiredRole ? (
+              <p className="mt-4 max-w-[40ch] text-[15px] leading-7 text-white/65">
+                {profile.desiredRole}
+                {place ? ` · ${place}` : ""}
+              </p>
+            ) : null}
             {profile?.reviewNote ? (
               <p className="mt-5 max-w-[48ch] border-l-2 border-[#8B96D9] pl-4 text-sm leading-6 text-white/80">
                 {profile.reviewNote}
