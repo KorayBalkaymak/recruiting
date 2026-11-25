@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionCandidate, getSessionStaff } from "@/lib/auth";
-import { candidateLogoutAction } from "../actions";
+import { CandidatePortalNav } from "@/components/candidate/portal-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -20,47 +20,23 @@ export default async function CandidatePortalLayout({
     redirect("/candidate/login");
   }
 
-  const links = [
-    { href: "/candidate/dashboard", label: "Dashboard" },
-    { href: "/candidate/profile", label: "Profil" },
-    { href: "/candidate/status", label: "Status" },
-  ];
-
   return (
-    <div className="min-h-screen bg-surface-subtle">
-      <header className="border-b border-surface-border bg-white">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-brand text-sm font-semibold text-navy">
-              CMS
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-ink">Kandidatenportal</p>
-              <p className="text-xs text-ink-muted">{candidate.fullName}</p>
-            </div>
+    <div className="min-h-screen bg-[#F7F8FC]">
+      <header className="bg-[#080A12] text-white">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-5 py-5">
+          <Link href="/candidate/dashboard" className="flex items-baseline gap-2.5">
+            <span className="text-[1.2rem] leading-none tracking-tight">CMS</span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-brand">
+              Talents
+            </span>
+          </Link>
+          <div className="flex flex-wrap items-center gap-6">
+            <p className="hidden text-[12px] text-white/45 sm:block">{candidate.fullName}</p>
+            <CandidatePortalNav />
           </div>
-          <nav className="flex flex-wrap items-center gap-1">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="rounded-md px-3 py-2 text-sm text-ink-muted hover:bg-surface-subtle hover:text-ink"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <form action={candidateLogoutAction}>
-              <button
-                type="submit"
-                className="rounded-md px-3 py-2 text-sm text-status-danger hover:bg-red-50"
-              >
-                Abmelden
-              </button>
-            </form>
-          </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-5xl px-5 py-10 md:py-12">{children}</main>
     </div>
   );
 }

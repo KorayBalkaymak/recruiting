@@ -12,10 +12,11 @@ export default async function CandidateProfilePage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-ink">Mein Profil</h1>
-        <p className="text-sm text-ink-muted">
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-brand">Profil</p>
+        <h1 className="mt-2 text-[1.85rem] font-normal tracking-tight text-ink">Angaben zur Prüfung</h1>
+        <p className="mt-2 max-w-[48ch] text-sm leading-6 text-ink-muted">
           Speichere Entwürfe oder reiche dein Profil zur internen Prüfung ein.
         </p>
       </div>

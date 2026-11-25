@@ -16,8 +16,11 @@ export default async function CandidateStatusPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-ink">Prüfstatus</h1>
-        <p className="text-sm text-ink-muted">Aktueller Stand und Historie deiner Einreichung.</p>
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-brand">Prüfung</p>
+        <h1 className="mt-2 text-[1.85rem] font-normal tracking-tight text-ink">Aktueller Stand</h1>
+        <p className="mt-2 max-w-[48ch] text-sm leading-6 text-ink-muted">
+          Verlauf und Rückmeldungen zu deiner Einreichung.
+        </p>
       </div>
 
       <div className="rounded-lg border border-surface-border bg-white p-5 shadow-panel">
