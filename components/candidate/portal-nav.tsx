@@ -29,7 +29,7 @@ export function CandidatePortalNav() {
           >
             {link.label}
             {active ? (
-              <span className="absolute inset-x-3 -bottom-px h-px bg-brand" />
+              <span className="absolute inset-x-3 -bottom-px h-px bg-[#8B96D9]" />
             ) : null}
           </Link>
         );

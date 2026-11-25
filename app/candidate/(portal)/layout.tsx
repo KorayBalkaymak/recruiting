@@ -26,7 +26,7 @@ export default async function CandidatePortalLayout({
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-5 py-5">
           <Link href="/candidate/dashboard" className="flex items-baseline gap-2.5">
             <span className="text-[1.2rem] leading-none tracking-tight">CMS</span>
-            <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-brand">
+            <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#8B96D9]">
               Talents
             </span>
           </Link>
