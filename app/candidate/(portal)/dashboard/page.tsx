@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireCandidate } from "@/lib/auth";
+import { getOwnCandidateCvMeta } from "@/lib/candidate/cv-upload";
 import { getCandidatePortalView } from "@/lib/candidate/portal-service";
 import { portalStatusLabels } from "@/lib/candidate/status-labels";
 import type { PortalProfileStatus } from "@/lib/candidate/portal-types";
@@ -59,7 +60,10 @@ function statusTone(status: PortalProfileStatus | undefined) {
 
 export default async function CandidateDashboardPage() {
   const candidate = await requireCandidate();
-  const profile = await getCandidatePortalView(candidate);
+  const [profile, cv] = await Promise.all([
+    getCandidatePortalView(candidate),
+    getOwnCandidateCvMeta(candidate).catch(() => null),
+  ]);
   const status = profile?.status;
   const step = nextStep(status);
   const greetingName = profile?.firstName || firstNameOf(candidate.fullName);
@@ -69,6 +73,7 @@ export default async function CandidateDashboardPage() {
     { label: "Kurzprofil", done: Boolean(profile?.summary?.trim()) },
     { label: "Standort", done: Boolean(profile?.city?.trim()) },
     { label: "Kompetenzen", done: (profile?.skills.length ?? 0) > 0 },
+    { label: "Lebenslauf", done: Boolean(cv?.fileName) },
     {
       label: "Zur Prüfung eingereicht",
       done: Boolean(status && status !== "draft"),
@@ -146,13 +151,13 @@ export default async function CandidateDashboardPage() {
 
       <section className="grid gap-px bg-[#E6E8F0] sm:grid-cols-2">
         <Link
-          href="/candidate/profile"
+          href="/candidate/profile#lebenslauf"
           className="bg-[#F7F8FC] px-0 py-6 transition-colors hover:bg-white sm:pr-8"
         >
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-brand">01</p>
-          <p className="mt-3 text-lg tracking-tight text-ink">Profil</p>
+          <p className="mt-3 text-lg tracking-tight text-ink">Lebenslauf & Profil</p>
           <p className="mt-2 max-w-[36ch] text-sm leading-6 text-ink-muted">
-            Angaben, Kompetenzen und Standort aktuell halten.
+            Unterlage hochladen sowie Angaben und Kompetenzen aktuell halten.
           </p>
         </Link>
         <Link

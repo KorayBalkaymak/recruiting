@@ -42,6 +42,28 @@ export function demoHasOriginalCv(candidateId: string) {
   return demoMeta().has(candidateId);
 }
 
+export async function getOwnCandidateCvMeta(candidate: CandidateUser) {
+  assertCandidateActor(candidate);
+  if (isDemoMode()) {
+    const meta = demoMeta().get(candidate.candidateId);
+    return meta ? { fileName: meta.fileName } : null;
+  }
+
+  const db = getDb();
+  const [doc] = await db
+    .select({ fileName: candidateDocuments.fileName })
+    .from(candidateDocuments)
+    .where(
+      and(
+        eq(candidateDocuments.candidateId, candidate.candidateId),
+        eq(candidateDocuments.kind, "cv"),
+        eq(candidateDocuments.sensitivity, "original")
+      )
+    )
+    .limit(1);
+  return doc ? { fileName: doc.fileName } : null;
+}
+
 function sha256Hex(buffer: Buffer) {
   return createHash("sha256").update(buffer).digest("hex");
 }
