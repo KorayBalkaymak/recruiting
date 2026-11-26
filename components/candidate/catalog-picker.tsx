@@ -233,10 +233,10 @@ export function QualificationCatalogPicker({
     [q]
   );
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5 rounded-xl bg-brand p-4 sm:p-5">
       <div>
-        <p className="text-sm font-medium text-ink">Qualifikationen / Zertifikate</p>
-        <p className="mt-1 text-xs leading-5 text-ink-muted">
+        <p className="text-sm font-medium text-white">Qualifikationen / Zertifikate</p>
+        <p className="mt-1 text-xs leading-5 text-white/80">
           Zertifikate in der passenden Gruppe anklicken — zusätzlich zur hochgeladenen Datei.
         </p>
       </div>
@@ -247,7 +247,7 @@ export function QualificationCatalogPicker({
         disabled={disabled}
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Zertifikat suchen"
-        className="rounded-md border border-surface-border px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:bg-surface-subtle"
+        className="rounded-md border border-white/20 bg-white/15 px-3 py-2 text-sm text-white placeholder:text-white/60 focus:border-white focus:outline-none focus:ring-1 focus:ring-white disabled:opacity-60"
       />
 
       {selected.length > 0 ? (
@@ -257,6 +257,7 @@ export function QualificationCatalogPicker({
               key={item}
               label={item}
               selected
+              onOrange
               disabled={Boolean(disabled)}
               onToggle={() => onChange(selected.filter((value) => value !== item))}
             />
@@ -264,29 +265,25 @@ export function QualificationCatalogPicker({
         </div>
       ) : null}
 
-      {visibleGroups.length > 0 ? (
-        <div className="flex flex-col gap-5 rounded-xl bg-brand p-4 sm:p-5">
-          {visibleGroups.map((group) => (
-            <section key={group.id}>
-              <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-white">
-                {group.title}
-              </h3>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {group.items.map((item) => (
-                  <Chip
-                    key={item}
-                    label={item}
-                    selected={selected.includes(item)}
-                    onOrange
-                    disabled={Boolean(disabled)}
-                    onToggle={() => onChange(toggleValue(selected, item))}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      ) : null}
+      {visibleGroups.map((group) => (
+        <section key={group.id}>
+          <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-white">
+            {group.title}
+          </h3>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {group.items.map((item) => (
+              <Chip
+                key={item}
+                label={item}
+                selected={selected.includes(item)}
+                onOrange
+                disabled={Boolean(disabled)}
+                onToggle={() => onChange(toggleValue(selected, item))}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
