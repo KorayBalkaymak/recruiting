@@ -2,6 +2,7 @@ export const MAX_TERMS_PER_KIND = 80;
 export const MAX_TERM_LENGTH = 64;
 export const MIN_SEARCH_RADIUS_KM = 1;
 export const MAX_SEARCH_RADIUS_KM = 200;
+export const SEARCH_RADIUS_OPTIONS_KM = [25, 50, 75, 100, 150, 200] as const;
 
 export type CandidateTermKind = "skill" | "keyword" | "qualification" | "industry";
 

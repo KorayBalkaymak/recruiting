@@ -8,6 +8,15 @@ import {
 } from "@/components/candidate/catalog-picker";
 import type { CandidatePortalView } from "@/lib/candidate/portal-service";
 import { portalStatusLabels } from "@/lib/candidate/status-labels";
+import { SEARCH_RADIUS_OPTIONS_KM } from "@/lib/candidate/terms";
+import { cn } from "@/lib/utils";
+
+function radiusChoices(current: number) {
+  if ((SEARCH_RADIUS_OPTIONS_KM as readonly number[]).includes(current)) {
+    return [...SEARCH_RADIUS_OPTIONS_KM];
+  }
+  return [...SEARCH_RADIUS_OPTIONS_KM, current].sort((a, b) => a - b);
+}
 
 function splitCsv(value: string) {
   return value
@@ -36,7 +45,7 @@ export function CandidateProfileForm({
   const [postalCode, setPostalCode] = useState(profile.postalCode ?? "");
   const [country, setCountry] = useState(profile.country ?? "Deutschland");
   const [searchRadiusKm, setSearchRadiusKm] = useState(
-    profile.searchRadiusKm != null ? String(profile.searchRadiusKm) : "50"
+    profile.searchRadiusKm != null ? profile.searchRadiusKm : 50
   );
   const [skills, setSkills] = useState(profile.skills.join(", "));
   const [keywords, setKeywords] = useState<string[]>(profile.keywords);
@@ -68,7 +77,7 @@ export function CandidateProfileForm({
       city,
       postalCode,
       country,
-      searchRadiusKm: Number(searchRadiusKm),
+      searchRadiusKm,
       skills: splitCsv(skills),
       keywords,
       qualifications,
@@ -140,14 +149,33 @@ export function CandidateProfileForm({
         <Field label="PLZ" value={postalCode} onChange={setPostalCode} disabled={!canEdit} />
         <Field label="Land" value={country} onChange={setCountry} disabled={!canEdit} />
       </div>
-      <Field
-        label="Suchradius (km, 1–200)"
-        value={searchRadiusKm}
-        onChange={setSearchRadiusKm}
-        type="number"
-        required
-        disabled={!canEdit}
-      />
+      <div>
+        <p className="text-sm font-medium text-ink">Suchradius</p>
+        <p className="mt-1 text-xs text-ink-muted">Umkreis um den Standort, in dem du einsetzbar bist.</p>
+        <div className="mt-2 flex flex-wrap gap-1.5" role="group" aria-label="Suchradius">
+          {radiusChoices(searchRadiusKm).map((km) => {
+            const active = searchRadiusKm === km;
+            return (
+              <button
+                key={km}
+                type="button"
+                disabled={!canEdit}
+                aria-pressed={active}
+                onClick={() => setSearchRadiusKm(km)}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
+                  active
+                    ? "border-[#141C6B] bg-[#141C6B] text-white"
+                    : "border-[#D8DCE8] bg-white text-ink hover:border-[#141C6B]/40",
+                  !canEdit && "cursor-not-allowed opacity-60"
+                )}
+              >
+                {km} km
+              </button>
+            );
+          })}
+        </div>
+      </div>
       <Field
         label="Skills (kommagetrennt)"
         value={skills}

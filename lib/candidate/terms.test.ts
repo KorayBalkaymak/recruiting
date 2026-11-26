@@ -1,9 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-const { assertSearchRadius, normalizeTerm, sanitizeTermList } = await import(
-  new URL("./terms.ts", import.meta.url).href
-);
+const { assertSearchRadius, normalizeTerm, sanitizeTermList, SEARCH_RADIUS_OPTIONS_KM } =
+  await import(new URL("./terms.ts", import.meta.url).href);
 
 describe("candidate terms", () => {
   it("normalizes terms", () => {
@@ -20,5 +19,9 @@ describe("candidate terms", () => {
     assert.throws(() => assertSearchRadius(0));
     assert.throws(() => assertSearchRadius(201));
     assert.doesNotThrow(() => assertSearchRadius(50));
+  });
+
+  it("exposes the selectable radius steps", () => {
+    assert.deepEqual([...SEARCH_RADIUS_OPTIONS_KM], [25, 50, 75, 100, 150, 200]);
   });
 });

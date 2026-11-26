@@ -30,7 +30,7 @@ test.describe("Kandidatenprofil und Bewerbung (Demo)", () => {
     await page.getByLabel("Nachname").fill("Tester");
     await page.getByLabel(/Gewünschte Tätigkeit/i).fill("Frontend Engineer");
     await page.getByLabel(/Stadt/).fill("Berlin");
-    await page.getByLabel(/Suchradius/i).fill("40");
+    await page.getByRole("button", { name: "50 km" }).click();
     await page.getByLabel(/Skills/i).fill("React, TypeScript");
     await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();
     await expect(page.getByText(/eingereicht/i)).toBeVisible({ timeout: 15_000 });
