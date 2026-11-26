@@ -232,17 +232,6 @@ export function QualificationCatalogPicker({
         .filter((group) => group.items.length > 0),
     [q]
   );
-  const orangeGroupIds = new Set([
-    "ndt",
-    "welding",
-    "coating",
-    "quality",
-    "hse",
-    "electrical",
-  ]);
-  const orangeGroups = visibleGroups.filter((group) => orangeGroupIds.has(group.id));
-  const navyGroups = visibleGroups.filter((group) => !orangeGroupIds.has(group.id));
-
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -275,54 +264,29 @@ export function QualificationCatalogPicker({
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-3">
-        {orangeGroups.length > 0 ? (
-          <div className="flex flex-col gap-5 rounded-xl bg-brand p-4 sm:p-5">
-            {orangeGroups.map((group) => (
-              <section key={group.id}>
-                <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-white">
-                  {group.title}
-                </h3>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {group.items.map((item) => (
-                    <Chip
-                      key={item}
-                      label={item}
-                      selected={selected.includes(item)}
-                      onOrange
-                      disabled={Boolean(disabled)}
-                      onToggle={() => onChange(toggleValue(selected, item))}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        ) : null}
-        {navyGroups.length > 0 ? (
-          <div className="flex flex-col gap-5 rounded-xl bg-[#141C6B] p-4 sm:p-5">
-            {navyGroups.map((group) => (
-              <section key={group.id}>
-                <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#8B96D9]">
-                  {group.title}
-                </h3>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {group.items.map((item) => (
-                    <Chip
-                      key={item}
-                      label={item}
-                      selected={selected.includes(item)}
-                      onDark
-                      disabled={Boolean(disabled)}
-                      onToggle={() => onChange(toggleValue(selected, item))}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        ) : null}
-      </div>
+      {visibleGroups.length > 0 ? (
+        <div className="flex flex-col gap-5 rounded-xl bg-brand p-4 sm:p-5">
+          {visibleGroups.map((group) => (
+            <section key={group.id}>
+              <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-white">
+                {group.title}
+              </h3>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {group.items.map((item) => (
+                  <Chip
+                    key={item}
+                    label={item}
+                    selected={selected.includes(item)}
+                    onOrange
+                    disabled={Boolean(disabled)}
+                    onToggle={() => onChange(toggleValue(selected, item))}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
