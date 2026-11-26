@@ -1,10 +1,14 @@
+import Link from "next/link";
 import { count, desc, eq, inArray, ne } from "drizzle-orm";
-import { Building2, Briefcase, Users, SendHorizonal } from "lucide-react";
+import { Building2, Briefcase, ClipboardCheck, Users, SendHorizonal } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { activityLogs, candidates, companies, vacancies, vacancySubmissions } from "@/lib/db/schema";
 import { toIsoRequired } from "@/lib/db/crm";
 import { isDemoMode } from "@/lib/demo/mode";
+import { listPortalProfilesForStaff } from "@/lib/candidate/portal-service";
+import { portalStatusLabels } from "@/lib/candidate/status-labels";
 
 async function getDashboardData() {
   if (isDemoMode()) {
@@ -82,15 +86,33 @@ async function getDashboardData() {
   };
 }
 
-const kpis = (data: Awaited<ReturnType<typeof getDashboardData>>) => [
-  { label: "Aktive Kandidaten", value: data.activeCandidates, icon: Users },
-  { label: "Offene Vakanzen", value: data.openVacancies, icon: Briefcase },
-  { label: "Aktive Kunden", value: data.activeCompanies, icon: Building2 },
-  { label: "Einreichungen in Prüfung", value: data.pendingSubmissions, icon: SendHorizonal },
-];
-
 export default async function DashboardPage() {
-  const data = await getDashboardData();
+  const staff = await requireStaff();
+  const [data, portalRows] = await Promise.all([
+    getDashboardData(),
+    listPortalProfilesForStaff(staff),
+  ]);
+  const portalPending = portalRows.filter(
+    (row) => row.status === "submitted" || row.status === "in_review"
+  );
+
+  const kpis = [
+    { label: "Aktive Kandidaten", value: data.activeCandidates, icon: Users, href: "/kandidaten" },
+    { label: "Offene Vakanzen", value: data.openVacancies, icon: Briefcase, href: "/vakanzen" },
+    { label: "Aktive Kunden", value: data.activeCompanies, icon: Building2, href: "/kunden" },
+    {
+      label: "Portal-Prüfungen",
+      value: portalPending.length,
+      icon: ClipboardCheck,
+      href: "/portal-pruefungen",
+    },
+    {
+      label: "Einreichungen in Prüfung",
+      value: data.pendingSubmissions,
+      icon: SendHorizonal,
+      href: "/einreichungen",
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,22 +121,60 @@ export default async function DashboardPage() {
         <p className="text-sm text-ink-muted">Überblick über die aktuelle Recruiting-Pipeline.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {kpis(data).map((kpi) => {
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {kpis.map((kpi) => {
           const Icon = kpi.icon;
           return (
-            <div
+            <Link
               key={kpi.label}
-              className="rounded-lg border border-surface-border bg-white p-4 shadow-panel"
+              href={kpi.href}
+              className="rounded-lg border border-surface-border bg-white p-4 shadow-panel transition-colors hover:border-brand/40"
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm text-ink-muted">{kpi.label}</span>
                 <Icon className="h-4 w-4 text-brand" strokeWidth={1.75} />
               </div>
               <p className="mt-2 text-2xl font-semibold text-ink">{kpi.value}</p>
-            </div>
+            </Link>
           );
         })}
+      </div>
+
+      <div className="rounded-lg border border-surface-border bg-white shadow-panel">
+        <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
+          <h2 className="text-sm font-medium text-ink">Zur Prüfung eingereicht</h2>
+          <Link href="/portal-pruefungen" className="text-xs font-medium text-brand hover:underline">
+            Alle ansehen
+          </Link>
+        </div>
+        {portalPending.length === 0 ? (
+          <p className="px-5 py-8 text-center text-sm text-ink-muted">
+            Keine neuen Portal-Einreichungen.
+          </p>
+        ) : (
+          <ul className="divide-y divide-surface-border">
+            {portalPending.map((row) => (
+              <li key={row.candidateId} className="flex items-center justify-between gap-4 px-5 py-3 text-sm">
+                <div className="min-w-0">
+                  <p className="font-medium text-ink">
+                    {row.firstName} {row.lastName}
+                  </p>
+                  <p className="truncate text-xs text-ink-muted">
+                    {row.desiredRole ?? "Ohne Tätigkeit"}
+                    {row.city ? ` · ${row.city}` : ""}
+                    {` · ${portalStatusLabels[row.status]}`}
+                  </p>
+                </div>
+                <Link
+                  href={`/portal-pruefungen/${row.candidateId}`}
+                  className="shrink-0 text-sm font-medium text-brand hover:underline"
+                >
+                  Prüfen
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="rounded-lg border border-surface-border bg-white shadow-panel">
