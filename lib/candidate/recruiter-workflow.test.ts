@@ -14,27 +14,55 @@ import {
 describe("registered candidates without uploads", () => {
   it("includes registered accounts without a CV", () => {
     assert.equal(
-      isRegisteredWithoutUploads({ hasAccount: true, originalCvCount: 0, cvFilePath: null }),
+      isRegisteredWithoutUploads({
+        hasAccount: true,
+        originalCvCount: 0,
+        originalCertificateCount: 0,
+        cvFilePath: null,
+      }),
       true
     );
   });
 
   it("excludes staff-created candidates without a portal account", () => {
     assert.equal(
-      isRegisteredWithoutUploads({ hasAccount: false, originalCvCount: 0, cvFilePath: null }),
+      isRegisteredWithoutUploads({
+        hasAccount: false,
+        originalCvCount: 0,
+        originalCertificateCount: 0,
+        cvFilePath: null,
+      }),
       false
     );
   });
 
-  it("excludes registered candidates after a CV upload", () => {
+  it("still flags registered candidates when only a CV is present", () => {
     assert.equal(
-      isRegisteredWithoutUploads({ hasAccount: true, originalCvCount: 1, cvFilePath: null }),
+      isRegisteredWithoutUploads({
+        hasAccount: true,
+        originalCvCount: 1,
+        originalCertificateCount: 0,
+        cvFilePath: null,
+      }),
+      true
+    );
+  });
+
+  it("excludes registered candidates after CV and qualification uploads", () => {
+    assert.equal(
+      isRegisteredWithoutUploads({
+        hasAccount: true,
+        originalCvCount: 1,
+        originalCertificateCount: 1,
+        cvFilePath: null,
+      }),
       false
     );
     assert.equal(
       isRegisteredWithoutUploads({
         hasAccount: true,
         originalCvCount: 0,
+        originalCertificateCount: 1,
         cvFilePath: "candidates/cv.pdf",
       }),
       false
@@ -42,9 +70,21 @@ describe("registered candidates without uploads", () => {
   });
 
   it("does not treat an incomplete profile as missing documents", () => {
-    assert.equal(hasRequiredApplicationDocument({ originalCvCount: 1, cvFilePath: null }), true);
     assert.equal(
-      isRegisteredWithoutUploads({ hasAccount: true, originalCvCount: 1, cvFilePath: null }),
+      hasRequiredApplicationDocument({
+        originalCvCount: 1,
+        originalCertificateCount: 1,
+        cvFilePath: null,
+      }),
+      true
+    );
+    assert.equal(
+      isRegisteredWithoutUploads({
+        hasAccount: true,
+        originalCvCount: 1,
+        originalCertificateCount: 1,
+        cvFilePath: null,
+      }),
       false
     );
   });

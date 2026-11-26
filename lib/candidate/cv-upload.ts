@@ -18,34 +18,51 @@ import {
   getPrivateDocumentStorage,
 } from "@/lib/storage/private-documents";
 
-const globalDemoMeta = globalThis as unknown as {
-  __cmsDemoCvMeta?: Map<
-    string,
-    {
-      documentId: string;
-      candidateId: string;
-      accountId: string;
-      fileName: string;
-      mimeType: string;
-      sizeBytes: number;
-      storagePath: string;
-    }
-  >;
+export type OriginalDocumentKind = "cv" | "certificate";
+
+type DemoDocMeta = {
+  documentId: string;
+  candidateId: string;
+  accountId: string;
+  kind: OriginalDocumentKind;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  storagePath: string;
 };
 
+const globalDemoMeta = globalThis as unknown as {
+  __cmsDemoOriginalDocs?: Map<string, DemoDocMeta>;
+};
+
+function demoKey(candidateId: string, kind: OriginalDocumentKind) {
+  return `${candidateId}:${kind}`;
+}
+
 function demoMeta() {
-  if (!globalDemoMeta.__cmsDemoCvMeta) globalDemoMeta.__cmsDemoCvMeta = new Map();
-  return globalDemoMeta.__cmsDemoCvMeta;
+  if (!globalDemoMeta.__cmsDemoOriginalDocs) globalDemoMeta.__cmsDemoOriginalDocs = new Map();
+  return globalDemoMeta.__cmsDemoOriginalDocs;
+}
+
+export function demoHasOriginalDocument(candidateId: string, kind: OriginalDocumentKind) {
+  return demoMeta().has(demoKey(candidateId, kind));
 }
 
 export function demoHasOriginalCv(candidateId: string) {
-  return demoMeta().has(candidateId);
+  return demoHasOriginalDocument(candidateId, "cv");
 }
 
-export async function getOwnCandidateCvMeta(candidate: CandidateUser) {
+export function demoHasOriginalCertificate(candidateId: string) {
+  return demoHasOriginalDocument(candidateId, "certificate");
+}
+
+export async function getOwnOriginalDocumentMeta(
+  candidate: CandidateUser,
+  kind: OriginalDocumentKind
+) {
   assertCandidateActor(candidate);
   if (isDemoMode()) {
-    const meta = demoMeta().get(candidate.candidateId);
+    const meta = demoMeta().get(demoKey(candidate.candidateId, kind));
     return meta ? { fileName: meta.fileName } : null;
   }
 
@@ -56,7 +73,7 @@ export async function getOwnCandidateCvMeta(candidate: CandidateUser) {
     .where(
       and(
         eq(candidateDocuments.candidateId, candidate.candidateId),
-        eq(candidateDocuments.kind, "cv"),
+        eq(candidateDocuments.kind, kind),
         eq(candidateDocuments.sensitivity, "original")
       )
     )
@@ -64,12 +81,34 @@ export async function getOwnCandidateCvMeta(candidate: CandidateUser) {
   return doc ? { fileName: doc.fileName } : null;
 }
 
+export async function getOwnCandidateCvMeta(candidate: CandidateUser) {
+  return getOwnOriginalDocumentMeta(candidate, "cv");
+}
+
+export async function getOwnCandidateCertificateMeta(candidate: CandidateUser) {
+  return getOwnOriginalDocumentMeta(candidate, "certificate");
+}
+
+export async function assertRequiredCandidateUploads(candidate: CandidateUser) {
+  const [cv, certificate] = await Promise.all([
+    getOwnOriginalDocumentMeta(candidate, "cv"),
+    getOwnOriginalDocumentMeta(candidate, "certificate"),
+  ]);
+  if (!cv?.fileName) {
+    throw new Error("Lebenslauf ist ein Pflichtfeld. Bitte zuerst hochladen.");
+  }
+  if (!certificate?.fileName) {
+    throw new Error("Qualifikationen sind ein Pflichtfeld. Bitte zuerst hochladen.");
+  }
+}
+
 function sha256Hex(buffer: Buffer) {
   return createHash("sha256").update(buffer).digest("hex");
 }
 
-export async function uploadCandidateCv(
+export async function uploadOriginalDocument(
   candidate: CandidateUser,
+  kind: OriginalDocumentKind,
   file: { buffer: Buffer; mimeType: string; fileName: string; sizeBytes: number }
 ) {
   assertCandidateActor(candidate);
@@ -83,7 +122,7 @@ export async function uploadCandidateCv(
   const storage = getPrivateDocumentStorage();
   if (!storage.isConfigured()) {
     throw new Error(
-      "CV-Upload ist noch nicht konfiguriert (privater Storage fehlt). Bitte B2-Umgebungsvariablen setzen."
+      "Upload ist noch nicht konfiguriert (privater Storage fehlt). Bitte B2-Umgebungsvariablen setzen."
     );
   }
 
@@ -102,10 +141,11 @@ export async function uploadCandidateCv(
   });
 
   if (isDemoMode()) {
-    demoMeta().set(candidate.candidateId, {
+    demoMeta().set(demoKey(candidate.candidateId, kind), {
       documentId,
       candidateId: candidate.candidateId,
       accountId: candidate.accountId,
+      kind,
       fileName: validated.fileName,
       mimeType: validated.mimeType,
       sizeBytes: validated.sizeBytes,
@@ -120,7 +160,7 @@ export async function uploadCandidateCv(
     .where(
       and(
         eq(candidateDocuments.candidateId, candidate.candidateId),
-        eq(candidateDocuments.kind, "cv"),
+        eq(candidateDocuments.kind, kind),
         eq(candidateDocuments.sensitivity, "original")
       )
     );
@@ -128,7 +168,7 @@ export async function uploadCandidateCv(
   await db.insert(candidateDocuments).values({
     id: documentId,
     candidateId: candidate.candidateId,
-    kind: "cv",
+    kind,
     sensitivity: "original",
     storageBucket: bucket,
     storagePath,
@@ -143,9 +183,17 @@ export async function uploadCandidateCv(
   return { documentId, mimeType: validated.mimeType, fileName: validated.fileName };
 }
 
-export async function getCandidateCvAccess(
+export async function uploadCandidateCv(
+  candidate: CandidateUser,
+  file: { buffer: Buffer; mimeType: string; fileName: string; sizeBytes: number }
+) {
+  return uploadOriginalDocument(candidate, "cv", file);
+}
+
+export async function getOriginalDocumentAccess(
   actor: { type: "candidate"; user: CandidateUser } | { type: "staff"; user: StaffUser },
-  requestedCandidateId: string
+  requestedCandidateId: string,
+  kind: OriginalDocumentKind
 ) {
   const candidateId = resolveBoundCandidateId(actor, requestedCandidateId);
   if (actor.type === "staff") assertStaffActor(actor.user);
@@ -156,7 +204,7 @@ export async function getCandidateCvAccess(
   }
 
   if (isDemoMode()) {
-    const meta = demoMeta().get(candidateId);
+    const meta = demoMeta().get(demoKey(candidateId, kind));
     if (!meta) return null;
     const object = await storage.get(meta.storagePath);
     if (!object) return null;
@@ -170,7 +218,7 @@ export async function getCandidateCvAccess(
     .where(
       and(
         eq(candidateDocuments.candidateId, candidateId),
-        eq(candidateDocuments.kind, "cv"),
+        eq(candidateDocuments.kind, kind),
         eq(candidateDocuments.sensitivity, "original")
       )
     )
@@ -188,4 +236,11 @@ export async function getCandidateCvAccess(
     body: object.body,
     contentType: object.contentType,
   };
+}
+
+export async function getCandidateCvAccess(
+  actor: { type: "candidate"; user: CandidateUser } | { type: "staff"; user: StaffUser },
+  requestedCandidateId: string
+) {
+  return getOriginalDocumentAccess(actor, requestedCandidateId, "cv");
 }

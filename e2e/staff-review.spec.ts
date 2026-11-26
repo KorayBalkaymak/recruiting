@@ -17,6 +17,7 @@ test.describe("Staff-Review und Statusänderung (Demo)", () => {
     await reviewLink.click();
 
     await expect(page.getByTestId("staff-cv-download")).toBeVisible();
+    await expect(page.getByTestId("staff-certificate-download")).toBeVisible();
     await expect(page.getByRole("heading", { name: /Prüfung/i })).toBeVisible();
 
     const startReview = page.getByRole("button", { name: "Prüfung starten" });

@@ -36,6 +36,7 @@ import {
   assertStaffActor,
 } from "@/lib/auth/actor-binding";
 import type { CandidateUser, StaffUser } from "@/lib/auth";
+import { assertRequiredCandidateUploads } from "@/lib/candidate/cv-upload";
 import {
   notifyCandidatePortalStatus,
   notifyStaffPortalSubmitted,
@@ -447,6 +448,7 @@ export async function submitCandidateProfile(candidate: CandidateUser) {
       skills: current.skills,
     });
     if (!current.desiredRole?.trim()) throw new Error("Gewünschte Tätigkeit ist erforderlich.");
+    await assertRequiredCandidateUploads(candidate);
     return upsertDemoPortalProfile(
       candidate.candidateId,
       { status: "submitted", submittedAt: new Date().toISOString(), reviewNote: null },
@@ -465,6 +467,7 @@ export async function submitCandidateProfile(candidate: CandidateUser) {
     throw new Error("Profil kann in diesem Status nicht eingereicht werden.");
   }
   validateForSubmit(view);
+  await assertRequiredCandidateUploads(candidate);
 
   const db = getDb();
   const result = await db.execute(sql`

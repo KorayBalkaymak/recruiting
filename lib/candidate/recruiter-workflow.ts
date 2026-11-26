@@ -4,15 +4,19 @@ const DAY_MS = 86_400_000;
 
 export function hasRequiredApplicationDocument(input: {
   originalCvCount: number;
+  originalCertificateCount?: number;
   cvFilePath: string | null | undefined;
 }) {
-  return input.originalCvCount > 0 || Boolean(input.cvFilePath);
+  const hasCv = input.originalCvCount > 0 || Boolean(input.cvFilePath);
+  const hasCertificate = (input.originalCertificateCount ?? 0) > 0;
+  return hasCv && hasCertificate;
 }
 
-/** Registered portal account without a CV/application document. Not the same as an incomplete profile. */
+/** Registered portal account without required CV and qualification files. */
 export function isRegisteredWithoutUploads(input: {
   hasAccount: boolean;
   originalCvCount: number;
+  originalCertificateCount?: number;
   cvFilePath: string | null | undefined;
 }) {
   return input.hasAccount && !hasRequiredApplicationDocument(input);

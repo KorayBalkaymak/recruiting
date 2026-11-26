@@ -11,7 +11,7 @@ import {
   vacancies,
   vacancySubmissions,
 } from "@/lib/db/schema";
-import { demoHasOriginalCv } from "@/lib/candidate/cv-upload";
+import { demoHasOriginalCertificate, demoHasOriginalCv } from "@/lib/candidate/cv-upload";
 import { MISSING_DOCUMENTS_TAB } from "@/lib/candidate/recruiter-workflow";
 import { isDemoMode } from "@/lib/demo/mode";
 import { getDemoCandidateAccounts } from "@/lib/demo/candidate-accounts";
@@ -48,6 +48,21 @@ const statusOrder: CandidateStatus[] = [
 const assigned = alias(profiles, "assigned_recruiter");
 const claimed = alias(profiles, "claimed_recruiter");
 
+function hasOriginalKind(kind: "cv" | "certificate") {
+  return exists(
+    getDb()
+      .select({ id: candidateDocuments.id })
+      .from(candidateDocuments)
+      .where(
+        and(
+          eq(candidateDocuments.candidateId, candidates.id),
+          eq(candidateDocuments.kind, kind),
+          eq(candidateDocuments.sensitivity, "original")
+        )
+      )
+  );
+}
+
 function missingDocumentsWhere() {
   return and(
     exists(
@@ -56,28 +71,19 @@ function missingDocumentsWhere() {
         .from(candidateAccounts)
         .where(eq(candidateAccounts.candidateId, candidates.id))
     ),
-    not(
-      exists(
-        getDb()
-          .select({ id: candidateDocuments.id })
-          .from(candidateDocuments)
-          .where(
-            and(
-              eq(candidateDocuments.candidateId, candidates.id),
-              eq(candidateDocuments.kind, "cv"),
-              eq(candidateDocuments.sensitivity, "original")
-            )
-          )
-      )
-    ),
-    sql`${candidates.cvFilePath} is null`
+    or(
+      and(not(hasOriginalKind("cv")), sql`${candidates.cvFilePath} is null`),
+      not(hasOriginalKind("certificate"))
+    )
   );
 }
 
 function demoMissingDocumentIds() {
   const registered = new Set(getDemoCandidateAccounts().map((account) => account.candidateId));
   return (row: Record<string, unknown>) =>
-    registered.has(String(row.id)) && !row.cv_file_path && !demoHasOriginalCv(String(row.id));
+    registered.has(String(row.id)) &&
+    ((!row.cv_file_path && !demoHasOriginalCv(String(row.id))) ||
+      !demoHasOriginalCertificate(String(row.id)));
 }
 
 function mapListRow(r: {

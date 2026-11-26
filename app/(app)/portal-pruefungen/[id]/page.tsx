@@ -43,7 +43,7 @@ export default async function PortalPruefungDetailPage({
             <Row label="Qualifikationen" value={profile.qualifications.join(", ")} />
             <Row label="Zusammenfassung" value={profile.summary} />
           </dl>
-          <div className="mt-4 border-t border-surface-border pt-4">
+          <div className="mt-4 flex flex-col gap-2 border-t border-surface-border pt-4">
             <a
               href={`/api/portal-pruefungen/${profile.candidateId}/cv`}
               className="text-sm font-medium text-brand hover:underline"
@@ -51,8 +51,15 @@ export default async function PortalPruefungDetailPage({
             >
               Lebenslauf herunterladen
             </a>
-            <p className="mt-1 text-xs text-ink-muted">
-              Autorisierter Staff-Download (404, falls noch kein CV hochgeladen wurde).
+            <a
+              href={`/api/portal-pruefungen/${profile.candidateId}/qualifikationen`}
+              className="text-sm font-medium text-brand hover:underline"
+              data-testid="staff-certificate-download"
+            >
+              Qualifikationen herunterladen
+            </a>
+            <p className="text-xs text-ink-muted">
+              Autorisierter Staff-Download (404, falls die Datei noch fehlt).
             </p>
           </div>
         </div>

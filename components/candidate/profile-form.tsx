@@ -12,7 +12,15 @@ function splitCsv(value: string) {
     .filter(Boolean);
 }
 
-export function CandidateProfileForm({ profile }: { profile: CandidatePortalView }) {
+export function CandidateProfileForm({
+  profile,
+  hasCv = false,
+  hasQualifications = false,
+}: {
+  profile: CandidatePortalView;
+  hasCv?: boolean;
+  hasQualifications?: boolean;
+}) {
   const [firstName, setFirstName] = useState(profile.firstName);
   const [lastName, setLastName] = useState(profile.lastName);
   const [desiredRole, setDesiredRole] = useState(profile.desiredRole ?? "");
@@ -150,9 +158,10 @@ export function CandidateProfileForm({ profile }: { profile: CandidatePortalView
         disabled={!canEdit}
       />
       <Field
-        label="Qualifikationen (kommagetrennt)"
+        label="Qualifikationen als Stichworte (optional)"
         value={qualifications}
         onChange={setQualifications}
+        hint="Zusätzlich zur Pflicht-Datei oben, z. B. IHK, Bachelor, AWS"
         disabled={!canEdit}
       />
 
@@ -184,6 +193,12 @@ export function CandidateProfileForm({ profile }: { profile: CandidatePortalView
             startTransition(async () => {
               setError(null);
               setMessage(null);
+              if (!hasCv || !hasQualifications) {
+                setError(
+                  "Lebenslauf und Qualifikationen sind Pflichtfelder. Bitte beide Dateien oben hochladen."
+                );
+                return;
+              }
               try {
                 await saveProfileDraftAction(buildPayload());
                 await submitProfileAction();

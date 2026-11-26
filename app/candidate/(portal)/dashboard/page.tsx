@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { requireCandidate } from "@/lib/auth";
-import { getOwnCandidateCvMeta } from "@/lib/candidate/cv-upload";
+import {
+  getOwnCandidateCertificateMeta,
+  getOwnCandidateCvMeta,
+} from "@/lib/candidate/cv-upload";
 import { getCandidatePortalView } from "@/lib/candidate/portal-service";
 import { portalStatusLabels } from "@/lib/candidate/status-labels";
 import type { PortalProfileStatus } from "@/lib/candidate/portal-types";
@@ -43,7 +46,7 @@ function nextStep(status: PortalProfileStatus | undefined) {
     default:
       return {
         title: "Profil vervollständigen",
-        text: "Hinterlege Rolle, Kurzprofil und Kompetenzen — danach kannst du zur Prüfung einreichen.",
+        text: "Hinterlege Lebenslauf, Qualifikationen, Rolle und Kompetenzen — danach kannst du zur Prüfung einreichen.",
         href: "/candidate/profile",
         cta: "Profil bearbeiten",
       };
@@ -60,9 +63,10 @@ function statusChip(status: PortalProfileStatus | undefined) {
 
 export default async function CandidateDashboardPage() {
   const candidate = await requireCandidate();
-  const [profile, cv] = await Promise.all([
+  const [profile, cv, certificate] = await Promise.all([
     getCandidatePortalView(candidate),
     getOwnCandidateCvMeta(candidate).catch(() => null),
+    getOwnCandidateCertificateMeta(candidate).catch(() => null),
   ]);
   const status = profile?.status;
   const step = nextStep(status);
@@ -74,6 +78,7 @@ export default async function CandidateDashboardPage() {
     { label: "Standort", done: Boolean(profile?.city?.trim()) },
     { label: "Kompetenzen", done: (profile?.skills.length ?? 0) > 0 },
     { label: "Lebenslauf", done: Boolean(cv?.fileName) },
+    { label: "Qualifikationen", done: Boolean(certificate?.fileName) },
     {
       label: "Zur Prüfung eingereicht",
       done: Boolean(status && status !== "draft"),
@@ -192,9 +197,9 @@ export default async function CandidateDashboardPage() {
           className="group rounded-[1.25rem] border border-[#E6E8F0] bg-white px-6 py-7 transition-colors hover:border-[#141C6B]/30 hover:bg-[#F4F5FB] sm:px-8"
         >
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#141C6B]">01</p>
-          <p className="mt-3 text-xl tracking-tight text-ink">Lebenslauf & Profil</p>
+          <p className="mt-3 text-xl tracking-tight text-ink">Unterlagen & Profil</p>
           <p className="mt-2 max-w-[36ch] text-sm leading-6 text-ink-muted">
-            Unterlage hochladen sowie Angaben und Kompetenzen aktuell halten.
+            Lebenslauf und Qualifikationen hochladen sowie Angaben aktuell halten.
           </p>
           <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#141C6B]">
             Öffnen

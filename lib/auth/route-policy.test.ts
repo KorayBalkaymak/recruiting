@@ -16,6 +16,7 @@ describe("route classification (BA4.2)", () => {
     assert.equal(classifyPath("/candidate/verify-email"), "candidate_login");
     assert.equal(classifyPath("/candidate/dashboard"), "candidate");
     assert.equal(classifyPath("/api/candidate/cv"), "candidate");
+    assert.equal(classifyPath("/api/candidate/qualifikationen"), "candidate");
     assert.equal(classifyPath("/"), "public");
     assert.equal(classifyPath("/marktplatz"), "public");
     assert.equal(classifyPath("/uebersicht"), "staff");
