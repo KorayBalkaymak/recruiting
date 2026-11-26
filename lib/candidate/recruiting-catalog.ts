@@ -628,3 +628,17 @@ export function catalogTermIsValid(label: string) {
 }
 
 export const qualificationItems = qualificationGroups.flatMap((group) => group.items);
+
+/** Prefer the unique position owner, otherwise the first category that lists the term. */
+export function primaryCategoryIdForTerm(term: string): string | null {
+  const asPosition = recruitingCategories.filter((category) => category.positions.includes(term));
+  if (asPosition.length === 1) return asPosition[0].id;
+  if (asPosition.length > 1) return asPosition[0].id;
+
+  const asDiscipline = recruitingCategories.filter((category) =>
+    category.disciplines.includes(term)
+  );
+  if (asDiscipline.length === 1) return asDiscipline[0].id;
+  if (asDiscipline.length > 1) return asDiscipline[0].id;
+  return null;
+}

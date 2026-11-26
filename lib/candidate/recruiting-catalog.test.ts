@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   catalogTermIsValid,
+  primaryCategoryIdForTerm,
   qualificationGroups,
   qualificationItems,
   recruitingCategories,
@@ -38,5 +39,12 @@ describe("recruiting catalog", () => {
     assert.ok(qualificationGroups.length >= 8);
     assert.ok(qualificationItems.includes("PMP"));
     assert.ok(qualificationItems.includes("VT2"));
+  });
+
+  it("maps terms back to their home category", () => {
+    assert.equal(primaryCategoryIdForTerm("Projektleiter"), "project-management");
+    assert.equal(primaryCategoryIdForTerm("Engineering Director"), "engineering");
+    assert.equal(primaryCategoryIdForTerm("Bauleiter"), "construction-management");
+    assert.equal(primaryCategoryIdForTerm("HSE Manager"), "hse-management");
   });
 });

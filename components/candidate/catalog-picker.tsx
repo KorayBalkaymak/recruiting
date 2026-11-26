@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import {
+  primaryCategoryIdForTerm,
   qualificationGroups,
   recruitingCategories,
 } from "@/lib/candidate/recruiting-catalog";
@@ -163,6 +164,23 @@ export function KeywordCatalogPicker({
         })}
       </div>
 
+      {selected.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
+          {selected.map((item) => (
+            <Chip
+              key={item}
+              label={item}
+              selected
+              selectedClass={themeFor(primaryCategoryIdForTerm(item) ?? category.id).chip}
+              disabled={Boolean(disabled)}
+              onToggle={() => onChange(selected.filter((value) => value !== item))}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-ink-muted">Noch keine Keywords ausgewählt.</p>
+      )}
+
       <div className={cn("flex flex-col gap-4 rounded-xl p-4 sm:p-5", theme.panel)}>
         <input
           type="search"
@@ -172,23 +190,6 @@ export function KeywordCatalogPicker({
           placeholder="Position oder Gewerk suchen"
           className="rounded-md border border-black/10 bg-white px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:bg-surface-subtle"
         />
-
-        {selected.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5">
-            {selected.map((item) => (
-              <Chip
-                key={item}
-                label={item}
-                selected
-                selectedClass={theme.chip}
-                disabled={Boolean(disabled)}
-                onToggle={() => onChange(selected.filter((value) => value !== item))}
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-xs text-ink-muted">Noch keine Keywords ausgewählt.</p>
-        )}
 
         <section>
           <h3 className={cn("text-[11px] font-medium uppercase tracking-[0.16em]", theme.heading)}>
