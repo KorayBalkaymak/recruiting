@@ -232,9 +232,16 @@ export function QualificationCatalogPicker({
         .filter((group) => group.items.length > 0),
     [q]
   );
-  const splitAt = Math.ceil(visibleGroups.length / 2);
-  const orangeGroups = visibleGroups.slice(0, splitAt);
-  const navyGroups = visibleGroups.slice(splitAt);
+  const orangeGroupIds = new Set([
+    "ndt",
+    "welding",
+    "coating",
+    "quality",
+    "hse",
+    "electrical",
+  ]);
+  const orangeGroups = visibleGroups.filter((group) => orangeGroupIds.has(group.id));
+  const navyGroups = visibleGroups.filter((group) => !orangeGroupIds.has(group.id));
 
   return (
     <div className="flex flex-col gap-4">
