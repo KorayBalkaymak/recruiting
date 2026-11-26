@@ -79,6 +79,9 @@ export function CandidateProfileForm({
     }
     if (!city.trim()) return "Stadt ist ein Pflichtfeld.";
     if (!postalCode.trim()) return "PLZ ist ein Pflichtfeld.";
+    if (!splitCsv(skills).length && keywords.length === 0) {
+      return "Mindestens ein Skill oder ein Schlagwort ist erforderlich.";
+    }
     return null;
   }
 
@@ -248,14 +251,20 @@ export function CandidateProfileForm({
                 return;
               }
               try {
-                await saveProfileDraftAction(buildPayload());
+                const payload = buildPayload();
+                if (payload.skills.length === 0 && payload.keywords.length > 0) {
+                  payload.skills = payload.keywords;
+                }
+                await saveProfileDraftAction(payload);
                 await submitProfileAction();
               } catch (e) {
                 const digest =
                   typeof e === "object" && e && "digest" in e
                     ? String((e as { digest?: string }).digest)
                     : "";
-                if (digest.startsWith("NEXT_REDIRECT")) throw e;
+                if (digest.startsWith("NEXT_REDIRECT") || (e instanceof Error && e.message === "NEXT_REDIRECT")) {
+                  throw e;
+                }
                 setError(e instanceof Error ? e.message : "Einreichung fehlgeschlagen.");
               }
             })

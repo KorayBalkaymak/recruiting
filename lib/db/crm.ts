@@ -45,9 +45,12 @@ export async function insertActivityLog(input: {
   });
 
   if (input.entityType === "candidate") {
-    await db
-      .update(candidates)
-      .set({ lastRecruiterActionAt: new Date() })
-      .where(eq(candidates.id, input.entityId));
+    const { candidatesHaveClaimColumns } = await import("@/lib/db/candidate-schema-compat");
+    if (await candidatesHaveClaimColumns()) {
+      await db
+        .update(candidates)
+        .set({ lastRecruiterActionAt: new Date() })
+        .where(eq(candidates.id, input.entityId));
+    }
   }
 }

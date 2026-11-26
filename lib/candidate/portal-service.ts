@@ -413,6 +413,12 @@ export async function saveCandidateDraft(candidate: CandidateUser, input: Profil
   await replaceTermsLive(candidate.candidateId, "qualification", qualifications);
 }
 
+function skillTermsForSubmit(view: { skills: string[]; keywords?: string[] }) {
+  const skills = view.skills.map((s) => s.trim()).filter(Boolean);
+  if (skills.length > 0) return skills;
+  return (view.keywords ?? []).map((s) => s.trim()).filter(Boolean);
+}
+
 function validateForSubmit(view: {
   firstName: string;
   lastName: string;
@@ -424,6 +430,7 @@ function validateForSubmit(view: {
   postalCode: string | null;
   searchRadiusKm: number | null;
   skills: string[];
+  keywords?: string[];
 }) {
   if (!view.firstName.trim() || !view.lastName.trim()) {
     throw new Error("Vor- und Nachname sind erforderlich.");
@@ -438,7 +445,9 @@ function validateForSubmit(view: {
   if (!view.postalCode?.trim()) throw new Error("PLZ ist erforderlich.");
   if (view.searchRadiusKm == null) throw new Error("Suchradius ist erforderlich.");
   assertSearchRadius(view.searchRadiusKm);
-  if (view.skills.length < 1) throw new Error("Mindestens ein Skill ist erforderlich.");
+  if (skillTermsForSubmit(view).length < 1) {
+    throw new Error("Mindestens ein Skill oder ein Schlagwort ist erforderlich.");
+  }
 }
 
 export async function submitCandidateProfile(candidate: CandidateUser) {
@@ -460,6 +469,7 @@ export async function submitCandidateProfile(candidate: CandidateUser) {
       postalCode: current.postalCode,
       searchRadiusKm: current.searchRadiusKm,
       skills: current.skills,
+      keywords: current.keywords,
     });
     await assertRequiredCandidateUploads(candidate);
     return upsertDemoPortalProfile(
@@ -483,6 +493,10 @@ export async function submitCandidateProfile(candidate: CandidateUser) {
   await assertRequiredCandidateUploads(candidate);
 
   const db = getDb();
+  const skillsForSubmit = skillTermsForSubmit(view);
+  if (view.skills.length === 0 && skillsForSubmit.length > 0) {
+    await replaceTermsLive(candidate.candidateId, "skill", skillsForSubmit);
+  }
   const result = await db.execute(sql`
     WITH updated AS (
       UPDATE candidate_portal_profiles

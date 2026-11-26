@@ -17,6 +17,7 @@ import { isDemoMode } from "@/lib/demo/mode";
 import { getDemoCandidateAccounts } from "@/lib/demo/candidate-accounts";
 import { getDemoStore } from "@/lib/demo/store";
 import { num, toIso, toIsoRequired } from "@/lib/db/crm";
+import { candidatesHaveClaimColumns } from "@/lib/db/candidate-schema-compat";
 import type { CandidateStatus } from "@/types/supabase";
 
 export type CandidateListItem = {
@@ -240,6 +241,41 @@ export async function getCandidates(tab: string, search?: string) {
     );
   }
 
+  const where = filters.length ? and(...filters) : undefined;
+  const hasClaimCols = await candidatesHaveClaimColumns();
+
+  if (!hasClaimCols) {
+    const rows = await db
+      .select({
+        id: candidates.id,
+        firstName: candidates.firstName,
+        lastName: candidates.lastName,
+        email: candidates.email,
+        anonymizedTitle: candidates.anonymizedTitle,
+        status: candidates.status,
+        location: candidates.location,
+        hourlyRateNet: candidates.hourlyRateNet,
+        availabilityDate: candidates.availabilityDate,
+        createdAt: candidates.createdAt,
+        updatedAt: candidates.updatedAt,
+        recruiterName: assigned.fullName,
+      })
+      .from(candidates)
+      .leftJoin(assigned, eq(assigned.id, candidates.assignedRecruiterId))
+      .where(where)
+      .orderBy(desc(candidates.updatedAt));
+
+    return rows.map((r) =>
+      mapListRow({
+        ...r,
+        lastRecruiterActionAt: null,
+        claimedById: null,
+        claimedByName: null,
+        claimedAt: null,
+      })
+    );
+  }
+
   const rows = await db
     .select({
       id: candidates.id,
@@ -262,7 +298,7 @@ export async function getCandidates(tab: string, search?: string) {
     .from(candidates)
     .leftJoin(assigned, eq(assigned.id, candidates.assignedRecruiterId))
     .leftJoin(claimed, eq(claimed.id, candidates.claimedByProfileId))
-    .where(filters.length ? and(...filters) : undefined)
+    .where(where)
     .orderBy(desc(candidates.updatedAt));
 
   return rows.map(mapListRow);
@@ -293,19 +329,68 @@ export async function getCandidateById(id: string) {
   }
 
   const db = getDb();
-  const [row] = await db
-    .select({
-      candidate: candidates,
-      recruiterId: assigned.id,
-      recruiterName: assigned.fullName,
-      claimedById: claimed.id,
-      claimedByName: claimed.fullName,
-    })
-    .from(candidates)
-    .leftJoin(assigned, eq(assigned.id, candidates.assignedRecruiterId))
-    .leftJoin(claimed, eq(claimed.id, candidates.claimedByProfileId))
-    .where(eq(candidates.id, id))
-    .limit(1);
+  const hasClaimCols = await candidatesHaveClaimColumns();
+  const [row] = hasClaimCols
+    ? await db
+        .select({
+          id: candidates.id,
+          firstName: candidates.firstName,
+          lastName: candidates.lastName,
+          email: candidates.email,
+          phone: candidates.phone,
+          anonymizedTitle: candidates.anonymizedTitle,
+          anonymizedProfile: candidates.anonymizedProfile,
+          status: candidates.status,
+          desiredSalaryMin: candidates.desiredSalaryMin,
+          desiredSalaryMax: candidates.desiredSalaryMax,
+          hourlyRateNet: candidates.hourlyRateNet,
+          availabilityDate: candidates.availabilityDate,
+          location: candidates.location,
+          assignedRecruiterId: candidates.assignedRecruiterId,
+          cvFilePath: candidates.cvFilePath,
+          exposeFilePath: candidates.exposeFilePath,
+          lastRecruiterActionAt: candidates.lastRecruiterActionAt,
+          claimedByProfileId: candidates.claimedByProfileId,
+          claimedAt: candidates.claimedAt,
+          createdAt: candidates.createdAt,
+          updatedAt: candidates.updatedAt,
+          recruiterId: assigned.id,
+          recruiterName: assigned.fullName,
+          claimedById: claimed.id,
+          claimedByName: claimed.fullName,
+        })
+        .from(candidates)
+        .leftJoin(assigned, eq(assigned.id, candidates.assignedRecruiterId))
+        .leftJoin(claimed, eq(claimed.id, candidates.claimedByProfileId))
+        .where(eq(candidates.id, id))
+        .limit(1)
+    : await db
+        .select({
+          id: candidates.id,
+          firstName: candidates.firstName,
+          lastName: candidates.lastName,
+          email: candidates.email,
+          phone: candidates.phone,
+          anonymizedTitle: candidates.anonymizedTitle,
+          anonymizedProfile: candidates.anonymizedProfile,
+          status: candidates.status,
+          desiredSalaryMin: candidates.desiredSalaryMin,
+          desiredSalaryMax: candidates.desiredSalaryMax,
+          hourlyRateNet: candidates.hourlyRateNet,
+          availabilityDate: candidates.availabilityDate,
+          location: candidates.location,
+          assignedRecruiterId: candidates.assignedRecruiterId,
+          cvFilePath: candidates.cvFilePath,
+          exposeFilePath: candidates.exposeFilePath,
+          createdAt: candidates.createdAt,
+          updatedAt: candidates.updatedAt,
+          recruiterId: assigned.id,
+          recruiterName: assigned.fullName,
+        })
+        .from(candidates)
+        .leftJoin(assigned, eq(assigned.id, candidates.assignedRecruiterId))
+        .where(eq(candidates.id, id))
+        .limit(1);
 
   if (!row) throw new Error("Kandidat nicht gefunden.");
 
@@ -321,33 +406,35 @@ export async function getCandidateById(id: string) {
     .leftJoin(vacancies, eq(vacancies.id, vacancySubmissions.vacancyId))
     .where(eq(vacancySubmissions.candidateId, id));
 
-  const c = row.candidate;
   return {
-    id: c.id,
-    first_name: c.firstName,
-    last_name: c.lastName,
-    email: c.email,
-    phone: c.phone,
-    anonymized_title: c.anonymizedTitle,
-    anonymized_profile: c.anonymizedProfile,
-    status: c.status,
-    desired_salary_min: num(c.desiredSalaryMin),
-    desired_salary_max: num(c.desiredSalaryMax),
-    hourly_rate_net: num(c.hourlyRateNet),
-    availability_date: c.availabilityDate,
-    location: c.location,
-    assigned_recruiter_id: c.assignedRecruiterId,
-    cv_file_path: c.cvFilePath,
-    exposé_file_path: c.exposeFilePath,
-    last_recruiter_action_at: toIso(c.lastRecruiterActionAt),
-    claimed_by_profile_id: c.claimedByProfileId,
-    claimed_at: toIso(c.claimedAt),
-    created_at: toIsoRequired(c.createdAt),
-    updated_at: toIsoRequired(c.updatedAt),
+    id: row.id,
+    first_name: row.firstName,
+    last_name: row.lastName,
+    email: row.email,
+    phone: row.phone,
+    anonymized_title: row.anonymizedTitle,
+    anonymized_profile: row.anonymizedProfile,
+    status: row.status,
+    desired_salary_min: num(row.desiredSalaryMin),
+    desired_salary_max: num(row.desiredSalaryMax),
+    hourly_rate_net: num(row.hourlyRateNet),
+    availability_date: row.availabilityDate,
+    location: row.location,
+    assigned_recruiter_id: row.assignedRecruiterId,
+    cv_file_path: row.cvFilePath,
+    exposé_file_path: row.exposeFilePath,
+    last_recruiter_action_at: "lastRecruiterActionAt" in row ? toIso(row.lastRecruiterActionAt) : null,
+    claimed_by_profile_id: "claimedByProfileId" in row ? row.claimedByProfileId : null,
+    claimed_at: "claimedAt" in row ? toIso(row.claimedAt) : null,
+    created_at: toIsoRequired(row.createdAt),
+    updated_at: toIsoRequired(row.updatedAt),
     assigned_recruiter: row.recruiterId
       ? { id: row.recruiterId, full_name: row.recruiterName }
       : null,
-    claimed_by: row.claimedById && row.claimedByName ? { id: row.claimedById, full_name: row.claimedByName } : null,
+    claimed_by:
+      "claimedById" in row && row.claimedById && row.claimedByName
+        ? { id: row.claimedById, full_name: row.claimedByName }
+        : null,
     submissions: submissions.map((s) => ({
       id: s.id,
       status: s.status,

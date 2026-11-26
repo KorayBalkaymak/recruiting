@@ -40,8 +40,16 @@ async function getSubmissions(status: string) {
   const db = getDb();
   const rows = await db
     .select({
-      submission: vacancySubmissions,
-      candidate: candidates,
+      id: vacancySubmissions.id,
+      matchScore: vacancySubmissions.matchScore,
+      status: vacancySubmissions.status,
+      submittedAt: vacancySubmissions.submittedAt,
+      createdAt: vacancySubmissions.createdAt,
+      candidateId: candidates.id,
+      firstName: candidates.firstName,
+      lastName: candidates.lastName,
+      anonymizedTitle: candidates.anonymizedTitle,
+      hourlyRateNet: candidates.hourlyRateNet,
       vacancyId: vacancies.id,
       vacancyTitle: vacancies.title,
       companyId: companies.id,
@@ -54,17 +62,17 @@ async function getSubmissions(status: string) {
     .orderBy(desc(vacancySubmissions.createdAt));
 
   const mapped = rows.map((r) => ({
-    id: r.submission.id,
-    match_score: num(r.submission.matchScore),
-    status: r.submission.status,
-    submitted_at: r.submission.submittedAt ? toIsoRequired(r.submission.submittedAt) : null,
-    created_at: toIsoRequired(r.submission.createdAt),
+    id: r.id,
+    match_score: num(r.matchScore),
+    status: r.status,
+    submitted_at: r.submittedAt ? toIsoRequired(r.submittedAt) : null,
+    created_at: toIsoRequired(r.createdAt),
     candidate: {
-      id: r.candidate.id,
-      first_name: r.candidate.firstName,
-      last_name: r.candidate.lastName,
-      anonymized_title: r.candidate.anonymizedTitle,
-      hourly_rate_net: num(r.candidate.hourlyRateNet),
+      id: r.candidateId,
+      first_name: r.firstName,
+      last_name: r.lastName,
+      anonymized_title: r.anonymizedTitle,
+      hourly_rate_net: num(r.hourlyRateNet),
     },
     vacancy: {
       id: r.vacancyId,
@@ -86,12 +94,10 @@ export default async function EinreichungenPage({
   const submissions = await getSubmissions(status);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <div>
         <h1 className="text-xl font-semibold text-ink">Einreichungen</h1>
-        <p className="text-sm text-ink-muted">
-          Alle Kandidaten-Einreichungen über alle Vakanzen hinweg im Überblick.
-        </p>
+        <p className="text-sm text-ink-muted">Kandidaten-Einreichungen über alle Vakanzen hinweg.</p>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
@@ -101,8 +107,8 @@ export default async function EinreichungenPage({
             href={f.value === "alle" ? "/einreichungen" : `/einreichungen?status=${f.value}`}
             className={
               status === f.value
-                ? "rounded-full bg-brand px-3 py-1.5 text-xs font-medium text-white"
-                : "rounded-full border border-surface-border px-3 py-1.5 text-xs text-ink-muted hover:border-brand hover:text-brand"
+                ? "border border-brand bg-brand-light px-3 py-1.5 text-xs font-medium text-brand-deep"
+                : "border border-surface-border px-3 py-1.5 text-xs text-ink-muted hover:border-brand hover:text-brand-deep"
             }
           >
             {f.label}
@@ -150,7 +156,7 @@ export default async function EinreichungenPage({
                 </div>
               </li>
             ))}
-          </ul>
+            </ul>
         )}
       </div>
     </div>

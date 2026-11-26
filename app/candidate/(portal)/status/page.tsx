@@ -4,8 +4,13 @@ import {
   getCandidateReviewEvents,
 } from "@/lib/candidate/portal-service";
 import { portalStatusLabels } from "@/lib/candidate/status-labels";
+import { SubmitSuccessToast } from "@/components/candidate/submit-success-toast";
 
-export default async function CandidateStatusPage() {
+export default async function CandidateStatusPage({
+  searchParams,
+}: {
+  searchParams: { sent?: string };
+}) {
   const candidate = await requireCandidate();
   const profile = await getCandidatePortalView(candidate);
   const events = await getCandidateReviewEvents(
@@ -15,6 +20,7 @@ export default async function CandidateStatusPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <SubmitSuccessToast show={searchParams.sent === "1"} />
       <div>
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-brand">Prüfung</p>
         <h1 className="mt-2 text-[1.85rem] font-normal tracking-tight text-ink">Aktueller Stand</h1>

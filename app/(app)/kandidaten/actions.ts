@@ -110,6 +110,11 @@ export async function claimCandidate(candidateId: string) {
     return {};
   }
 
+  const { candidatesHaveClaimColumns } = await import("@/lib/db/candidate-schema-compat");
+  if (!(await candidatesHaveClaimColumns())) {
+    return { error: "Übernahme ist in dieser Datenbank noch nicht verfügbar." };
+  }
+
   const db = getDb();
   const taken = await db
     .update(candidates)
@@ -162,6 +167,11 @@ export async function releaseCandidateClaim(candidateId: string) {
     row.last_recruiter_action_at = now.toISOString();
     revalidateCandidate(candidateId);
     return {};
+  }
+
+  const { candidatesHaveClaimColumns } = await import("@/lib/db/candidate-schema-compat");
+  if (!(await candidatesHaveClaimColumns())) {
+    return { error: "Übernahme ist in dieser Datenbank noch nicht verfügbar." };
   }
 
   const db = getDb();

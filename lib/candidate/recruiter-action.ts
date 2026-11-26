@@ -15,6 +15,9 @@ export async function markCandidateRecruiterAction(candidateId: string, at = new
     return;
   }
 
+  const { candidatesHaveClaimColumns } = await import("@/lib/db/candidate-schema-compat");
+  if (!(await candidatesHaveClaimColumns())) return;
+
   await getDb()
     .update(candidates)
     .set({ lastRecruiterActionAt: at })

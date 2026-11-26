@@ -187,7 +187,13 @@ export async function getVacancyById(id: string) {
   const submissionRows = await db
     .select({
       submission: vacancySubmissions,
-      candidate: candidates,
+      candidateId: candidates.id,
+      candidateFirstName: candidates.firstName,
+      candidateLastName: candidates.lastName,
+      candidateTitle: candidates.anonymizedTitle,
+      candidateStatus: candidates.status,
+      candidateRate: candidates.hourlyRateNet,
+      candidateLocation: candidates.location,
     })
     .from(vacancySubmissions)
     .innerJoin(candidates, eq(candidates.id, vacancySubmissions.candidateId))
@@ -243,20 +249,20 @@ export async function getVacancyById(id: string) {
           last_name: filled[0].lastName,
         }
       : null,
-    submissions: submissionRows.map(({ submission: s, candidate: c }) => ({
-      id: s.id,
-      match_score: num(s.matchScore),
-      status: s.status,
-      submitted_at: toIso(s.submittedAt),
-      feedback: s.feedback,
+    submissions: submissionRows.map((row) => ({
+      id: row.submission.id,
+      match_score: num(row.submission.matchScore),
+      status: row.submission.status,
+      submitted_at: toIso(row.submission.submittedAt),
+      feedback: row.submission.feedback,
       candidate: {
-        id: c.id,
-        first_name: c.firstName,
-        last_name: c.lastName,
-        anonymized_title: c.anonymizedTitle,
-        status: c.status,
-        hourly_rate_net: num(c.hourlyRateNet),
-        location: c.location,
+        id: row.candidateId,
+        first_name: row.candidateFirstName,
+        last_name: row.candidateLastName,
+        anonymized_title: row.candidateTitle,
+        status: row.candidateStatus,
+        hourly_rate_net: num(row.candidateRate),
+        location: row.candidateLocation,
       },
     })),
   };

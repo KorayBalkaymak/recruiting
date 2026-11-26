@@ -264,5 +264,6 @@ export async function submitProfileAction() {
   revalidatePath("/candidate/profile");
   revalidatePath("/candidate/status");
   revalidatePath("/portal-pruefungen");
-  redirect("/candidate/status");
+  revalidatePath("/uebersicht");
+  redirect("/candidate/status?sent=1");
 }
