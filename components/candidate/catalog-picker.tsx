@@ -1,0 +1,255 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import {
+  qualificationGroups,
+  recruitingCategories,
+} from "@/lib/candidate/recruiting-catalog";
+import { MAX_TERMS_PER_KIND } from "@/lib/candidate/terms";
+import { cn } from "@/lib/utils";
+
+function matchesQuery(label: string, query: string) {
+  if (!query) return true;
+  return label.toLowerCase().includes(query);
+}
+
+function toggleValue(list: string[], value: string) {
+  if (list.includes(value)) return list.filter((item) => item !== value);
+  if (list.length >= MAX_TERMS_PER_KIND) return list;
+  return [...list, value];
+}
+
+function Chip({
+  label,
+  selected,
+  disabled,
+  onToggle,
+}: {
+  label: string;
+  selected: boolean;
+  disabled: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      aria-pressed={selected}
+      onClick={onToggle}
+      className={cn(
+        "rounded-full border px-3 py-1.5 text-left text-[13px] leading-5 transition-colors",
+        selected
+          ? "border-[#141C6B] bg-[#141C6B] text-white"
+          : "border-[#D8DCE8] bg-white text-ink hover:border-[#141C6B]/40",
+        disabled && "cursor-not-allowed opacity-60"
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
+export function KeywordCatalogPicker({
+  selected,
+  onChange,
+  disabled,
+}: {
+  selected: string[];
+  onChange: (next: string[]) => void;
+  disabled?: boolean;
+}) {
+  const [activeId, setActiveId] = useState(recruitingCategories[0]?.id ?? "");
+  const [query, setQuery] = useState("");
+  const category = recruitingCategories.find((item) => item.id === activeId) ?? recruitingCategories[0];
+  const q = query.trim().toLowerCase();
+  const positions = useMemo(
+    () => (category ? category.positions.filter((item) => matchesQuery(item, q)) : []),
+    [category, q]
+  );
+  const disciplines = useMemo(
+    () => (category ? category.disciplines.filter((item) => matchesQuery(item, q)) : []),
+    [category, q]
+  );
+
+  if (!category) return null;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <p className="text-sm font-medium text-ink">Suchbegriffe / Keywords</p>
+        <p className="mt-1 text-xs leading-5 text-ink-muted">
+          Oberbegriff wählen, darunter Positionen und danach Fachbereiche / Gewerke anklicken.
+        </p>
+      </div>
+
+      <div className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
+        {recruitingCategories.map((item) => {
+          const active = item.id === category.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              disabled={disabled}
+              onClick={() => setActiveId(item.id)}
+              className={cn(
+                "shrink-0 rounded-md px-3 py-2 text-left text-[12px] font-semibold uppercase tracking-[0.08em] transition-colors",
+                active ? "bg-[#141C6B] text-white" : "bg-[#F4F5FB] text-[#141C6B] hover:bg-[#E8EAF5]"
+              )}
+            >
+              {item.code}
+              <span className="mt-0.5 block max-w-[11rem] truncate text-[11px] font-medium normal-case tracking-normal">
+                {item.title}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <input
+        type="search"
+        value={query}
+        disabled={disabled}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder="Position oder Gewerk suchen"
+        className="rounded-md border border-surface-border px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:bg-surface-subtle"
+      />
+
+      {selected.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
+          {selected.map((item) => (
+            <Chip
+              key={item}
+              label={item}
+              selected
+              disabled={Boolean(disabled)}
+              onToggle={() => onChange(selected.filter((value) => value !== item))}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-ink-muted">Noch keine Keywords ausgewählt.</p>
+      )}
+
+      <section>
+        <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#141C6B]">
+          Positionen
+        </h3>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {positions.map((item) => (
+            <Chip
+              key={item}
+              label={item}
+              selected={selected.includes(item)}
+              disabled={Boolean(disabled)}
+              onToggle={() => onChange(toggleValue(selected, item))}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#141C6B]">
+          Fachbereiche / Gewerke
+        </h3>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {disciplines.map((item) => (
+            <Chip
+              key={item}
+              label={item}
+              selected={selected.includes(item)}
+              disabled={Boolean(disabled)}
+              onToggle={() => onChange(toggleValue(selected, item))}
+            />
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export function QualificationCatalogPicker({
+  selected,
+  onChange,
+  disabled,
+}: {
+  selected: string[];
+  onChange: (next: string[]) => void;
+  disabled?: boolean;
+}) {
+  const [activeId, setActiveId] = useState(qualificationGroups[0]?.id ?? "");
+  const [query, setQuery] = useState("");
+  const group = qualificationGroups.find((item) => item.id === activeId) ?? qualificationGroups[0];
+  const q = query.trim().toLowerCase();
+  const items = useMemo(
+    () => (group ? group.items.filter((item) => matchesQuery(item, q)) : []),
+    [group, q]
+  );
+
+  if (!group) return null;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <p className="text-sm font-medium text-ink">Qualifikationen / Zertifikate</p>
+        <p className="mt-1 text-xs leading-5 text-ink-muted">
+          Gruppe wählen und Zertifikate anklicken — zusätzlich zur hochgeladenen Datei.
+        </p>
+      </div>
+
+      <div className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
+        {qualificationGroups.map((item) => {
+          const active = item.id === group.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              disabled={disabled}
+              onClick={() => setActiveId(item.id)}
+              className={cn(
+                "shrink-0 rounded-md px-3 py-2 text-[12px] font-medium transition-colors",
+                active ? "bg-[#141C6B] text-white" : "bg-[#F4F5FB] text-[#141C6B] hover:bg-[#E8EAF5]"
+              )}
+            >
+              {item.title}
+            </button>
+          );
+        })}
+      </div>
+
+      <input
+        type="search"
+        value={query}
+        disabled={disabled}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder="Zertifikat suchen"
+        className="rounded-md border border-surface-border px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:bg-surface-subtle"
+      />
+
+      {selected.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
+          {selected.map((item) => (
+            <Chip
+              key={item}
+              label={item}
+              selected
+              disabled={Boolean(disabled)}
+              onToggle={() => onChange(selected.filter((value) => value !== item))}
+            />
+          ))}
+        </div>
+      ) : null}
+
+      <div className="flex flex-wrap gap-1.5">
+        {items.map((item) => (
+          <Chip
+            key={item}
+            label={item}
+            selected={selected.includes(item)}
+            disabled={Boolean(disabled)}
+            onToggle={() => onChange(toggleValue(selected, item))}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

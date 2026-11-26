@@ -2,6 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { saveProfileDraftAction, submitProfileAction } from "@/app/candidate/actions";
+import {
+  KeywordCatalogPicker,
+  QualificationCatalogPicker,
+} from "@/components/candidate/catalog-picker";
 import type { CandidatePortalView } from "@/lib/candidate/portal-service";
 import { portalStatusLabels } from "@/lib/candidate/status-labels";
 
@@ -35,8 +39,8 @@ export function CandidateProfileForm({
     profile.searchRadiusKm != null ? String(profile.searchRadiusKm) : "50"
   );
   const [skills, setSkills] = useState(profile.skills.join(", "));
-  const [keywords, setKeywords] = useState(profile.keywords.join(", "));
-  const [qualifications, setQualifications] = useState(profile.qualifications.join(", "));
+  const [keywords, setKeywords] = useState<string[]>(profile.keywords);
+  const [qualifications, setQualifications] = useState<string[]>(profile.qualifications);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -66,8 +70,8 @@ export function CandidateProfileForm({
       country,
       searchRadiusKm: Number(searchRadiusKm),
       skills: splitCsv(skills),
-      keywords: splitCsv(keywords),
-      qualifications: splitCsv(qualifications),
+      keywords,
+      qualifications,
     };
   }
 
@@ -151,17 +155,10 @@ export function CandidateProfileForm({
         hint="z. B. TypeScript, React, PostgreSQL"
         disabled={!canEdit}
       />
-      <Field
-        label="Suchbegriffe / Keywords (kommagetrennt)"
-        value={keywords}
-        onChange={setKeywords}
-        disabled={!canEdit}
-      />
-      <Field
-        label="Qualifikationen als Stichworte (optional)"
-        value={qualifications}
+      <KeywordCatalogPicker selected={keywords} onChange={setKeywords} disabled={!canEdit} />
+      <QualificationCatalogPicker
+        selected={qualifications}
         onChange={setQualifications}
-        hint="Zusätzlich zur Pflicht-Datei oben, z. B. IHK, Bachelor, AWS"
         disabled={!canEdit}
       />
 

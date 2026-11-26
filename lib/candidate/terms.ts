@@ -1,4 +1,4 @@
-export const MAX_TERMS_PER_KIND = 30;
+export const MAX_TERMS_PER_KIND = 80;
 export const MAX_TERM_LENGTH = 64;
 export const MIN_SEARCH_RADIUS_KM = 1;
 export const MAX_SEARCH_RADIUS_KM = 200;
