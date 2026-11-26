@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies, headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
   CANDIDATE_VERIFY_EMAIL_PATH,
@@ -259,4 +260,9 @@ export async function saveProfileDraftAction(input: ProfileSaveInput) {
 export async function submitProfileAction() {
   const candidate = await requireCandidate();
   await submitCandidateProfile(candidate);
+  revalidatePath("/candidate/dashboard");
+  revalidatePath("/candidate/profile");
+  revalidatePath("/candidate/status");
+  revalidatePath("/portal-pruefungen");
+  redirect("/candidate/status");
 }

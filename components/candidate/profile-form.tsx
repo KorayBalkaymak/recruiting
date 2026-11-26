@@ -250,8 +250,12 @@ export function CandidateProfileForm({
               try {
                 await saveProfileDraftAction(buildPayload());
                 await submitProfileAction();
-                setMessage("Profil zur Prüfung eingereicht.");
               } catch (e) {
+                const digest =
+                  typeof e === "object" && e && "digest" in e
+                    ? String((e as { digest?: string }).digest)
+                    : "";
+                if (digest.startsWith("NEXT_REDIRECT")) throw e;
                 setError(e instanceof Error ? e.message : "Einreichung fehlgeschlagen.");
               }
             })
