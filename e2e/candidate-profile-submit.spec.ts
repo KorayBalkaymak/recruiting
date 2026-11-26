@@ -29,7 +29,10 @@ test.describe("Kandidatenprofil und Bewerbung (Demo)", () => {
     await page.getByLabel("Vorname").fill("Profil");
     await page.getByLabel("Nachname").fill("Tester");
     await page.getByLabel(/Gewünschte Tätigkeit/i).fill("Frontend Engineer");
+    await page.getByLabel(/^Kurzprofil/).fill("Frontend-Entwickler mit Fokus auf React.");
+    await page.getByLabel(/Berufserfahrung/).fill("5");
     await page.getByLabel(/Stadt/).fill("Berlin");
+    await page.getByLabel(/^PLZ/).fill("10115");
     await page.getByRole("button", { name: "50 km" }).click();
     await page.getByLabel(/Skills/i).fill("React, TypeScript");
     await page.getByRole("button", { name: "Zur Prüfung einreichen" }).click();

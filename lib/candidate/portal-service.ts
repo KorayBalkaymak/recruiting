@@ -416,16 +416,26 @@ export async function saveCandidateDraft(candidate: CandidateUser, input: Profil
 function validateForSubmit(view: {
   firstName: string;
   lastName: string;
+  email: string | null;
   desiredRole: string | null;
+  summary: string | null;
+  yearsExperience: number | null;
   city: string | null;
+  postalCode: string | null;
   searchRadiusKm: number | null;
   skills: string[];
 }) {
   if (!view.firstName.trim() || !view.lastName.trim()) {
     throw new Error("Vor- und Nachname sind erforderlich.");
   }
+  if (!view.email?.trim()) throw new Error("E-Mail ist erforderlich.");
   if (!view.desiredRole?.trim()) throw new Error("Gewünschte Tätigkeit ist erforderlich.");
-  if (!view.city?.trim()) throw new Error("Standort ist erforderlich.");
+  if (!view.summary?.trim()) throw new Error("Kurzprofil ist erforderlich.");
+  if (view.yearsExperience == null || !Number.isFinite(view.yearsExperience)) {
+    throw new Error("Berufserfahrung ist erforderlich.");
+  }
+  if (!view.city?.trim()) throw new Error("Stadt ist erforderlich.");
+  if (!view.postalCode?.trim()) throw new Error("PLZ ist erforderlich.");
   if (view.searchRadiusKm == null) throw new Error("Suchradius ist erforderlich.");
   assertSearchRadius(view.searchRadiusKm);
   if (view.skills.length < 1) throw new Error("Mindestens ein Skill ist erforderlich.");
@@ -440,14 +450,17 @@ export async function submitCandidateProfile(candidate: CandidateUser) {
       throw new Error("Profil kann in diesem Status nicht eingereicht werden.");
     }
     validateForSubmit({
-      firstName: candidate.fullName,
-      lastName: "-",
+      firstName: candidate.fullName.split(" ")[0] ?? candidate.fullName,
+      lastName: candidate.fullName.split(" ").slice(1).join(" ") || "-",
+      email: candidate.email,
       desiredRole: current.desiredRole,
+      summary: current.summary,
+      yearsExperience: current.yearsExperience,
       city: current.city,
+      postalCode: current.postalCode,
       searchRadiusKm: current.searchRadiusKm,
       skills: current.skills,
     });
-    if (!current.desiredRole?.trim()) throw new Error("Gewünschte Tätigkeit ist erforderlich.");
     await assertRequiredCandidateUploads(candidate);
     return upsertDemoPortalProfile(
       candidate.candidateId,

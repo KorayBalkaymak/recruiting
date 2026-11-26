@@ -66,6 +66,22 @@ export function CandidateProfileForm({
         ? "Abgelehnte Profile können nicht bearbeitet werden."
         : null;
 
+  function submitBlocker() {
+    if (!hasCv || !hasQualifications) {
+      return "Lebenslauf und Qualifikationen sind Pflichtfelder. Bitte beide Dateien oben hochladen.";
+    }
+    if (!firstName.trim() || !lastName.trim()) return "Vor- und Nachname sind Pflichtfelder.";
+    if (!profile.email?.trim()) return "E-Mail ist ein Pflichtfeld.";
+    if (!desiredRole.trim()) return "Gewünschte Tätigkeit ist ein Pflichtfeld.";
+    if (!summary.trim()) return "Kurzprofil ist ein Pflichtfeld.";
+    if (!yearsExperience.trim() || !Number.isFinite(Number(yearsExperience))) {
+      return "Berufserfahrung ist ein Pflichtfeld.";
+    }
+    if (!city.trim()) return "Stadt ist ein Pflichtfeld.";
+    if (!postalCode.trim()) return "PLZ ist ein Pflichtfeld.";
+    return null;
+  }
+
   function buildPayload() {
     const years = yearsExperience.trim() ? Number(yearsExperience) : null;
     return {
@@ -119,7 +135,13 @@ export function CandidateProfileForm({
           disabled={!canEdit}
         />
       </div>
-      <Field label="E-Mail" value={profile.email ?? ""} onChange={() => undefined} disabled />
+      <Field
+        label="E-Mail"
+        value={profile.email ?? ""}
+        onChange={() => undefined}
+        required
+        disabled
+      />
       <Field
         label="Gewünschte Tätigkeit / Beruf"
         value={desiredRole}
@@ -128,11 +150,12 @@ export function CandidateProfileForm({
         disabled={!canEdit}
       />
       <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-medium text-ink">Kurzprofil</span>
+        <span className="font-medium text-ink">Kurzprofil *</span>
         <textarea
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
           rows={4}
+          required
           disabled={!canEdit}
           className="rounded-md border border-surface-border px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:bg-surface-subtle"
         />
@@ -142,11 +165,12 @@ export function CandidateProfileForm({
         value={yearsExperience}
         onChange={setYearsExperience}
         type="number"
+        required
         disabled={!canEdit}
       />
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Stadt / Standort" value={city} onChange={setCity} required disabled={!canEdit} />
-        <Field label="PLZ" value={postalCode} onChange={setPostalCode} disabled={!canEdit} />
+        <Field label="PLZ" value={postalCode} onChange={setPostalCode} required disabled={!canEdit} />
         <Field label="Land" value={country} onChange={setCountry} disabled={!canEdit} />
       </div>
       <div>
@@ -218,10 +242,9 @@ export function CandidateProfileForm({
             startTransition(async () => {
               setError(null);
               setMessage(null);
-              if (!hasCv || !hasQualifications) {
-                setError(
-                  "Lebenslauf und Qualifikationen sind Pflichtfelder. Bitte beide Dateien oben hochladen."
-                );
+              const blocked = submitBlocker();
+              if (blocked) {
+                setError(blocked);
                 return;
               }
               try {
@@ -260,7 +283,10 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-1.5 text-sm">
-      <span className="font-medium text-ink">{label}</span>
+      <span className="font-medium text-ink">
+        {label}
+        {required ? " *" : ""}
+      </span>
       <input
         type={type}
         value={value}
