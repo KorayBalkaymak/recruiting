@@ -52,12 +52,14 @@ function Chip({
   disabled,
   onToggle,
   onDark,
+  onOrange,
 }: {
   label: string;
   selected: boolean;
   disabled: boolean;
   onToggle: () => void;
   onDark?: boolean;
+  onOrange?: boolean;
 }) {
   return (
     <button
@@ -67,13 +69,17 @@ function Chip({
       onClick={onToggle}
       className={cn(
         "rounded-full border px-3 py-1.5 text-left text-[13px] leading-5 transition-colors",
-        onDark
+        onOrange
           ? selected
-            ? "border-white bg-white text-[#141C6B]"
-            : "border-white/20 bg-[#1C2A8A] text-white hover:border-white/45 hover:bg-[#2436A0]"
-          : selected
-            ? "border-[#141C6B] bg-[#141C6B] text-white"
-            : "border-[#D8DCE8] bg-white text-ink hover:border-[#141C6B]/40",
+            ? "border-white bg-white text-brand"
+            : "border-white/25 bg-white/15 text-white hover:border-white/50 hover:bg-white/25"
+          : onDark
+            ? selected
+              ? "border-white bg-white text-[#141C6B]"
+              : "border-white/20 bg-[#1C2A8A] text-white hover:border-white/45 hover:bg-[#2436A0]"
+            : selected
+              ? "border-[#141C6B] bg-[#141C6B] text-white"
+              : "border-[#D8DCE8] bg-white text-ink hover:border-[#141C6B]/40",
         disabled && "cursor-not-allowed opacity-60"
       )}
     >
@@ -226,6 +232,9 @@ export function QualificationCatalogPicker({
         .filter((group) => group.items.length > 0),
     [q]
   );
+  const splitAt = Math.ceil(visibleGroups.length / 2);
+  const orangeGroups = visibleGroups.slice(0, splitAt);
+  const navyGroups = visibleGroups.slice(splitAt);
 
   return (
     <div className="flex flex-col gap-4">
@@ -259,25 +268,53 @@ export function QualificationCatalogPicker({
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-5">
-        {visibleGroups.map((group) => (
-          <section key={group.id}>
-            <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#141C6B]">
-              {group.title}
-            </h3>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {group.items.map((item) => (
-                <Chip
-                  key={item}
-                  label={item}
-                  selected={selected.includes(item)}
-                  disabled={Boolean(disabled)}
-                  onToggle={() => onChange(toggleValue(selected, item))}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
+      <div className="flex flex-col gap-3">
+        {orangeGroups.length > 0 ? (
+          <div className="flex flex-col gap-5 rounded-xl bg-brand p-4 sm:p-5">
+            {orangeGroups.map((group) => (
+              <section key={group.id}>
+                <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-white">
+                  {group.title}
+                </h3>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {group.items.map((item) => (
+                    <Chip
+                      key={item}
+                      label={item}
+                      selected={selected.includes(item)}
+                      onOrange
+                      disabled={Boolean(disabled)}
+                      onToggle={() => onChange(toggleValue(selected, item))}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        ) : null}
+        {navyGroups.length > 0 ? (
+          <div className="flex flex-col gap-5 rounded-xl bg-[#141C6B] p-4 sm:p-5">
+            {navyGroups.map((group) => (
+              <section key={group.id}>
+                <h3 className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#8B96D9]">
+                  {group.title}
+                </h3>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {group.items.map((item) => (
+                    <Chip
+                      key={item}
+                      label={item}
+                      selected={selected.includes(item)}
+                      onDark
+                      disabled={Boolean(disabled)}
+                      onToggle={() => onChange(toggleValue(selected, item))}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        ) : null}
       </div>
     </div>
   );
