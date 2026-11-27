@@ -31,7 +31,7 @@ export function Header({ currentUser, unreadNotifications = 0 }: HeaderProps) {
         <input
           type="search"
           placeholder="Suche nach Kandidaten, Kunden, Vakanzen…"
-          className="w-full rounded-md border border-surface-border bg-surface-subtle py-2 pl-9 pr-3 text-sm text-ink placeholder:text-ink-muted focus:border-brand focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand"
+          className="h-9 w-full rounded-md border border-surface-border bg-surface-subtle py-2 pl-9 pr-3 text-sm text-ink placeholder:text-ink-muted focus:border-brand focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand"
         />
       </div>
 

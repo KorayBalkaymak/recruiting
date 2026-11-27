@@ -55,7 +55,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             role: staff.role,
           }}
         />
-        <main className="scrollbar-thin flex-1 overflow-y-auto bg-surface-subtle p-6">
+        <main className="scrollbar-thin flex-1 overflow-y-auto bg-surface-subtle p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>

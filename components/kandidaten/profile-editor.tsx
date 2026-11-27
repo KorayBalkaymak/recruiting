@@ -117,7 +117,7 @@ export function ProfileEditor({
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_300px]">
-      <div className="flex flex-col gap-4 rounded-lg border border-surface-border bg-white p-5 shadow-panel">
+      <div className="crm-panel flex flex-col gap-4 p-5">
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-ink">Profil-Titel (anonymisiert)</label>
           <Input
@@ -290,7 +290,7 @@ export function ProfileEditor({
         </div>
       </div>
 
-      <aside className="flex flex-col gap-4 rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+      <aside className="flex flex-col gap-4 crm-panel p-4">
         <div>
           <h3 className="text-sm font-medium text-ink">Baustein-System</h3>
           <p className="mt-0.5 text-xs text-ink-muted">

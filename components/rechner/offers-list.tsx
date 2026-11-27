@@ -11,7 +11,7 @@ export async function OffersList() {
   const offers = await getRecentOffers();
 
   return (
-    <div className="rounded-lg border border-surface-border bg-white shadow-panel">
+    <div className="crm-panel">
       <div className="border-b border-surface-border px-5 py-3">
         <h2 className="text-sm font-medium text-ink">Letzte Angebote & Freigabe-Status</h2>
       </div>

@@ -9,6 +9,8 @@ import { PipelineFunnelChart } from "@/components/reporting/pipeline-funnel-char
 import { RevenueTrendChart } from "@/components/reporting/revenue-trend-chart";
 import { TopCustomersChart } from "@/components/reporting/top-customers-chart";
 import { formatCurrency } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/page-header";
+import { Panel } from "@/components/ui/panel";
 
 const stageLabels: Record<string, string> = {
   neue_anfrage: "Neue Anfragen",
@@ -107,11 +109,11 @@ export default async function ReportingPage() {
   const totalMargin = (offers as OfferRow[]).reduce((sum, o) => sum + (o.margin_per_month ?? 0), 0);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-semibold text-ink">Reporting</h1>
-        <p className="text-sm text-ink-muted">Kennzahlen zur Recruiting-Pipeline und Wirtschaftlichkeit.</p>
-      </div>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        title="Reporting"
+        description="Kennzahlen zur Recruiting-Pipeline und Wirtschaftlichkeit."
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <KpiCard label="Vakanzen in Bearbeitung" value={String(tabCounts.in_bearbeitung)} />
@@ -119,37 +121,37 @@ export default async function ReportingPage() {
         <KpiCard label="Deckungsbeitrag/Monat (gesamt)" value={formatCurrency(totalMargin)} />
       </div>
 
-      <div className="rounded-lg border border-surface-border bg-white p-5 shadow-panel">
-        <h2 className="mb-3 text-sm font-medium text-ink">Vakanzen-Pipeline (Funnel)</h2>
+      <Panel className="p-5">
+        <h2 className="mb-3 text-sm font-medium tracking-tight text-ink">Vakanzen-Pipeline</h2>
         <PipelineFunnelChart data={funnelData} />
-      </div>
+      </Panel>
 
-      <div className="rounded-lg border border-surface-border bg-white p-5 shadow-panel">
-        <h2 className="mb-3 text-sm font-medium text-ink">Umsatz &amp; Deckungsbeitrag je Monat</h2>
+      <Panel className="p-5">
+        <h2 className="mb-3 text-sm font-medium tracking-tight text-ink">Umsatz und Deckungsbeitrag je Monat</h2>
         {revenueTrend.length === 0 ? (
           <p className="py-8 text-center text-sm text-ink-muted">Noch keine Angebote kalkuliert.</p>
         ) : (
           <RevenueTrendChart data={revenueTrend} />
         )}
-      </div>
+      </Panel>
 
-      <div className="rounded-lg border border-surface-border bg-white p-5 shadow-panel">
-        <h2 className="mb-3 text-sm font-medium text-ink">Top-Kunden nach offenen Vakanzen</h2>
+      <Panel className="p-5">
+        <h2 className="mb-3 text-sm font-medium tracking-tight text-ink">Top-Kunden nach offenen Vakanzen</h2>
         {topCustomers.length === 0 ? (
           <p className="py-8 text-center text-sm text-ink-muted">Keine offenen Vakanzen vorhanden.</p>
         ) : (
           <TopCustomersChart data={topCustomers} />
         )}
-      </div>
+      </Panel>
     </div>
   );
 }
 
 function KpiCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+    <Panel className="p-5">
       <p className="text-xs text-ink-muted">{label}</p>
-      <p className="mt-1 text-xl font-semibold text-ink">{value}</p>
-    </div>
+      <p className="mt-1 text-xl font-semibold tracking-tight text-ink">{value}</p>
+    </Panel>
   );
 }

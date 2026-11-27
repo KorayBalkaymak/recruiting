@@ -79,7 +79,7 @@ export function VacancyFormWizard({ companies }: { companies: Company[] }) {
   }
 
   return (
-    <div className="rounded-lg border border-surface-border bg-white p-6 shadow-panel">
+    <div className="crm-panel p-6">
       <ol className="mb-6 flex items-center gap-2">
         {steps.map((label, i) => (
           <li key={label} className="flex flex-1 items-center gap-2">

@@ -11,7 +11,7 @@ export function FillableVacancies({ vacancies }: { vacancies: any[] }) {
   if (vacancies.length === 0) return null;
 
   return (
-    <div className="rounded-lg border border-surface-border bg-white shadow-panel">
+    <div className="crm-panel">
       <div className="border-b border-surface-border px-5 py-3">
         <h2 className="text-sm font-medium text-ink">Besetzte Vakanzen ohne Vertrag</h2>
       </div>

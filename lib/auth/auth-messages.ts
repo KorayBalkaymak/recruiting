@@ -90,6 +90,12 @@ export function toSafeAuthMessage(error: unknown, dbUrl?: DatabaseUrlHint) {
   if (/ERR_INVALID_URL|Invalid URL/i.test(message) && !/Failed query|Neon|DATABASE_URL/i.test(message)) {
     return "Auth-URL ungültig. BETTER_AUTH_URL und NEXT_PUBLIC_APP_URL auf dieselbe Origin setzen wie im Browser, Dev-Server neu starten.";
   }
+  if (/RESEND_API_KEY|EMAIL_FROM|E-Mail-Versand ist nicht konfiguriert/i.test(message)) {
+    return "E-Mail-Versand ist nicht eingerichtet. In .env.local RESEND_API_KEY und EMAIL_FROM setzen (kein eigener Mailserver, siehe docs/resend-setup.md), Dev-Server neu starten.";
+  }
+  if (/E-Mail-Versand ist fehlgeschlagen/i.test(message)) {
+    return "Die Bestätigungs-E-Mail konnte nicht gesendet werden. Resend-API-Key, Absenderadresse und Domain prüfen.";
+  }
   if (
     /Keine Datenbank-URL gesetzt/i.test(message) ||
     /DATABASE_URL|Neon|Failed query|fetch fehlgeschlagen|HTTP-Endpoint/i.test(message)

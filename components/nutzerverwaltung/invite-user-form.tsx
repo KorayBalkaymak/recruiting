@@ -39,7 +39,7 @@ export function InviteUserForm() {
           Nutzer einladen
         </Button>
       ) : (
-        <div className="rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+        <div className="crm-panel p-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Input placeholder="Name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
             <Input

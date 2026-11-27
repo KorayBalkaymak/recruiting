@@ -39,7 +39,7 @@ export default async function VacancyDetailPage({ params }: { params: { id: stri
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_300px]">
         <div className="flex flex-col gap-4">
-          <div className="rounded-lg border border-surface-border bg-white p-5 shadow-panel">
+          <div className="crm-panel p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h1 className="text-lg font-semibold text-ink">{vacancy.title}</h1>
@@ -90,7 +90,7 @@ export default async function VacancyDetailPage({ params }: { params: { id: stri
             )}
 
             {vacancy.status === "geschlossen" && vacancy.close_reason && (
-              <div className="mt-4 rounded-md bg-slate-50 p-3 text-sm text-ink-muted">
+              <div className="mt-4 bg-surface-subtle p-3 text-sm text-ink-muted">
                 Geschlossen — Grund: {vacancy.close_reason}
                 {vacancy.close_notes ? ` · ${vacancy.close_notes}` : ""}
               </div>
@@ -120,7 +120,7 @@ export default async function VacancyDetailPage({ params }: { params: { id: stri
             />
           )}
 
-          <div className="rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+          <div className="crm-panel p-4">
             <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-muted">
               Zuständig
             </h3>
@@ -128,7 +128,7 @@ export default async function VacancyDetailPage({ params }: { params: { id: stri
           </div>
 
           {vacancy.contact && (
-            <div className="rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+            <div className="crm-panel p-4">
               <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-muted">
                 Ansprechpartner
               </h3>

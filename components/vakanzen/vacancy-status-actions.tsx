@@ -31,7 +31,7 @@ export function NewRequestActions({
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+    <div className="crm-panel flex flex-col gap-3 p-4">
       <h3 className="text-xs font-medium uppercase tracking-wide text-ink-muted">
         Anfrage zuweisen
       </h3>
@@ -73,7 +73,7 @@ export function NewRequestActions({
 export function ProcessingActions({ vacancyId }: { vacancyId: string }) {
   const [isPending, startTransition] = useTransition();
   return (
-    <div className="rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+    <div className="crm-panel p-4">
       <h3 className="mb-3 text-xs font-medium uppercase tracking-wide text-ink-muted">Aktion</h3>
       <Button onClick={() => startTransition(() => startProcessing(vacancyId))} disabled={isPending}>
         Kandidatensuche starten (In Bearbeitung)
@@ -98,7 +98,7 @@ export function FillOrCloseActions({
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+    <div className="crm-panel p-4">
       <h3 className="mb-3 text-xs font-medium uppercase tracking-wide text-ink-muted">Aktion</h3>
 
       {mode === "none" && (

@@ -6,6 +6,7 @@ import { num } from "@/lib/db/crm";
 import { isDemoMode } from "@/lib/demo/mode";
 import { Calculator } from "@/components/rechner/calculator";
 import { OffersList } from "@/components/rechner/offers-list";
+import { PageHeader } from "@/components/ui/page-header";
 
 async function getCalculatorOptions() {
   if (isDemoMode()) {
@@ -56,13 +57,11 @@ export default async function RechnerPage() {
   const { companies: companyOptions, candidates: candidateOptions } = await getCalculatorOptions();
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-semibold text-ink">Verrechnungssatzrechner</h1>
-        <p className="text-sm text-ink-muted">
-          Kalkuliere Verrechnungssätze, Deckungsbeiträge und erzeuge Angebote.
-        </p>
-      </div>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        title="Verrechnungssatzrechner"
+        description="Verrechnungssätze und Deckungsbeiträge kalkulieren und Angebote erzeugen."
+      />
 
       <Calculator
         companies={companyOptions.map((c: { id: string; name: string }) => ({

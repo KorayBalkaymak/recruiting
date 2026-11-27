@@ -3,21 +3,21 @@ import { requireStaff } from "@/lib/auth";
 import { listPortalProfilesForStaff } from "@/lib/candidate/portal-service";
 import { portalStatusLabels } from "@/lib/candidate/status-labels";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/ui/page-header";
+import { Panel } from "@/components/ui/panel";
 
 export default async function PortalPruefungenPage() {
   const staff = await requireStaff();
   const rows = await listPortalProfilesForStaff(staff);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-semibold text-ink">Portal-Prüfungen</h1>
-        <p className="text-sm text-ink-muted">
-          Eingereichte Kandidatenprofile aus dem Kandidatenportal prüfen.
-        </p>
-      </div>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        title="Portal-Prüfungen"
+        description="Eingereichte Kandidatenprofile aus dem Portal prüfen."
+      />
 
-      <div className="rounded-lg border border-surface-border bg-white shadow-panel">
+      <Panel>
         <div className="scrollbar-thin overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
@@ -63,7 +63,7 @@ export default async function PortalPruefungenPage() {
             </tbody>
           </table>
         </div>
-      </div>
+      </Panel>
     </div>
   );
 }

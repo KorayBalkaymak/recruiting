@@ -29,7 +29,7 @@ export function PortalReviewActions({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-surface-border bg-white p-5 shadow-panel">
+    <div className="crm-panel flex flex-col gap-3 p-5">
       <h2 className="text-sm font-semibold text-ink">Prüfung</h2>
       <label className="flex flex-col gap-1.5 text-sm">
         <span className="font-medium text-ink">Interne Begründung / Hinweis</span>

@@ -58,7 +58,7 @@ export function MatchingPanel({
   }
 
   return (
-    <div className="rounded-lg border border-surface-border bg-white shadow-panel">
+    <div className="crm-panel">
       <div className="border-b border-surface-border px-5 py-3">
         <h2 className="text-sm font-medium text-ink">Matching & Einreichungen</h2>
       </div>

@@ -19,11 +19,11 @@ export function Sidebar({ openRequestsCount = 0, canManageUsers = false }: Sideb
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border px-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-sm font-semibold text-navy">
+        <div className="flex h-8 w-8 items-center justify-center bg-brand text-[11px] font-semibold tracking-wide text-navy">
           CMS
         </div>
         <span className="text-sm font-medium tracking-tight text-white">
-          Recruiting-Plattform
+          CMS Talents
         </span>
       </div>
 

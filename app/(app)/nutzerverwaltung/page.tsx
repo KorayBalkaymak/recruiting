@@ -6,6 +6,8 @@ import { profiles } from "@/lib/db/schema";
 import { isDemoMode } from "@/lib/demo/mode";
 import { UserTable } from "@/components/nutzerverwaltung/user-table";
 import { InviteUserForm } from "@/components/nutzerverwaltung/invite-user-form";
+import { PageHeader } from "@/components/ui/page-header";
+import { Panel } from "@/components/ui/panel";
 import { AuthError, requireUserManager } from "@/lib/auth";
 
 async function getUsers() {
@@ -49,18 +51,14 @@ export default async function NutzerverwaltungPage() {
   const users = await getUsers();
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-ink">Nutzerverwaltung</h1>
-          <p className="text-sm text-ink-muted">Interne Nutzer und ihre Rollen verwalten.</p>
-        </div>
+    <div className="flex flex-col gap-5">
+      <PageHeader title="Nutzerverwaltung" description="Interne Nutzer und ihre Rollen verwalten.">
         <InviteUserForm />
-      </div>
+      </PageHeader>
 
-      <div className="rounded-lg border border-surface-border bg-white shadow-panel">
+      <Panel>
         <UserTable users={users} />
-      </div>
+      </Panel>
     </div>
   );
 }

@@ -84,7 +84,7 @@ export function Calculator({
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_380px]">
-      <div className="flex flex-col gap-4 rounded-lg border border-surface-border bg-white p-5 shadow-panel">
+      <div className="crm-panel flex flex-col gap-4 p-5">
         <Tabs value={mode} onValueChange={(v) => setMode(v as "stundensatz" | "gehalt")}>
           <TabsList>
             <TabsTrigger value="stundensatz">Modus 1: Stundensatz</TabsTrigger>
@@ -206,13 +206,14 @@ export function Calculator({
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="rounded-lg border border-surface-border bg-brand p-5 text-white shadow-panel">
-          <p className="text-xs uppercase tracking-wide text-white/80">
-            Empfohlener Verrechnungssatz (netto, pro Stunde)
+        <div className="border border-navy bg-navy p-5 text-white">
+          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-brand">
+            Empfohlener Verrechnungssatz
           </p>
-          <p className="mt-1 text-3xl font-semibold">
+          <p className="mt-2 text-3xl font-semibold tracking-tight">
             {formatCurrency(result.recommendedHourlyRate, currency)}
           </p>
+          <p className="mt-1 text-xs text-white/55">Netto, pro Stunde</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -222,7 +223,7 @@ export function Calculator({
           <KpiCard label="Deckungsbeitrag / Jahr" value={formatCurrency(result.marginPerYear, currency)} />
         </div>
 
-        <div className="rounded-lg border border-surface-border bg-white p-5 shadow-panel">
+        <div className="crm-panel p-5">
           <p className="mb-3 text-sm font-medium text-ink">Umsatzverteilung pro Stunde</p>
           <RevenueDonutChart
             candidateShare={result.candidateHourlyRateNet}
@@ -266,7 +267,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function KpiCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-surface-border bg-white p-3 shadow-panel">
+    <div className="crm-panel p-3">
       <p className="text-xs text-ink-muted">{label}</p>
       <p className="mt-1 text-base font-semibold text-ink">{value}</p>
     </div>

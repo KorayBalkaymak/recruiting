@@ -42,7 +42,7 @@ export function CompanyTabsNav({
               <span
                 className={cn(
                   "rounded-full px-1.5 py-0.5 text-xs",
-                  isActive ? "bg-brand-light text-brand" : "bg-slate-100 text-ink-muted"
+                  isActive ? "bg-brand-light text-brand-deep" : "bg-surface-subtle text-ink-muted"
                 )}
               >
                 {counts[tab.value] ?? 0}

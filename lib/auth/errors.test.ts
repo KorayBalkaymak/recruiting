@@ -19,6 +19,17 @@ describe("toSafeAuthMessage", () => {
     );
   });
 
+  it("maps missing Resend config without a generic failure", () => {
+    assert.match(
+      toSafeAuthMessage(new Error("E-Mail-Versand ist nicht konfiguriert (RESEND_API_KEY / EMAIL_FROM).")),
+      /RESEND_API_KEY und EMAIL_FROM/
+    );
+    assert.match(
+      toSafeAuthMessage(new Error("E-Mail-Versand ist fehlgeschlagen.")),
+      /Bestätigungs-E-Mail konnte nicht gesendet/
+    );
+  });
+
   it("maps origin failures to a config hint", () => {
     const error = APIError.from("FORBIDDEN", {
       message: "origin",

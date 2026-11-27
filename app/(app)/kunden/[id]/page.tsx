@@ -90,7 +90,7 @@ export default async function CompanyDetailPage({ params }: { params: { id: stri
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
         <div className="flex flex-col gap-4">
-          <div className="rounded-lg border border-surface-border bg-white p-5 shadow-panel">
+          <div className="crm-panel p-5">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-lg font-semibold text-ink">{company.name}</h1>
@@ -109,7 +109,7 @@ export default async function CompanyDetailPage({ params }: { params: { id: stri
             </div>
           </div>
 
-          <div className="rounded-lg border border-surface-border bg-white shadow-panel">
+          <div className="crm-panel">
             <div className="border-b border-surface-border px-5 py-3">
               <h2 className="text-sm font-medium text-ink">Vakanzen</h2>
             </div>
@@ -132,7 +132,7 @@ export default async function CompanyDetailPage({ params }: { params: { id: stri
             )}
           </div>
 
-          <div className="rounded-lg border border-surface-border bg-white shadow-panel">
+          <div className="crm-panel">
             <div className="border-b border-surface-border px-5 py-3">
               <h2 className="text-sm font-medium text-ink">Historie & Notizen</h2>
             </div>
@@ -155,7 +155,7 @@ export default async function CompanyDetailPage({ params }: { params: { id: stri
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+          <div className="crm-panel p-4">
             <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-muted">
               Status verwalten
             </h3>
@@ -166,14 +166,14 @@ export default async function CompanyDetailPage({ params }: { params: { id: stri
             />
           </div>
 
-          <div className="rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+          <div className="crm-panel p-4">
             <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-muted">
               Zugewiesener KAM
             </h3>
             <p className="text-sm text-ink">{company.assigned_kam?.full_name ?? "Nicht zugewiesen"}</p>
           </div>
 
-          <div className="rounded-lg border border-surface-border bg-white p-4 shadow-panel">
+          <div className="crm-panel p-4">
             <h3 className="mb-3 text-xs font-medium uppercase tracking-wide text-ink-muted">
               Ansprechpartner
             </h3>

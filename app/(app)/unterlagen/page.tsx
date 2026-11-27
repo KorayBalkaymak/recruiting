@@ -7,6 +7,8 @@ import { candidates, companies, contracts, offersCalculations } from "@/lib/db/s
 import { num, toIsoRequired } from "@/lib/db/crm";
 import { isDemoMode } from "@/lib/demo/mode";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/page-header";
+import { Panel, PanelHeader } from "@/components/ui/panel";
 
 async function getUnterlagenData() {
   if (isDemoMode()) {
@@ -96,13 +98,11 @@ export default async function UnterlagenPage() {
   const { candidates: candidateDocs, offers, contracts: contractDocs } = await getUnterlagenData();
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-semibold text-ink">Unterlagen</h1>
-        <p className="text-sm text-ink-muted">
-          Zentrale Ablage aller automatisch erzeugten Dokumente.
-        </p>
-      </div>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        title="Unterlagen"
+        description="Zentrale Ablage aller automatisch erzeugten Dokumente."
+      />
 
       <DocumentSection
         title="Anonymisierte Kandidaten-Exposés"
@@ -161,10 +161,8 @@ function DocumentSection({
   rows: { id: string; primary: string; secondary: string; viewHref: string; downloadHref?: string }[];
 }) {
   return (
-    <div className="rounded-lg border border-surface-border bg-white shadow-panel">
-      <div className="border-b border-surface-border px-5 py-3">
-        <h2 className="text-sm font-medium text-ink">{title}</h2>
-      </div>
+    <Panel>
+      <PanelHeader title={title} />
       {rows.length === 0 ? (
         <p className="px-5 py-6 text-sm text-ink-muted">{emptyLabel}</p>
       ) : (
@@ -204,6 +202,6 @@ function DocumentSection({
           ))}
         </ul>
       )}
-    </div>
+    </Panel>
   );
 }

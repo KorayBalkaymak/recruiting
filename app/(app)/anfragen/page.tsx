@@ -8,6 +8,8 @@ import { toIsoRequired } from "@/lib/db/crm";
 import { isDemoMode } from "@/lib/demo/mode";
 import { employmentTypeLabels } from "@/lib/labels";
 import { formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/page-header";
+import { Panel } from "@/components/ui/panel";
 
 const sourceIcons: Record<string, typeof Mail> = {
   portal: Globe,
@@ -66,15 +68,13 @@ export default async function AnfragenPage() {
   const requests = await getRequests();
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-semibold text-ink">Anfragen</h1>
-        <p className="text-sm text-ink-muted">
-          Neu eingegangene Vakanz-Anfragen über Portal, E-Mail und Telefon — bereit zur Zuweisung.
-        </p>
-      </div>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        title="Anfragen"
+        description="Neu eingegangene Vakanz-Anfragen über Portal, E-Mail und Telefon — bereit zur Zuweisung."
+      />
 
-      <div className="rounded-lg border border-surface-border bg-white shadow-panel">
+      <Panel>
         {requests.length === 0 ? (
           <div className="px-5 py-16 text-center">
             <Inbox className="mx-auto mb-2 h-8 w-8 text-ink-muted" strokeWidth={1.5} />
@@ -103,7 +103,7 @@ export default async function AnfragenPage() {
                     <span className="text-xs text-ink-muted">{formatDate(r.created_at)}</span>
                     <Link
                       href={`/vakanzen/${r.id}`}
-                      className="rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-hover"
+                      className="bg-brand px-3 py-1.5 text-xs font-medium text-navy transition-colors hover:bg-brand-hover hover:text-white"
                     >
                       Prüfen & zuweisen
                     </Link>
@@ -113,7 +113,7 @@ export default async function AnfragenPage() {
             })}
           </ul>
         )}
-      </div>
+      </Panel>
     </div>
   );
 }
