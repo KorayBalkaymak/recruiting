@@ -34,7 +34,7 @@ export function SubmitSuccessToast({ show }: { show: boolean }) {
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-white">
           <Check className="h-9 w-9" strokeWidth={2.5} />
         </span>
-        <p className="text-lg font-semibold text-ink">Profil abgeschickt</p>
+        <p className="text-lg font-semibold text-ink">Profil zur Prüfung eingereicht</p>
         <p className="text-sm leading-6 text-ink-muted">
           Deine Unterlagen sind beim Recruiter angekommen und werden geprüft.
         </p>

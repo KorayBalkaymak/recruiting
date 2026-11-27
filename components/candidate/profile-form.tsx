@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { saveProfileDraftAction, submitProfileAction } from "@/app/candidate/actions";
 import {
   KeywordCatalogPicker,
   QualificationCatalogPicker,
 } from "@/components/candidate/catalog-picker";
+import { SubmitSuccessToast } from "@/components/candidate/submit-success-toast";
 import type { CandidatePortalView } from "@/lib/candidate/portal-service";
 import { portalStatusLabels } from "@/lib/candidate/status-labels";
 import { SEARCH_RADIUS_OPTIONS_KM } from "@/lib/candidate/terms";
@@ -52,7 +53,16 @@ export function CandidateProfileForm({
   const [qualifications, setQualifications] = useState<string[]>(profile.qualifications);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const feedbackRef = useRef<HTMLParagraphElement>(null);
+
+  function showError(text: string) {
+    setError(text);
+    window.requestAnimationFrame(() => {
+      feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }
 
   const canSubmit = profile.status === "draft" || profile.status === "changes_requested";
   const canEdit =
@@ -105,6 +115,7 @@ export function CandidateProfileForm({
 
   return (
     <div className="flex flex-col gap-4">
+      <SubmitSuccessToast show={sent} />
       <div className="rounded-md bg-surface-subtle px-3 py-2 text-sm text-ink-muted">
         Status: <span className="font-medium text-ink">{portalStatusLabels[profile.status]}</span>
       </div>
@@ -119,7 +130,11 @@ export function CandidateProfileForm({
         </p>
       )}
 
-      {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-status-danger">{error}</p>}
+      {error && (
+        <p ref={feedbackRef} className="rounded-md bg-red-50 px-3 py-2 text-sm text-status-danger">
+          {error}
+        </p>
+      )}
       {message && <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-status-done">{message}</p>}
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -239,7 +254,7 @@ export function CandidateProfileForm({
         </button>
         <button
           type="button"
-          disabled={isPending || !canSubmit}
+          disabled={isPending || !canSubmit || sent}
           className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-hover disabled:opacity-50"
           onClick={() =>
             startTransition(async () => {
@@ -247,7 +262,7 @@ export function CandidateProfileForm({
               setMessage(null);
               const blocked = submitBlocker();
               if (blocked) {
-                setError(blocked);
+                showError(blocked);
                 return;
               }
               try {
@@ -256,23 +271,39 @@ export function CandidateProfileForm({
                   payload.skills = payload.keywords;
                 }
                 await saveProfileDraftAction(payload);
-                await submitProfileAction();
+                const result = await submitProfileAction();
+                if (!result.ok) {
+                  showError(result.error);
+                  return;
+                }
+                setSent(true);
+                window.setTimeout(() => {
+                  window.location.assign("/candidate/status?sent=1");
+                }, 700);
               } catch (e) {
                 const digest =
                   typeof e === "object" && e && "digest" in e
                     ? String((e as { digest?: string }).digest)
                     : "";
-                if (digest.startsWith("NEXT_REDIRECT") || (e instanceof Error && e.message === "NEXT_REDIRECT")) {
-                  throw e;
+                if (digest.includes("NEXT_REDIRECT") || (e instanceof Error && e.message === "NEXT_REDIRECT")) {
+                  setSent(true);
+                  window.location.assign("/candidate/status?sent=1");
+                  return;
                 }
-                setError(e instanceof Error ? e.message : "Einreichung fehlgeschlagen.");
+                showError(e instanceof Error && e.message ? e.message : "Einreichung fehlgeschlagen.");
               }
             })
           }
         >
-          Zur Prüfung einreichen
+          {isPending ? "Wird eingereicht…" : "Zur Prüfung einreichen"}
         </button>
       </div>
+      {error && (
+        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-status-danger">{error}</p>
+      )}
+      {!canSubmit && lockedMessage && (
+        <p className="text-sm text-ink-muted">{lockedMessage}</p>
+      )}
     </div>
   );
 }

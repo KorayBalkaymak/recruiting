@@ -3,6 +3,7 @@
 import { cookies, headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect";
 import {
   CANDIDATE_VERIFY_EMAIL_PATH,
   decideCandidateLoginAccess,
@@ -257,13 +258,21 @@ export async function saveProfileDraftAction(input: ProfileSaveInput) {
   await saveCandidateDraft(candidate, input);
 }
 
-export async function submitProfileAction() {
-  const candidate = await requireCandidate();
-  await submitCandidateProfile(candidate);
-  revalidatePath("/candidate/dashboard");
-  revalidatePath("/candidate/profile");
-  revalidatePath("/candidate/status");
-  revalidatePath("/portal-pruefungen");
-  revalidatePath("/uebersicht");
-  redirect("/candidate/status?sent=1");
+export async function submitProfileAction(): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const candidate = await requireCandidate();
+    await submitCandidateProfile(candidate);
+    revalidatePath("/candidate/dashboard");
+    revalidatePath("/candidate/profile");
+    revalidatePath("/candidate/status");
+    revalidatePath("/portal-pruefungen");
+    revalidatePath("/uebersicht");
+    return { ok: true };
+  } catch (error) {
+    if (isRedirectError(error)) throw error;
+    return {
+      ok: false,
+      error: error instanceof Error && error.message ? error.message : "Einreichung fehlgeschlagen.",
+    };
+  }
 }
