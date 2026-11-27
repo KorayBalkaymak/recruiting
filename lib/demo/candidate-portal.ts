@@ -26,6 +26,8 @@ export type DemoPortalProfile = {
   postalCode: string | null;
   country: string;
   searchRadiusKm: number | null;
+  hourlyRateNet: number | null;
+  availabilityDate: string | null;
   skills: string[];
   keywords: string[];
   qualifications: string[];
@@ -65,6 +67,8 @@ function seedProfiles(): Record<string, DemoPortalProfile> {
       postalCode: "50667",
       country: "Deutschland",
       searchRadiusKm: 50,
+      hourlyRateNet: 85,
+      availabilityDate: "2026-12-01",
       skills: ["TypeScript", "Node.js", "PostgreSQL"],
       keywords: ["fullstack", "remote-ready"],
       qualifications: ["B.Sc. Informatik"],
@@ -182,6 +186,8 @@ export function registerDemoCandidate(input: {
     postalCode: null,
     country: "Deutschland",
     searchRadiusKm: null,
+    hourlyRateNet: null,
+    availabilityDate: null,
     skills: [],
     keywords: [],
     qualifications: [],

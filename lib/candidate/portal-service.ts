@@ -37,6 +37,7 @@ import {
 } from "@/lib/auth/actor-binding";
 import type { CandidateUser, StaffUser } from "@/lib/auth";
 import { assertRequiredCandidateUploads } from "@/lib/candidate/cv-upload";
+import { num } from "@/lib/db/crm";
 import {
   notifyCandidatePortalStatus,
   notifyStaffPortalSubmitted,
@@ -95,6 +96,25 @@ async function safeNotifyStaffSubmission(input: {
   }
 }
 
+function toDateOnly(value: Date | string | null | undefined): string | null {
+  if (!value) return null;
+  if (typeof value === "string") {
+    const match = value.match(/^(\d{4}-\d{2}-\d{2})/);
+    return match?.[1] ?? null;
+  }
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10);
+  }
+  return null;
+}
+
+export function isIsoDateOnly(value: string | null | undefined): value is string {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const utc = new Date(Date.UTC(year, month - 1, day));
+  return utc.getUTCFullYear() === year && utc.getUTCMonth() === month - 1 && utc.getUTCDate() === day;
+}
+
 export type CandidatePortalView = {
   candidateId: string;
   firstName: string;
@@ -110,6 +130,8 @@ export type CandidatePortalView = {
   postalCode: string | null;
   country: string | null;
   searchRadiusKm: number | null;
+  hourlyRateNet: number | null;
+  availabilityDate: string | null;
   skills: string[];
   keywords: string[];
   qualifications: string[];
@@ -125,6 +147,8 @@ export type ProfileSaveInput = {
   postalCode: string;
   country: string;
   searchRadiusKm: number;
+  hourlyRateNet: number | null;
+  availabilityDate: string | null;
   skills: string[];
   keywords: string[];
   qualifications: string[];
@@ -153,6 +177,8 @@ function mapDemoProfile(
     postalCode: p.postalCode,
     country: p.country,
     searchRadiusKm: p.searchRadiusKm,
+    hourlyRateNet: p.hourlyRateNet,
+    availabilityDate: p.availabilityDate,
     skills: p.skills,
     keywords: p.keywords,
     qualifications: p.qualifications,
@@ -189,6 +215,8 @@ export async function getCandidatePortalView(
       postalCode: candidateSearchProfiles.postalCode,
       country: candidateSearchProfiles.country,
       searchRadiusKm: candidateSearchProfiles.searchRadiusKm,
+      hourlyRateNet: candidates.hourlyRateNet,
+      availabilityDate: candidates.availabilityDate,
     })
     .from(candidates)
     .innerJoin(
@@ -233,6 +261,8 @@ export async function getCandidatePortalView(
     postalCode: row.postalCode,
     country: row.country,
     searchRadiusKm: row.searchRadiusKm,
+    hourlyRateNet: num(row.hourlyRateNet),
+    availabilityDate: toDateOnly(row.availabilityDate),
     skills,
     keywords,
     qualifications,
@@ -284,6 +314,14 @@ export async function saveCandidateDraft(candidate: CandidateUser, input: Profil
     replaceDemoTerms(candidate.candidateId, "skill", skills);
     replaceDemoTerms(candidate.candidateId, "keyword", keywords);
     replaceDemoTerms(candidate.candidateId, "qualification", qualifications);
+    const { getDemoStore } = await import("@/lib/demo/store");
+    const crm = getDemoStore().candidates.find((row) => String(row.id) === candidate.candidateId) as
+      | Record<string, unknown>
+      | undefined;
+    if (crm) {
+      crm.hourly_rate_net = input.hourlyRateNet;
+      crm.availability_date = input.availabilityDate;
+    }
     return upsertDemoPortalProfile(
       candidate.candidateId,
       {
@@ -295,6 +333,8 @@ export async function saveCandidateDraft(candidate: CandidateUser, input: Profil
         postalCode: input.postalCode.trim() || null,
         country: input.country.trim() || "Deutschland",
         searchRadiusKm: input.searchRadiusKm,
+        hourlyRateNet: input.hourlyRateNet,
+        availabilityDate: input.availabilityDate,
         skills,
         keywords,
         qualifications,
@@ -303,6 +343,11 @@ export async function saveCandidateDraft(candidate: CandidateUser, input: Profil
       statusEvent
     );
   }
+
+  const hourlyRateNet = input.hourlyRateNet;
+  const availabilityDate = input.availabilityDate && isIsoDateOnly(input.availabilityDate)
+    ? input.availabilityDate
+    : null;
 
   const db = getDb();
   const [portal] = await db
@@ -382,7 +427,14 @@ export async function saveCandidateDraft(candidate: CandidateUser, input: Profil
 
   await db
     .update(candidates)
-    .set({ firstName, lastName, location: input.city.trim() || null, updatedAt: new Date() })
+    .set({
+      firstName,
+      lastName,
+      location: input.city.trim() || null,
+      hourlyRateNet: hourlyRateNet != null ? String(hourlyRateNet) : null,
+      availabilityDate,
+      updatedAt: new Date(),
+    })
     .where(eq(candidates.id, candidate.candidateId));
 
   await db
@@ -429,6 +481,8 @@ function validateForSubmit(view: {
   city: string | null;
   postalCode: string | null;
   searchRadiusKm: number | null;
+  hourlyRateNet?: number | null;
+  availabilityDate?: string | null;
   skills: string[];
   keywords?: string[];
 }) {
@@ -447,6 +501,12 @@ function validateForSubmit(view: {
   assertSearchRadius(view.searchRadiusKm);
   if (skillTermsForSubmit(view).length < 1) {
     throw new Error("Mindestens ein Skill oder ein Schlagwort ist erforderlich.");
+  }
+  if (view.hourlyRateNet == null || !Number.isFinite(view.hourlyRateNet) || view.hourlyRateNet <= 0) {
+    throw new Error("Stundensatz (netto) ist erforderlich.");
+  }
+  if (!isIsoDateOnly(view.availabilityDate ?? null)) {
+    throw new Error("Verfügbar ab ist erforderlich.");
   }
 }
 
@@ -468,6 +528,8 @@ export async function submitCandidateProfile(candidate: CandidateUser) {
       city: current.city,
       postalCode: current.postalCode,
       searchRadiusKm: current.searchRadiusKm,
+      hourlyRateNet: current.hourlyRateNet,
+      availabilityDate: current.availabilityDate,
       skills: current.skills,
       keywords: current.keywords,
     });
@@ -631,6 +693,8 @@ export async function getPortalProfileForStaff(staff: StaffUser, candidateId: st
       postalCode: candidateSearchProfiles.postalCode,
       country: candidateSearchProfiles.country,
       searchRadiusKm: candidateSearchProfiles.searchRadiusKm,
+      hourlyRateNet: candidates.hourlyRateNet,
+      availabilityDate: candidates.availabilityDate,
     })
     .from(candidates)
     .innerJoin(
@@ -672,6 +736,8 @@ export async function getPortalProfileForStaff(staff: StaffUser, candidateId: st
     postalCode: row.postalCode,
     country: row.country,
     searchRadiusKm: row.searchRadiusKm,
+    hourlyRateNet: num(row.hourlyRateNet),
+    availabilityDate: toDateOnly(row.availabilityDate),
     skills: terms.filter((t) => t.kind === "skill").map((t) => t.term),
     keywords: terms.filter((t) => t.kind === "keyword").map((t) => t.term),
     qualifications: terms.filter((t) => t.kind === "qualification").map((t) => t.term),

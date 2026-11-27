@@ -5,6 +5,7 @@ import { getPortalProfileForStaff } from "@/lib/candidate/portal-service";
 import { portalStatusLabels } from "@/lib/candidate/status-labels";
 import { PortalReviewActions } from "@/components/portal-pruefungen/review-actions";
 import { Badge } from "@/components/ui/badge";
+import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default async function PortalPruefungDetailPage({
   params,
@@ -38,6 +39,11 @@ export default async function PortalPruefungDetailPage({
             <Row label="Standort" value={[profile.city, profile.postalCode].filter(Boolean).join(", ")} />
             <Row label="Radius" value={profile.searchRadiusKm != null ? `${profile.searchRadiusKm} km` : null} />
             <Row label="Erfahrung" value={profile.yearsExperience != null ? `${profile.yearsExperience} Jahre` : null} />
+            <Row
+              label="Stundensatz (netto)"
+              value={profile.hourlyRateNet != null ? `${formatCurrency(profile.hourlyRateNet)} / Std.` : null}
+            />
+            <Row label="Verfügbar ab" value={profile.availabilityDate ? formatDate(profile.availabilityDate) : null} />
             <Row label="Skills" value={profile.skills.join(", ")} />
             <Row label="Keywords" value={profile.keywords.join(", ")} />
             <Row label="Qualifikationen" value={profile.qualifications.join(", ")} />

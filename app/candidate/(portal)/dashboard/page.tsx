@@ -76,6 +76,8 @@ export default async function CandidateDashboardPage() {
     { label: "Gewünschte Rolle", done: Boolean(profile?.desiredRole?.trim()) },
     { label: "Kurzprofil", done: Boolean(profile?.summary?.trim()) },
     { label: "Standort", done: Boolean(profile?.city?.trim()) },
+    { label: "Stundensatz", done: Boolean(profile?.hourlyRateNet && profile.hourlyRateNet > 0) },
+    { label: "Verfügbar ab", done: Boolean(profile?.availabilityDate) },
     { label: "Kompetenzen", done: (profile?.skills.length ?? 0) > 0 },
     { label: "Lebenslauf", done: Boolean(cv?.fileName) },
     { label: "Qualifikationen", done: Boolean(certificate?.fileName) },

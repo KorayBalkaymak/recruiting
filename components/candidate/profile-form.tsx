@@ -48,6 +48,10 @@ export function CandidateProfileForm({
   const [searchRadiusKm, setSearchRadiusKm] = useState(
     profile.searchRadiusKm != null ? profile.searchRadiusKm : 50
   );
+  const [hourlyRateNet, setHourlyRateNet] = useState(
+    profile.hourlyRateNet != null ? String(profile.hourlyRateNet) : ""
+  );
+  const [availabilityDate, setAvailabilityDate] = useState(profile.availabilityDate ?? "");
   const [skills, setSkills] = useState(profile.skills.join(", "));
   const [keywords, setKeywords] = useState<string[]>(profile.keywords);
   const [qualifications, setQualifications] = useState<string[]>(profile.qualifications);
@@ -92,6 +96,11 @@ export function CandidateProfileForm({
     if (!splitCsv(skills).length && keywords.length === 0) {
       return "Mindestens ein Skill oder ein Schlagwort ist erforderlich.";
     }
+    const rate = Number(hourlyRateNet.trim().replace(",", "."));
+    if (!hourlyRateNet.trim() || !Number.isFinite(rate) || rate <= 0) {
+      return "Stundensatz (netto) ist ein Pflichtfeld.";
+    }
+    if (!availabilityDate.trim()) return "Verfügbar ab ist ein Pflichtfeld.";
     return null;
   }
 
@@ -107,6 +116,11 @@ export function CandidateProfileForm({
       postalCode,
       country,
       searchRadiusKm,
+      hourlyRateNet: (() => {
+        const rate = Number(hourlyRateNet.trim().replace(",", "."));
+        return Number.isFinite(rate) && rate > 0 ? rate : null;
+      })(),
+      availabilityDate: availabilityDate.trim() || null,
       skills: splitCsv(skills),
       keywords,
       qualifications,
@@ -186,6 +200,30 @@ export function CandidateProfileForm({
         required
         disabled={!canEdit}
       />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field
+          label="Stundensatz (netto)"
+          value={hourlyRateNet}
+          onChange={setHourlyRateNet}
+          type="number"
+          required
+          disabled={!canEdit}
+          hint="Euro pro Stunde, netto"
+        />
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="font-medium text-ink">Verfügbar ab *</span>
+          <input
+            type="date"
+            required
+            disabled={!canEdit}
+            aria-label="Verfügbar ab"
+            value={availabilityDate}
+            onChange={(e) => setAvailabilityDate(e.target.value)}
+            className="w-full max-w-[12.5rem] rounded-md border border-surface-border px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:bg-surface-subtle"
+          />
+          <span className="text-xs text-ink-muted">Kalender öffnen und Datum wählen</span>
+        </label>
+      </div>
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Stadt / Standort" value={city} onChange={setCity} required disabled={!canEdit} />
         <Field label="PLZ" value={postalCode} onChange={setPostalCode} required disabled={!canEdit} />
