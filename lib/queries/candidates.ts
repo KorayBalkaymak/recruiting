@@ -330,7 +330,7 @@ export async function getCandidateById(id: string) {
 
   const db = getDb();
   const hasClaimCols = await candidatesHaveClaimColumns();
-  const [row] = hasClaimCols
+  const detailRows = hasClaimCols
     ? await db
         .select({
           id: candidates.id,
@@ -392,6 +392,36 @@ export async function getCandidateById(id: string) {
         .where(eq(candidates.id, id))
         .limit(1);
 
+  const row = detailRows[0] as
+    | {
+        id: string;
+        firstName: string;
+        lastName: string;
+        email: string | null;
+        phone: string | null;
+        anonymizedTitle: string | null;
+        anonymizedProfile: Record<string, unknown>;
+        status: CandidateStatus;
+        desiredSalaryMin: string | number | null;
+        desiredSalaryMax: string | number | null;
+        hourlyRateNet: string | number | null;
+        availabilityDate: string | null;
+        location: string | null;
+        assignedRecruiterId: string | null;
+        cvFilePath: string | null;
+        exposeFilePath: string | null;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        recruiterId: string | null;
+        recruiterName: string | null;
+        lastRecruiterActionAt?: Date | string | null;
+        claimedByProfileId?: string | null;
+        claimedAt?: Date | string | null;
+        claimedById?: string | null;
+        claimedByName?: string | null;
+      }
+    | undefined;
+
   if (!row) throw new Error("Kandidat nicht gefunden.");
 
   const submissions = await db
@@ -423,16 +453,16 @@ export async function getCandidateById(id: string) {
     assigned_recruiter_id: row.assignedRecruiterId,
     cv_file_path: row.cvFilePath,
     exposé_file_path: row.exposeFilePath,
-    last_recruiter_action_at: "lastRecruiterActionAt" in row ? toIso(row.lastRecruiterActionAt) : null,
-    claimed_by_profile_id: "claimedByProfileId" in row ? row.claimedByProfileId : null,
-    claimed_at: "claimedAt" in row ? toIso(row.claimedAt) : null,
+    last_recruiter_action_at: toIso(row.lastRecruiterActionAt),
+    claimed_by_profile_id: row.claimedByProfileId ?? null,
+    claimed_at: toIso(row.claimedAt),
     created_at: toIsoRequired(row.createdAt),
     updated_at: toIsoRequired(row.updatedAt),
     assigned_recruiter: row.recruiterId
       ? { id: row.recruiterId, full_name: row.recruiterName }
       : null,
     claimed_by:
-      "claimedById" in row && row.claimedById && row.claimedByName
+      row.claimedById && row.claimedByName
         ? { id: row.claimedById, full_name: row.claimedByName }
         : null,
     submissions: submissions.map((s) => ({
