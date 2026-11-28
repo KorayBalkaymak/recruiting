@@ -109,14 +109,28 @@ export default async function KandidatenPage({
         </Link>
       </div>
 
-      <section className="overflow-hidden rounded-[1.35rem] border border-[#E6E8F0] bg-[#F7F8FC]">
+      <section
+        className={cn(
+          "overflow-hidden rounded-[1.35rem]",
+          tab === "alle"
+            ? "bg-[#E4572E] text-white"
+            : "border border-[#E6E8F0] bg-[#F7F8FC]"
+        )}
+      >
         <div className="flex items-center justify-between px-5 py-3.5">
-          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#141C6B]">
+          <p
+            className={cn(
+              "text-[11px] font-medium uppercase tracking-[0.16em]",
+              tab === "alle" ? "text-white" : "text-[#141C6B]"
+            )}
+          >
             {missingActive ? "Fehlende Unterlagen" : candidateTabs.find((item) => item.value === tab)?.label ?? "Liste"}
           </p>
-          <p className="text-xs text-ink-muted">{candidates.length} sichtbar</p>
+          <p className={cn("text-xs", tab === "alle" ? "text-white/75" : "text-ink-muted")}>
+            {candidates.length} sichtbar
+          </p>
         </div>
-        <CandidateTable candidates={candidates} tab={tab} />
+        <CandidateTable candidates={candidates} tab={tab} inverted={tab === "alle"} />
       </section>
     </div>
   );

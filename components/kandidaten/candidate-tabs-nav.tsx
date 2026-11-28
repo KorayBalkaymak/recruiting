@@ -22,9 +22,11 @@ export function CandidateTabsNav({
             href={tab.value === "alle" ? "/kandidaten" : `/kandidaten?tab=${tab.value}`}
             className={cn(
               "flex min-w-[7.5rem] flex-1 items-center justify-between gap-3 rounded-2xl px-4 py-3.5 transition-all",
-              isActive
-                ? "bg-[#141C6B] text-white shadow-[0_16px_40px_-24px_rgba(20,28,107,0.9)]"
-                : "border border-[#E6E8F0] bg-white text-ink hover:border-[#141C6B]/25 hover:bg-[#F7F8FC]"
+              isActive && tab.value === "alle"
+                ? "bg-[#E4572E] text-white shadow-[0_16px_40px_-24px_rgba(228,87,46,0.9)]"
+                : isActive
+                  ? "bg-[#141C6B] text-white shadow-[0_16px_40px_-24px_rgba(20,28,107,0.9)]"
+                  : "border border-[#E6E8F0] bg-white text-ink hover:border-[#141C6B]/25 hover:bg-[#F7F8FC]"
             )}
           >
             <span className={cn("text-[13px] font-medium", isActive ? "text-white" : "text-ink")}>

@@ -12,18 +12,36 @@ import type { CandidateListItem } from "@/lib/queries/candidates";
 export function CandidateTable({
   candidates,
   tab,
+  inverted = false,
 }: {
   candidates: CandidateListItem[];
   tab: string;
+  inverted?: boolean;
 }) {
   const missingDocs = tab === MISSING_DOCUMENTS_TAB;
 
   if (candidates.length === 0) {
     return (
       <div className="px-6 py-20 text-center">
-        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#141C6B]">Pipeline</p>
-        <p className="mt-2 text-lg font-medium tracking-tight text-ink">Keine Kandidaten in dieser Ansicht</p>
-        <p className="mx-auto mt-2 max-w-[36ch] text-sm leading-6 text-ink-muted">
+        <p
+          className={
+            inverted
+              ? "text-[11px] font-medium uppercase tracking-[0.18em] text-white/80"
+              : "text-[11px] font-medium uppercase tracking-[0.18em] text-[#141C6B]"
+          }
+        >
+          Pipeline
+        </p>
+        <p className={inverted ? "mt-2 text-lg font-medium tracking-tight text-white" : "mt-2 text-lg font-medium tracking-tight text-ink"}>
+          Keine Kandidaten in dieser Ansicht
+        </p>
+        <p
+          className={
+            inverted
+              ? "mx-auto mt-2 max-w-[36ch] text-sm leading-6 text-white/75"
+              : "mx-auto mt-2 max-w-[36ch] text-sm leading-6 text-ink-muted"
+          }
+        >
           {missingDocs
             ? "Registrierte Kandidaten ohne hochgeladenen Lebenslauf erscheinen hier."
             : "Neue Profile landen hier, sobald sie angelegt oder aus dem Portal eingereicht werden."}
