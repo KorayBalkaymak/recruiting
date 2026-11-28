@@ -21,7 +21,7 @@ export function CandidateTabsNav({
             key={tab.value}
             href={tab.value === "alle" ? "/kandidaten" : `/kandidaten?tab=${tab.value}`}
             className={cn(
-              "flex min-w-[7.5rem] flex-1 items-center justify-between gap-3 rounded-2xl px-4 py-3.5 transition-all",
+              "flex min-w-[6.5rem] flex-1 items-center justify-between gap-2 rounded-lg px-3 py-2 transition-all",
               isActive && tab.value === "alle"
                 ? "bg-[#E4572E] text-white shadow-[0_16px_40px_-24px_rgba(228,87,46,0.9)]"
                 : isActive

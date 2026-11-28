@@ -111,13 +111,13 @@ export default async function KandidatenPage({
 
       <section
         className={cn(
-          "overflow-hidden rounded-[1.35rem]",
+          "overflow-hidden rounded-xl",
           tab === "alle"
             ? "bg-[#E4572E] text-white"
             : "border border-[#E6E8F0] bg-[#F7F8FC]"
         )}
       >
-        <div className="flex items-center justify-between px-5 py-3.5">
+        <div className="flex items-center justify-between px-3 py-2">
           <p
             className={cn(
               "text-[11px] font-medium uppercase tracking-[0.16em]",

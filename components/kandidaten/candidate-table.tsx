@@ -51,7 +51,7 @@ export function CandidateTable({
   }
 
   return (
-    <ul className="flex flex-col gap-2.5 p-3 sm:p-4">
+    <ul className="flex flex-col gap-1 p-1.5 sm:p-2">
       {candidates.map((candidate) => {
         const statusInfo = candidateStatusLabels[candidate.status];
         const inactivity = recruiterInactivity(candidate.last_recruiter_action_at);
@@ -59,54 +59,56 @@ export function CandidateTable({
           <li key={candidate.id}>
             <Link
               href={`/kandidaten/${candidate.id}`}
-              className="group grid grid-cols-1 items-center gap-4 rounded-2xl border border-[#E6E8F0] bg-white px-4 py-4 transition-all hover:-translate-y-0.5 hover:border-[#141C6B]/20 hover:shadow-[0_20px_50px_-32px_rgba(20,28,107,0.55)] sm:grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)_auto] sm:px-5 lg:grid-cols-[minmax(0,1.5fr)_140px_150px_130px_minmax(0,0.9fr)_28px]"
+              className="group grid grid-cols-1 items-center gap-2 rounded-md border border-[#E6E8F0] bg-white px-2.5 py-1.5 transition-colors hover:border-[#141C6B]/25 hover:bg-[#FAFBFF] sm:grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)_auto] lg:grid-cols-[minmax(0,1.5fr)_128px_132px_118px_minmax(0,0.9fr)_24px]"
             >
-              <span className="flex min-w-0 items-center gap-3.5">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#141C6B] text-[13px] font-semibold tracking-wide text-white">
+              <span className="flex min-w-0 items-center gap-2.5">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#141C6B] text-[11px] font-semibold tracking-wide text-white">
                   {initials(candidate.first_name, candidate.last_name)}
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate text-[15px] font-medium tracking-tight text-ink">
-                    {candidate.first_name} {candidate.last_name}
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="truncate text-sm font-medium tracking-tight text-ink">
+                      {candidate.first_name} {candidate.last_name}
+                    </span>
+                    {inactivity.stale ? (
+                      <span className="inline-flex shrink-0 items-center gap-0.5 text-[10px] font-medium text-[#E4572E]">
+                        <AlertTriangle className="h-3 w-3" strokeWidth={2} />
+                        {inactivity.label}
+                      </span>
+                    ) : null}
                   </span>
-                  <span className="mt-0.5 block truncate text-xs text-ink-muted">
+                  <span className="block truncate text-[11px] text-ink-muted">
                     {candidate.anonymized_title ?? "Titel folgt im Exposé"}
                   </span>
-                  {inactivity.stale ? (
-                    <span className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-[#E4572E]">
-                      <AlertTriangle className="h-3 w-3" strokeWidth={2} />
-                      {inactivity.label}
-                    </span>
-                  ) : null}
                 </span>
               </span>
 
-              <span className="flex items-center gap-1.5 text-sm text-ink">
+              <span className="flex items-center gap-1 text-xs text-ink">
                 {missingDocs ? (
                   <span className="truncate text-ink-muted">{candidate.email ?? "Keine E-Mail"}</span>
                 ) : (
                   <>
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-[#141C6B]" strokeWidth={1.75} />
+                    <MapPin className="h-3 w-3 shrink-0 text-[#141C6B]" strokeWidth={1.75} />
                     <span className="truncate">{candidate.location ?? "Standort offen"}</span>
                   </>
                 )}
               </span>
 
               <span className="justify-self-start">
-                <span className="inline-flex rounded-full bg-[#F4F5FB] px-2.5 py-1 text-[11px] font-medium text-[#141C6B]">
+                <span className="inline-flex rounded-full bg-[#F4F5FB] px-2 py-0.5 text-[10px] font-medium text-[#141C6B]">
                   {statusInfo.label}
                 </span>
               </span>
 
               {missingDocs ? (
-                <span className="text-sm text-ink-muted">{formatDate(candidate.created_at)}</span>
+                <span className="text-xs text-ink-muted">{formatDate(candidate.created_at)}</span>
               ) : (
                 <>
-                  <span className="text-sm font-medium tabular-nums text-ink">
+                  <span className="text-xs font-medium tabular-nums text-ink">
                     {candidate.hourly_rate_net ? `${formatCurrency(candidate.hourly_rate_net)}` : "Satz offen"}
                   </span>
-                  <span className="hidden items-center gap-1.5 text-sm text-ink-muted lg:flex">
-                    <Calendar className="h-3.5 w-3.5 text-[#141C6B]" strokeWidth={1.75} />
+                  <span className="hidden items-center gap-1 text-xs text-ink-muted lg:flex">
+                    <Calendar className="h-3 w-3 text-[#141C6B]" strokeWidth={1.75} />
                     {candidate.availability_date ? formatDate(candidate.availability_date) : "Datum offen"}
                   </span>
                 </>
@@ -123,8 +125,8 @@ export function CandidateTable({
                 </span>
               </span>
 
-              <span className="hidden h-8 w-8 items-center justify-center rounded-full bg-[#F4F5FB] text-[#141C6B] transition-colors group-hover:bg-[#E4572E] group-hover:text-white lg:flex">
-                <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
+              <span className="hidden h-6 w-6 items-center justify-center rounded-full bg-[#F4F5FB] text-[#141C6B] transition-colors group-hover:bg-[#E4572E] group-hover:text-white lg:flex">
+                <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2} />
               </span>
             </Link>
           </li>
