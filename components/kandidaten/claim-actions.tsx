@@ -32,7 +32,7 @@ export function CandidateClaimActions({
   return (
     <div className="flex flex-col items-start gap-2 sm:items-end">
       {claimedBy ? (
-        <p className="text-xs text-ink-muted">
+        <p className="text-xs text-white/65">
           {isOwner ? "Sie bearbeiten diesen Kandidaten gerade." : claimLiveLabel(claimedBy.full_name)}
         </p>
       ) : null}

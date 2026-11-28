@@ -37,32 +37,32 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
         Zurück zur Kandidatenliste
       </Link>
 
-      <div className="crm-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-lg bg-[#1A1A1A] p-5 text-white shadow-panel sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-light text-sm font-semibold text-brand">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white">
             {initials(candidate.first_name, candidate.last_name)}
           </span>
           <div>
-            <p className="flex items-center gap-2 text-base font-semibold text-ink">
+            <p className="flex flex-wrap items-center gap-2 text-base font-semibold text-white">
               {candidate.first_name} {candidate.last_name}
-              <span className="rounded-sm bg-surface-subtle px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink-muted">
+              <span className="rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/70">
                 Nur intern sichtbar
               </span>
             </p>
-            <p className="text-sm text-ink-muted">
+            <p className="text-sm text-white/65">
               {candidate.location ?? "Standort unbekannt"} ·{" "}
               {candidate.hourly_rate_net ? formatCurrency(candidate.hourly_rate_net) + " / Std." : "Stundensatz offen"}
             </p>
             {inactivity.stale ? (
-              <p className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-brand">
+              <p className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[#E4572E]">
                 <AlertTriangle className="h-3.5 w-3.5" strokeWidth={2} />
                 {inactivity.label}
-                <span className="font-normal text-ink-muted">
+                <span className="font-normal text-white/55">
                   · letzte Bearbeitung {formatDateTime(candidate.last_recruiter_action_at)}
                 </span>
               </p>
             ) : (
-              <p className="mt-1 text-xs text-ink-muted">
+              <p className="mt-1 text-xs text-white/55">
                 Letzte Recruiter-Bearbeitung {formatDateTime(candidate.last_recruiter_action_at)}
               </p>
             )}
