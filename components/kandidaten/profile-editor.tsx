@@ -117,9 +117,9 @@ export function ProfileEditor({
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_300px]">
-      <div className="crm-panel flex flex-col gap-4 p-5">
+      <div className="flex flex-col gap-4 rounded-lg bg-[#E4572E] p-5 text-white shadow-panel">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-ink">Profil-Titel (anonymisiert)</label>
+          <label className="text-sm font-medium text-white">Profil-Titel (anonymisiert)</label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -128,10 +128,23 @@ export function ProfileEditor({
         </div>
 
         <Tabs defaultValue="editor">
-          <TabsList>
-            <TabsTrigger value="editor">Editor</TabsTrigger>
-            <TabsTrigger value="details">Details & Historie</TabsTrigger>
-            <TabsTrigger value="vorschau">
+          <TabsList className="border-white/25">
+            <TabsTrigger
+              value="editor"
+              className="text-white/75 hover:text-white data-[state=active]:text-white data-[state=active]:after:bg-white"
+            >
+              Editor
+            </TabsTrigger>
+            <TabsTrigger
+              value="details"
+              className="text-white/75 hover:text-white data-[state=active]:text-white data-[state=active]:after:bg-white"
+            >
+              Details & Historie
+            </TabsTrigger>
+            <TabsTrigger
+              value="vorschau"
+              className="text-white/75 hover:text-white data-[state=active]:text-white data-[state=active]:after:bg-white"
+            >
               <Eye className="mr-1 h-3.5 w-3.5" />
               PDF-Vorschau
             </TabsTrigger>
@@ -139,7 +152,7 @@ export function ProfileEditor({
 
           <TabsContent value="editor" className="pt-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-ink">Zusammenfassung</label>
+              <label className="text-sm font-medium text-white">Zusammenfassung</label>
               <div className="rounded-md border border-surface-border">
                 <div className="flex items-center gap-1 border-b border-surface-border bg-surface-subtle px-2 py-1.5">
                   <ToolbarButton icon={Bold} label="Fett" onClick={() => exec("bold")} />
@@ -205,14 +218,14 @@ export function ProfileEditor({
 
           <TabsContent value="details" className="flex flex-col gap-3 pt-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-ink">Berufserfahrung</h3>
+              <h3 className="text-sm font-medium text-white">Berufserfahrung</h3>
               <Button variant="secondary" size="sm" onClick={addWorkHistoryEntry}>
                 <Plus className="h-3.5 w-3.5" />
                 Station hinzufügen
               </Button>
             </div>
             {profile.work_history.length === 0 && (
-              <p className="text-sm text-ink-muted">Noch keine Stationen erfasst.</p>
+              <p className="text-sm text-white/75">Noch keine Stationen erfasst.</p>
             )}
             {profile.work_history.map((entry, index) => (
               <div key={index} className="rounded-md border border-surface-border p-3">
@@ -256,9 +269,9 @@ export function ProfileEditor({
           </TabsContent>
         </Tabs>
 
-        <div className="flex items-center justify-between border-t border-surface-border pt-4">
+        <div className="flex items-center justify-between border-t border-white/20 pt-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-ink-muted">Vorlage</span>
+            <span className="text-sm text-white/80">Vorlage</span>
             <Select value={template} onValueChange={(v) => setTemplate(v as ProfileTemplate)}>
               <SelectTrigger className="w-52">
                 <SelectValue />
@@ -274,7 +287,7 @@ export function ProfileEditor({
           </div>
           <div className="flex items-center gap-2">
             {savedState === "saved" && (
-              <span className="text-sm text-status-done">Gespeichert</span>
+              <span className="text-sm text-white">Gespeichert</span>
             )}
             <Button variant="secondary" asChild>
               <a href={`${pdfPreviewUrl}?download=1`} target="_blank" rel="noreferrer">
@@ -369,7 +382,7 @@ function ChipEditor({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-ink">{title}</label>
+      <label className="text-sm font-medium text-white">{title}</label>
       <div className="flex flex-wrap gap-1.5">
         {values.map((value) => (
           <span
