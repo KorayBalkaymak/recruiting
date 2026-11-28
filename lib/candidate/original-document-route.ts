@@ -110,7 +110,8 @@ export async function handleCandidateOriginalDocumentGet(kind: OriginalDocumentK
 
 export async function handleStaffOriginalDocumentGet(
   candidateId: string,
-  kind: OriginalDocumentKind
+  kind: OriginalDocumentKind,
+  request?: Request
 ) {
   try {
     const staff = await requireStaff();
@@ -118,10 +119,14 @@ export async function handleStaffOriginalDocumentGet(
     if (!file) {
       return NextResponse.json({ error: missingLabel[kind] }, { status: 404 });
     }
+    const preview = request ? new URL(request.url).searchParams.get("preview") === "1" : false;
+    const disposition = preview
+      ? contentDispositionAttachment(file.fileName).replace("attachment;", "inline;")
+      : contentDispositionAttachment(file.fileName);
     return new NextResponse(new Uint8Array(file.body), {
       headers: {
         "Content-Type": file.contentType,
-        "Content-Disposition": contentDispositionAttachment(file.fileName),
+        "Content-Disposition": disposition,
         "Cache-Control": "private, no-store",
       },
     });

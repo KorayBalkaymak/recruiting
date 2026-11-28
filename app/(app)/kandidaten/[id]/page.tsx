@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AlertTriangle, ArrowLeft } from "lucide-react";
 import { getCandidateById } from "@/lib/queries/candidates";
 import { ProfileEditor } from "@/components/kandidaten/profile-editor";
+import { PortalSubmissionPanel } from "@/components/kandidaten/portal-submission-panel";
 import { CandidateStatusSelect } from "@/components/kandidaten/status-select";
 import { CandidateClaimActions } from "@/components/kandidaten/claim-actions";
 import { LiveRefresh } from "@/components/kandidaten/live-refresh";
@@ -10,11 +11,18 @@ import { submissionStatusLabels } from "@/lib/labels";
 import { recruiterInactivity } from "@/lib/candidate/recruiter-workflow";
 import { requireCrmStaff } from "@/lib/auth/crm-access";
 import { canManageUsers } from "@/lib/auth/roles";
+import { getPortalProfileForStaff } from "@/lib/candidate/portal-service";
+import { getStaffOriginalDocumentMeta } from "@/lib/candidate/cv-upload";
 import { formatCurrency, formatDateTime, initials } from "@/lib/utils";
 
 export default async function CandidateDetailPage({ params }: { params: { id: string } }) {
   const staff = await requireCrmStaff();
   const candidate = await getCandidateById(params.id);
+  const [portal, cvMeta, certificateMeta] = await Promise.all([
+    getPortalProfileForStaff(staff, params.id),
+    getStaffOriginalDocumentMeta(staff, params.id, "cv").catch(() => null),
+    getStaffOriginalDocumentMeta(staff, params.id, "certificate").catch(() => null),
+  ]);
   const inactivity = recruiterInactivity(candidate.last_recruiter_action_at);
   const claimedBy = candidate.claimed_by ?? null;
 
@@ -70,6 +78,14 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
           />
         </div>
       </div>
+
+      <PortalSubmissionPanel
+        profile={portal}
+        cvFileName={cvMeta?.fileName ?? null}
+        cvMimeType={cvMeta?.mimeType ?? null}
+        certificateFileName={certificateMeta?.fileName ?? null}
+        certificateMimeType={certificateMeta?.mimeType ?? null}
+      />
 
       <ProfileEditor
         candidateId={candidate.id}

@@ -89,6 +89,35 @@ export async function getOwnCandidateCertificateMeta(candidate: CandidateUser) {
   return getOwnOriginalDocumentMeta(candidate, "certificate");
 }
 
+export async function getStaffOriginalDocumentMeta(
+  staff: StaffUser,
+  candidateId: string,
+  kind: OriginalDocumentKind
+) {
+  assertStaffActor(staff);
+  if (!candidateId.trim()) return null;
+  if (isDemoMode()) {
+    const meta = demoMeta().get(demoKey(candidateId, kind));
+    return meta ? { fileName: meta.fileName, mimeType: meta.mimeType } : null;
+  }
+  const db = getDb();
+  const [doc] = await db
+    .select({
+      fileName: candidateDocuments.fileName,
+      mimeType: candidateDocuments.mimeType,
+    })
+    .from(candidateDocuments)
+    .where(
+      and(
+        eq(candidateDocuments.candidateId, candidateId),
+        eq(candidateDocuments.kind, kind),
+        eq(candidateDocuments.sensitivity, "original")
+      )
+    )
+    .limit(1);
+  return doc ?? null;
+}
+
 export async function assertRequiredCandidateUploads(candidate: CandidateUser) {
   const [cv, certificate] = await Promise.all([
     getOwnOriginalDocumentMeta(candidate, "cv"),
