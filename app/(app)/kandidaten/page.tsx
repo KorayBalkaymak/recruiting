@@ -26,7 +26,7 @@ export default async function KandidatenPage({
     <div className="flex flex-col gap-5">
       <LiveRefresh />
 
-      <section className="relative overflow-hidden rounded-none bg-[#1A1A1A] px-6 py-7 text-white sm:px-8">
+      <section className="relative overflow-hidden rounded-[1.35rem] bg-[#1A1A1A] px-6 py-7 text-white sm:px-8">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full bg-[#141C6B] blur-3xl"
@@ -55,12 +55,12 @@ export default async function KandidatenPage({
                 name="q"
                 defaultValue={query}
                 placeholder="Name, Titel, E-Mail…"
-                className="h-11 w-full rounded-none border border-white/10 bg-white/10 pl-10 pr-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/30"
+                className="h-11 w-full rounded-full border border-white/10 bg-white/10 pl-10 pr-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/30"
               />
             </form>
             <Link
               href="/kandidaten/neu"
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-[#E4572E] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#c94a26]"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-[#E4572E] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#c94a26]"
             >
               <Plus className="h-4 w-4" strokeWidth={2} />
               Neuer Kandidat
@@ -74,7 +74,7 @@ export default async function KandidatenPage({
         <Link
           href={missingActive ? "/kandidaten" : `/kandidaten?tab=${MISSING_DOCUMENTS_TAB}`}
           className={cn(
-            "flex items-center justify-between gap-4 rounded-none px-4 py-3.5 transition-all",
+            "flex items-center justify-between gap-4 rounded-2xl px-4 py-3.5 transition-all",
             missingActive
               ? "bg-[#E4572E] text-white shadow-[0_16px_40px_-24px_rgba(228,87,46,0.9)]"
               : "border border-[#E6E8F0] bg-white hover:border-[#E4572E]/30"
@@ -83,7 +83,7 @@ export default async function KandidatenPage({
           <span className="flex items-center gap-3">
             <span
               className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-none",
+                "flex h-9 w-9 items-center justify-center rounded-xl",
                 missingActive ? "bg-white/15 text-white" : "bg-[#FFF1EC] text-[#E4572E]"
               )}
             >
